@@ -1,66 +1,117 @@
 <template>
-  <el-radio-group v-model="isCollapse" style="margin-bottom: 20px">
-    <el-radio-button :label="false">expand</el-radio-button>
-    <el-radio-button :label="true">collapse</el-radio-button>
-  </el-radio-group>
-  <el-menu
-    default-active="2"
-    class="el-menu-vertical-demo"
-    :collapse="isCollapse"
-    @open="handleOpen"
-    @close="handleClose"
-  >
-    <el-sub-menu index="1">
-      <template #title>
-        <el-icon><location /></el-icon>
-        <span>Navigator One</span>
+  <div class="sidebar">
+    <el-menu
+      default-active="3"
+      class="el-menu-vertical-demo"
+      background-color="#545c64"
+      text-color="#bfcbd9"
+      active-text-color="#20a0ff"
+      :collapse="collapse"
+      unique-opened
+      @open="handleOpen"
+      @close="handleClose"
+    >
+      <template v-for="menu in menus">
+        <template v-if="menu.subs">
+          <el-sub-menu :index="menu.index" :key="menu.index">
+            <template #title>
+              <i class="icon" :class="menu.icon"></i>
+              <span class="title">{{ menu.title }}</span>
+            </template>
+            <template v-for="subMenu in menu.subs">
+              <el-sub-menu v-if="subMenu.subs" :index="subMenu.index" :key="subMenu.index">
+                <template #title>
+                  <span class="title">{{ subMenu.title }}</span>
+                </template>
+                <el-menu-item v-for="(third,i) in subMenu.subs" :index="third.index" :key="i">
+                  <span class="title">{{ third.title }}</span>
+                </el-menu-item>
+              </el-sub-menu>
+              <el-menu-item v-else :index="subMenu.index" :key="subMenu.index">
+                <span class="title">{{ subMenu.title }}</span>
+              </el-menu-item>
+            </template>
+          </el-sub-menu>
+        </template>
+
+        <template v-else>
+          <el-menu-item :index="menu.index" :key="menu.index">
+            <i class="icon" :class="menu.icon"></i>
+            <template #title>
+              <span class="title">{{ menu.title }}</span>
+            </template>
+          </el-menu-item>
+        </template>
       </template>
-      <el-menu-item-group>
-        <template #title><span>Group One</span></template>
-        <el-menu-item index="1-1">item one</el-menu-item>
-        <el-menu-item index="1-2">item two</el-menu-item>
-      </el-menu-item-group>
-      <el-menu-item-group title="Group Two">
-        <el-menu-item index="1-3">item three</el-menu-item>
-      </el-menu-item-group>
-      <el-sub-menu index="1-4">
-        <template #title><span>item four</span></template>
-        <el-menu-item index="1-4-1">item one</el-menu-item>
-      </el-sub-menu>
-    </el-sub-menu>
-    <el-menu-item index="2">
-      <el-icon><icon-menu /></el-icon>
-      <template #title>Navigator Two</template>
-    </el-menu-item>
-    <el-menu-item index="3" disabled>
-      <el-icon><document /></el-icon>
-      <template #title>Navigator Three</template>
-    </el-menu-item>
-    <el-menu-item index="4">
-      <el-icon><setting /></el-icon>
-      <template #title>Navigator Four</template>
-    </el-menu-item>
-  </el-menu>
+    </el-menu>
+  </div>
 </template>
 
+
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import {
-  Location,
-  Document,
-  Menu as IconMenu,
-  Setting,
-} from '@element-plus/icons'
+import { computed, defineComponent } from 'vue'
+import { useStore } from "vuex";
 
 export default defineComponent({
   components: {
-    Location,
-    Document,
-    Setting,
-    IconMenu,
   },
   setup() {
-    const isCollapse = ref(true)
+    const menus = [
+      {
+        icon: "fas fa-chart-line fa-2x fa-fw",
+        index: "/dashboard",
+        title: "系统首页"
+      },
+      {
+        icon: "fas fa-users fa-2x fa-fw",
+        index: "/users",
+        title: "用户管理"
+      },
+      {
+        icon: "fas fa-file-alt fa-2x fa-fw",
+        index: "/orders",
+        title: "需求单管理"
+      },
+      {
+        icon: "fas fa-wrench fa-2x fa-fw",
+        index: "/products",
+        title: "耗材管理"
+      },
+      {
+        icon: "fas fa-ban fa-2x fa-fw",
+        index: "/permissions",
+        title: "权限管理"
+      },
+      {
+        icon: "fas fa-vials fa-2x fa-fw",
+        index: "/tests",
+        title: "测试功能",
+        subs: [
+          {
+            index: "/charts",
+            title: "表格"
+          },
+          {
+            index: "/3d",
+            title: "3d"
+          },
+          {
+            index: "4",
+            title: "三级菜单",
+            subs: [
+              {
+                index: "/editor",
+                title: "富文本编辑器",
+              },
+            ],
+          },
+        ]
+      },
+    ]
+
+    const store = useStore();
+    const collapse = computed(() => store.state.collapse);
+
     const handleOpen = (key, keyPath) => {
       console.log(key, keyPath)
     }
@@ -68,7 +119,8 @@ export default defineComponent({
       console.log(key, keyPath)
     }
     return {
-      isCollapse,
+      menus,
+      collapse,
       handleOpen,
       handleClose,
     }
@@ -76,9 +128,30 @@ export default defineComponent({
 })
 </script>
 
-<style>
+<style scoped>
+.icon {
+  margin: 12px;
+}
+.sidebar {
+  position: absolute;
+  top: 80px;
+  left: -10px;
+  overflow-y: auto;
+  height: 100%;
+}
+/* 设置后侧边栏收缩高度才能占满屏幕 */
+/* 此处控制侧边栏收缩后样式 */
+.sidebar > ul {
+  position: relative;
+  height: 100%;
+  min-width: 90px;
+}
+.title {
+  font-size: 15px;
+}
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
-  min-height: 400px;
+  min-height: 100%;
 }
+
 </style>

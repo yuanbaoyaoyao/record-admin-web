@@ -1,10 +1,12 @@
 <template>
     <div>
+        <v-header />
         <v-sidebar />
-        <div>
+        <div class="content-box" :class="{ 'content-collapse': collapse }">
+            <v-tags></v-tags>
             <div class="content">
                 <router-view v-slot="{ Component }">
-                    <transition>
+                    <transition name="move" mode="out-in">
                         <keep-alive>
                             <component :is="Component" />
                         </keep-alive>
@@ -16,9 +18,22 @@
 </template>
 <script>
 import vSidebar from "../components/Sidebar.vue";
+import vHeader from "../components/Header.vue";
+import vTags from "../components/Tags.vue";
+import { useStore } from "vuex";
+import { computed } from 'vue';
 export default {
     components: {
-        vSidebar
+        vSidebar,
+        vHeader,
+        vTags
+    },
+    setup() {
+        const store = useStore();
+        const collapse = computed(() => store.state.collapse);
+        return {
+            collapse,
+        }
     }
 }
 </script>
