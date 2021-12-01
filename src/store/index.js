@@ -10,16 +10,18 @@ export default createStore({
         handleCollapse(state, data) {
             state.collapse = data;
         },
-        addTags(state, data) {
+
+        handleAddTags(state, data) {
             state.editableTabs.push(data)
         },
-        deleteTags(state, data) {
-            state.editableTabs.splice(data)
+        handleDeleteTags(state, data) {
+            state.editableTabs.splice(data.i, 1)
+            
         },
-        clearTags(state) {
+        handleClearTags(state) {
             state.editableTabs = []
         },
-        deleteOtherTags(state, data) {
+        handleDeleteOtherTags(state, data) {
             state.editableTabs = data
         }
     }

@@ -4,6 +4,7 @@
             :model-value="$route.meta.title"
             type="border-card"
             @tab-click="handleClick"
+            @tab-remove="handleRemove"
             closable
         >
             <el-tab-pane
@@ -28,14 +29,13 @@ export default {
         const store = useStore();
         const editableTabs = computed(() => store.state.editableTabs);
         const showTags = computed(() => editableTabs.value.length > 0);
-        // const editableTabsValue = computed(() => store.state.tabsIndex);
 
         const addTags = (route) => {
             const isExist = editableTabs.value.some((menu) => {
                 return menu.path === route.fullPath;
             })
             if (!isExist) {
-                store.commit("addTags", {
+                store.commit("handleAddTags", {
                     name: route.name,
                     title: route.meta.title,
                     path: route.fullPath
@@ -45,12 +45,31 @@ export default {
 
         const handleClick = (tab) => {
             //将当前tab名字与store中的edableTabs中的名字比对，获得路由
-            var length = editableTabs.value.length;
-            for (var i = 0; i < length; i++) {
+            for (var i = 0; i < editableTabs.value.length; i++) {
                 if (editableTabs.value[i].title === tab.props.name) {
                     router.push(editableTabs.value[i].path)
                     break;
                 }
+            }
+        }
+
+        const handleRemove = (name) => {
+            var tabIndex, delItem;
+            for (var i = 0; i < editableTabs.value.length; i++) {
+                if (editableTabs.value[i].title === name) {
+                    delItem = editableTabs.value[i];
+                    tabIndex = i;
+                    store.commit("handleDeleteTags", { i });
+                    break;
+                }
+            }
+            const item = editableTabs.value[tabIndex]
+                ? editableTabs.value[tabIndex]
+                : editableTabs.value[tabIndex - 1];
+            if (item) {
+                delItem.path === route.fullPath && router.push(item.path);
+            } else {
+                router.push("/");
             }
         }
         addTags(route)
@@ -60,9 +79,9 @@ export default {
         })
         return {
             editableTabs,
-            // editableTabsValue,
             showTags,
-            handleClick
+            handleClick,
+            handleRemove
         }
     },
 }
