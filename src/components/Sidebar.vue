@@ -1,15 +1,14 @@
 <template>
   <div class="sidebar">
     <el-menu
-      default-active="3"
+      :default-active="onRoutes"
       class="el-menu-vertical-demo"
       background-color="#545c64"
       text-color="#bfcbd9"
       active-text-color="#20a0ff"
       :collapse="collapse"
       unique-opened
-      @open="handleOpen"
-      @close="handleClose"
+      router
     >
       <template v-for="menu in menus">
         <template v-if="menu.subs">
@@ -51,6 +50,7 @@
 <script lang="ts">
 import { computed, defineComponent } from 'vue'
 import { useStore } from "vuex";
+import { useRoute } from 'vue-router';
 
 export default defineComponent({
   components: {
@@ -74,7 +74,7 @@ export default defineComponent({
       },
       {
         icon: "fas fa-wrench fa-2x fa-fw",
-        index: "/products",
+        index: "/consumables",
         title: "耗材管理"
       },
       {
@@ -109,20 +109,17 @@ export default defineComponent({
       },
     ]
 
+    const route = useRoute();
+    const onRoutes = computed(() => {
+      return route.path;
+    })
+
     const store = useStore();
     const collapse = computed(() => store.state.collapse);
-
-    const handleOpen = (key, keyPath) => {
-      console.log(key, keyPath)
-    }
-    const handleClose = (key, keyPath) => {
-      console.log(key, keyPath)
-    }
     return {
       menus,
       collapse,
-      handleOpen,
-      handleClose,
+      onRoutes,
     }
   },
 })
@@ -130,7 +127,8 @@ export default defineComponent({
 
 <style scoped>
 .icon {
-  margin: 12px;
+  margin: 14px;
+  /* margin-top: 2px; */
 }
 .sidebar {
   position: absolute;
@@ -153,5 +151,4 @@ export default defineComponent({
   width: 200px;
   min-height: 100%;
 }
-
 </style>

@@ -1,64 +1,69 @@
 <template>
-    <div class="tags">
-        <el-tabs v-model="editableTabsValue" type="card" editable @edit="handleTabsEdit">
+    <div class="tags" v-if="showTags">
+        <el-tabs
+            :model-value="$route.meta.title"
+            type="border-card"
+            @tab-click="handleClick"
+            closable
+        >
             <el-tab-pane
+                class="tab"
                 v-for="item in editableTabs"
-                :key="item.name"
+                :key="item.path"
                 :label="item.title"
-                :name="item.name"
-            >{{ item.content }}</el-tab-pane>
+                :name="item.title"
+            ></el-tab-pane>
         </el-tabs>
     </div>
 </template>
 <script lang="ts">
+import { computed } from '@vue/reactivity';
+import { useStore } from "vuex"
+import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router';
 export default {
-    data() {
-        return {
-            editableTabsValue: '2',
-            editableTabs: [
-                {
-                    title: 'Tab 1',
-                    name: '1',
-                    content: 'Tab 1 content',
-                },
-                {
-                    title: 'Tab 2',
-                    name: '2',
-                    content: 'Tab 2 content',
-                },
-            ],
-            tabIndex: 2,
-        }
-    },
-    methods: {
-        handleTabsEdit(targetName, action) {
-            if (action === 'add') {
-                const newTabName = `${++this.tabIndex}`
-                this.editableTabs.push({
-                    title: 'New Tab',
-                    name: newTabName,
-                    content: 'New Tab content',
-                })
-                this.editableTabsValue = newTabName
-            }
-            if (action === 'remove') {
-                const tabs = this.editableTabs
-                let activeName = this.editableTabsValue
-                if (activeName === targetName) {
-                    tabs.forEach((tab, index) => {
-                        if (tab.name === targetName) {
-                            const nextTab = tabs[index + 1] || tabs[index - 1]
-                            if (nextTab) {
-                                activeName = nextTab.name
-                            }
-                        }
-                    })
-                }
+    setup() {
+        const route = useRoute();
+        const router = useRouter();
 
-                this.editableTabsValue = activeName
-                this.editableTabs = tabs.filter((tab) => tab.name !== targetName)
+        const store = useStore();
+        const editableTabs = computed(() => store.state.editableTabs);
+        const showTags = computed(() => editableTabs.value.length > 0);
+        // const editableTabsValue = computed(() => store.state.tabsIndex);
+
+        const addTags = (route) => {
+            const isExist = editableTabs.value.some((menu) => {
+                return menu.path === route.fullPath;
+            })
+            if (!isExist) {
+                store.commit("addTags", {
+                    name: route.name,
+                    title: route.meta.title,
+                    path: route.fullPath
+                })
             }
-        },
+        }
+
+        const handleClick = (tab) => {
+            //将当前tab名字与store中的edableTabs中的名字比对，获得路由
+            var length = editableTabs.value.length;
+            for (var i = 0; i < length; i++) {
+                if (editableTabs.value[i].title === tab.props.name) {
+                    router.push(editableTabs.value[i].path)
+                    break;
+                }
+            }
+        }
+        addTags(route)
+
+        onBeforeRouteUpdate((to) => {
+            addTags(to)
+        })
+        return {
+            editableTabs,
+            // editableTabsValue,
+            showTags,
+            handleClick
+        }
     },
 }
 </script>
@@ -70,9 +75,6 @@ export default {
     overflow: hidden;
     background: #fff;
     padding-right: 120px;
-    /* box-shadow: 0 5px 10px #ddd; */
-    /* margin: 60px; */
-    /* margin-left: 181px; */
     margin-top: 0px;
     width: 100%;
 }
