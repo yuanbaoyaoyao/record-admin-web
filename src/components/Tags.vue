@@ -1,27 +1,51 @@
 <template>
-    <div class="tags" v-if="showTags">
-        <el-tabs
-            :model-value="$route.meta.title"
-            type="border-card"
-            @tab-click="handleClick"
-            @tab-remove="handleRemove"
-            closable
-        >
-            <el-tab-pane
-                class="tab"
-                v-for="item in editableTabs"
-                :key="item.path"
-                :label="item.title"
-                :name="item.title"
-            ></el-tab-pane>
-        </el-tabs>
+    <div v-if="showTags">
+        <div class="tags">
+            <el-tabs
+                :model-value="$route.meta.title"
+                type="border-card"
+                @tab-click="handleClick"
+                @tab-remove="handleRemove"
+                closable
+            >
+                <el-tab-pane
+                    class="tab"
+                    v-for="item in editableTabs"
+                    :key="item.path"
+                    :label="item.title"
+                    :name="item.title"
+                ></el-tab-pane>
+            </el-tabs>
+        </div>
+
+        <div class="dropdown">
+            <el-dropdown @command="handleCloseTags" trigger="click">
+                <el-button type="primary">
+                    标签选项
+                    <el-icon class="el-icon--right">
+                        <arrow-down />
+                    </el-icon>
+                </el-button>
+
+                <template #dropdown>
+                    <el-dropdown-menu>
+                        <el-dropdown-item command="other">关闭其他</el-dropdown-item>
+                        <el-dropdown-item command="all">关闭所有</el-dropdown-item>
+                    </el-dropdown-menu>
+                </template>
+            </el-dropdown>
+        </div>
     </div>
 </template>
 <script lang="ts">
 import { computed } from '@vue/reactivity';
 import { useStore } from "vuex"
 import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router';
+import { ArrowDown } from '@element-plus/icons';
 export default {
+    components: {
+        ArrowDown
+    },
     setup() {
         const route = useRoute();
         const router = useRouter();
@@ -72,6 +96,23 @@ export default {
                 router.push("/");
             }
         }
+
+        const closeAll = () => {
+            store.commit("handleClearTags");
+            router.push("/")
+        }
+
+        const closeOthers = () => {
+            const curItem = editableTabs.value.filter((item) => {
+                console.log(item)
+                return item.path === route.fullPath;
+            });
+            store.commit("handleDeleteOtherTags", curItem);
+        };
+
+        const handleCloseTags = (command) => {
+            command === "other" ? closeOthers() : closeAll()
+        }
         addTags(route)
 
         onBeforeRouteUpdate((to) => {
@@ -81,7 +122,8 @@ export default {
             editableTabs,
             showTags,
             handleClick,
-            handleRemove
+            handleRemove,
+            handleCloseTags
         }
     },
 }
@@ -96,5 +138,12 @@ export default {
     padding-right: 120px;
     margin-top: 0px;
     width: 100%;
+    z-index: 100;
+}
+.dropdown {
+    position: relative;
+    bottom: 40px;
+    float: right;
+    z-index: 1000;
 }
 </style>
