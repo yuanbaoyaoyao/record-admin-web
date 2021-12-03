@@ -1,36 +1,34 @@
 <template>
     <div>
         <el-row :gutter="20">
-            <el-col :span="16">
-                <div class="grid-content bg-purple"></div>
+            <el-col :span="12">
+                <el-card shadow="hover">
+                    <div class="admin-info">
+                        <img src="" class="user-avator" alt="">
+                    </div>
+                </el-card>
             </el-col>
-            <el-col :span="8">
-                <div class="grid-content bg-purple"></div>
-            </el-col>
-        </el-row>
-        <el-row :gutter="20">
-            <el-col :span="8">
-                <div class="grid-content bg-purple"></div>
-            </el-col>
-            <el-col :span="8">
-                <div class="grid-content bg-purple"></div>
-            </el-col>
-            <el-col :span="4">
-                <div class="grid-content bg-purple"></div>
-            </el-col>
-            <el-col :span="4">
-                <div class="grid-content bg-purple"></div>
+            <el-col :span="12">
+                <el-card shadow="hover">
+                    <div class="user-info">用户传递信息</div>
+                </el-card>
             </el-col>
         </el-row>
         <el-row :gutter="20">
-            <el-col :span="4">
-                <div class="grid-content bg-purple"></div>
+            <el-col :span="8">
+                <el-card shadow="hover">
+                    <div class="stock-info">库存信息</div>
+                </el-card>
             </el-col>
-            <el-col :span="16">
-                <div class="grid-content bg-purple"></div>
+            <el-col :span="8">
+                <el-card shadow="hover">
+                    <div class="month-info">本月信息</div>
+                </el-card>
             </el-col>
-            <el-col :span="4">
-                <div class="grid-content bg-purple"></div>
+            <el-col :span="8">
+                <el-card shadow="hover">
+                    <div class="year-info">本年信息</div>
+                </el-card>
             </el-col>
         </el-row>
     </div>
@@ -43,21 +41,10 @@
 .el-col {
     border-radius: 4px;
 }
-.bg-purple-dark {
-    background: #99a9bf;
+.user-avator {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
 }
-.bg-purple {
-    background: #d3dce6;
-}
-.bg-purple-light {
-    background: #e5e9f2;
-}
-.grid-content {
-    border-radius: 4px;
-    min-height: 36px;
-}
-.row-bg {
-    padding: 10px 0;
-    background-color: #f9fafc;
-}
+
 </style>

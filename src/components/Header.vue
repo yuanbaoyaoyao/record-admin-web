@@ -124,12 +124,13 @@ export default {
 
 .user-avator img {
     display: block;
-    margin-right: 5px;
+    margin-right: 50px;
     width: 35px;
     height: 35px;
 }
 .user-name {
-    margin: 5px;
+    margin: -70px;
+    margin-right: 0px;
     margin-top: 8px;
 }
 </style>
