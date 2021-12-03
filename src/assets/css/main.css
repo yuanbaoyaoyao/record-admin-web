@@ -21,8 +21,10 @@ body,
 }
 
 .content {
+    position: absolute;
     width: auto;
     height: 100%;
+    width: 100%;
     padding: 10px;
     overflow-y: scroll;
     box-sizing: border-box;

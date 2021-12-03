@@ -104,7 +104,6 @@ export default {
 
         const closeOthers = () => {
             const curItem = editableTabs.value.filter((item) => {
-                console.log(item)
                 return item.path === route.fullPath;
             });
             store.commit("handleDeleteOtherTags", curItem);
