@@ -124,7 +124,7 @@ export default {
 
 .user-avator img {
     display: block;
-    margin-right: 50px;
+    margin-right: 80px;
     width: 35px;
     height: 35px;
 }
