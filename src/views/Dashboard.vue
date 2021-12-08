@@ -90,44 +90,32 @@
     </div>
 </template>
 
-<script>
+<script setup>
 import Bar from "../components/Charts/Bar.vue"
 import Pie from "../components/Charts/Pie.vue"
 import Line from "../components/Charts/Line.vue"
-export default {
-    components: {
-        Bar,
-        Pie,
-        Line
+const listData = [
+    {
+        name: "qwe",
+        time: "2021/12/7",
+        event: "need a card"
     },
-    setup() {
-        let listData = [
-            {
-                name: "qwe",
-                time: "2021/12/7",
-                event: "need a card"
-            },
-            {
-                name: "qwe",
-                time: "2021/12/7",
-                event: "need a card"
-            },
-            {
-                name: "qwe",
-                time: "2021/12/7",
-                event: "need a card"
-            },
-            {
-                name: "qwe",
-                time: "2021/12/7",
-                event: "need a card"
-            },
-        ]
-        return {
-            listData
-        }
-    }
-}
+    {
+        name: "qwe",
+        time: "2021/12/7",
+        event: "need a card"
+    },
+    {
+        name: "qwe",
+        time: "2021/12/7",
+        event: "need a card"
+    },
+    {
+        name: "qwe",
+        time: "2021/12/7",
+        event: "need a card"
+    },
+]
 </script>
 
 
@@ -149,9 +137,7 @@ export default {
     font-family: Cursive;
 }
 .admin-info-list {
-    /* margin: 10px; */
-    margin-top: 20px;
-    margin-bottom: 8px;
+    margin-top: 12px;
 }
 .user-info-list-detail {
     display: grid;

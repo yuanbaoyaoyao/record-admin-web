@@ -16,24 +16,13 @@
         </div>
     </div>
 </template>
-<script>
+<script setup>
 import vSidebar from "../components/Sidebar.vue";
 import vHeader from "../components/Header.vue";
 import vTags from "../components/Tags.vue";
 import { useStore } from "vuex";
 import { computed } from 'vue';
-export default {
-    components: {
-        vSidebar,
-        vHeader,
-        vTags
-    },
-    setup() {
-        const store = useStore();
-        const collapse = computed(() => store.state.collapse);
-        return {
-            collapse,
-        }
-    }
-}
+const store = useStore();
+const collapse = computed(() => store.state.collapse);
+
 </script>

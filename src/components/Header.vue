@@ -50,34 +50,19 @@
     </div>
 </template>
 
-<script>
-import { ArrowDown, BellFilled,  Expand, Fold } from '@element-plus/icons';
+<script setup>
+import { ArrowDown, BellFilled, Expand, Fold } from '@element-plus/icons';
 import { computed } from '@vue/reactivity';
 import { useStore } from 'vuex';
-export default {
-    components: {
-        ArrowDown,
-        BellFilled,
-        Expand,
-        Fold
-    },
-    setup() {
-        const store = useStore();
-        const collapse = computed(() => store.state.collapse);
-        const collapseChage = () => {
-            store.commit("handleCollapse", !collapse.value);
-        };
-        return{
-            collapse,
-            collapseChage
-        }
-    },
+const store = useStore();
+const collapse = computed(() => store.state.collapse);
+const collapseChage = () => {
+    store.commit("handleCollapse", !collapse.value);
 };
-
 </script>
 
 <style scoped>
-.expand-fold-icon{
+.expand-fold-icon {
     font-size: 30px;
     margin-top: 25px;
 }

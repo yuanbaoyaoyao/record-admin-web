@@ -47,80 +47,72 @@
 </template>
 
 
-<script lang="ts">
-import { computed, defineComponent } from 'vue'
+<script setup>
+import { computed } from 'vue'
 import { useStore } from "vuex";
 import { useRoute } from 'vue-router';
 
-export default defineComponent({
-  setup() {
-    const menus = [
+const menus = [
+  {
+    icon: "fas fa-chart-line fa-2x fa-fw",
+    index: "/dashboard",
+    title: "系统首页"
+  },
+  {
+    icon: "fas fa-users fa-2x fa-fw",
+    index: "/users",
+    title: "用户管理"
+  },
+  {
+    icon: "fas fa-file-alt fa-2x fa-fw",
+    index: "/orders",
+    title: "需求单管理"
+  },
+  {
+    icon: "fas fa-wrench fa-2x fa-fw",
+    index: "/consumables",
+    title: "耗材管理"
+  },
+  {
+    icon: "fas fa-ban fa-2x fa-fw",
+    index: "/permissions",
+    title: "权限管理"
+  },
+  {
+    icon: "fas fa-vials fa-2x fa-fw",
+    index: "/tests",
+    title: "测试功能",
+    subs: [
       {
-        icon: "fas fa-chart-line fa-2x fa-fw",
-        index: "/dashboard",
-        title: "系统首页"
+        index: "/charts",
+        title: "表格"
       },
       {
-        icon: "fas fa-users fa-2x fa-fw",
-        index: "/users",
-        title: "用户管理"
+        index: "/3d",
+        title: "3d"
       },
       {
-        icon: "fas fa-file-alt fa-2x fa-fw",
-        index: "/orders",
-        title: "需求单管理"
-      },
-      {
-        icon: "fas fa-wrench fa-2x fa-fw",
-        index: "/consumables",
-        title: "耗材管理"
-      },
-      {
-        icon: "fas fa-ban fa-2x fa-fw",
-        index: "/permissions",
-        title: "权限管理"
-      },
-      {
-        icon: "fas fa-vials fa-2x fa-fw",
-        index: "/tests",
-        title: "测试功能",
+        index: "4",
+        title: "三级菜单",
         subs: [
           {
-            index: "/charts",
-            title: "表格"
+            index: "/editor",
+            title: "富文本编辑器",
           },
-          {
-            index: "/3d",
-            title: "3d"
-          },
-          {
-            index: "4",
-            title: "三级菜单",
-            subs: [
-              {
-                index: "/editor",
-                title: "富文本编辑器",
-              },
-            ],
-          },
-        ]
+        ],
       },
     ]
-
-    const route = useRoute();
-    const onRoutes = computed(() => {
-      return route.path;
-    })
-
-    const store = useStore();
-    const collapse = computed(() => store.state.collapse);
-    return {
-      menus,
-      collapse,
-      onRoutes,
-    }
   },
+]
+
+const route = useRoute();
+const onRoutes = computed(() => {
+  return route.path;
 })
+
+const store = useStore();
+const collapse = computed(() => store.state.collapse);
+
 </script>
 
 <style scoped>
