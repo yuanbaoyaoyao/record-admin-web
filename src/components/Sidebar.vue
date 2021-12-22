@@ -35,7 +35,10 @@
 
         <template v-else>
           <el-menu-item :index="menu.index" :key="menu.index">
-            <i class="icon" :class="menu.icon"></i>
+            <!-- 解决抖动问题 -->
+            <div>
+              <i class="icon" :class="menu.icon"></i>
+            </div>
             <template #title>
               <span class="title">{{ menu.title }}</span>
             </template>
@@ -66,7 +69,7 @@ const menus = [
   {
     icon: "fas fa-file-alt fa-2x fa-fw",
     index: "/orders",
-    title: "需求单管理"
+    title: "需求管理"
   },
   {
     icon: "fas fa-wrench fa-2x fa-fw",
@@ -117,6 +120,7 @@ const collapse = computed(() => store.state.collapse);
 
 <style scoped>
 .icon {
+  display: block;
   margin: 14px;
   /* margin-top: 2px; */
 }
