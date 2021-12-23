@@ -1,6 +1,6 @@
 <template>
-    <div v-if="showTags">
-        <div class="tags">
+    <div v-if="showTags" class="tags">
+        <div class="tags-list">
             <el-tabs
                 :model-value="$route.meta.title"
                 type="border-card"
@@ -18,7 +18,7 @@
             </el-tabs>
         </div>
 
-        <div class="dropdown">
+        <div class="tags-management">
             <el-dropdown @command="handleCloseTags" trigger="click">
                 <el-button type="primary">
                     标签选项
@@ -116,19 +116,19 @@ onBeforeRouteUpdate((to) => {
 
 <style>
 .tags {
-    position: relative;
-    height: 41px;
+    display: flex;
+    justify-content: space-between;
+    /* box-shadow: 2px 0px 0px #dad4d4; */
+}
+.tags-list {
+    height: auto;
     overflow: hidden;
     background: #fff;
-    padding-right: 120px;
-    margin-top: 0px;
-    width: 100%;
-    z-index: 100;
 }
-.dropdown {
-    position: relative;
-    bottom: 40px;
+.tags-management {
     float: right;
-    z-index: 1000;
+}
+.el-tabs--border-card>.el-tabs__content {
+    padding: 0px!important;
 }
 </style>

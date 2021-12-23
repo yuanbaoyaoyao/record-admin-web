@@ -14,7 +14,9 @@
         <template v-if="menu.subs">
           <el-sub-menu :index="menu.index" :key="menu.index">
             <template #title>
-              <i class="icon" :class="menu.icon"></i>
+              <div>
+                <i class="icon" :class="menu.icon"></i>
+              </div>
               <span class="title">{{ menu.title }}</span>
             </template>
             <template v-for="subMenu in menu.subs">
@@ -64,22 +66,74 @@ const menus = [
   {
     icon: "fas fa-users fa-2x fa-fw",
     index: "/users",
-    title: "用户管理"
+    title: "用户管理",
+    subs: [
+      {
+        index: "/usersList",
+        title: "用户列表"
+      },
+      {
+        index: "/userTrace",
+        title: "用户足迹"
+      },
+    ]
   },
   {
     icon: "fas fa-file-alt fa-2x fa-fw",
     index: "/orders",
-    title: "需求管理"
+    title: "需求管理",
+    subs: [
+      {
+        index: "/ordersList",
+        title: "需求列表"
+      },
+      {
+        index: "/orderDetail",
+        title: "需求详情"
+      },
+    ]
   },
   {
     icon: "fas fa-wrench fa-2x fa-fw",
     index: "/consumables",
-    title: "耗材管理"
+    title: "耗材管理",
+    subs: [
+      {
+        index: "/consumablesList",
+        title: "耗材列表"
+      },
+      {
+        index: "/consumableAdd",
+        title: "添加耗材"
+      },
+      {
+        index: "/consumableDetail",
+        title: "耗材详情"
+      },
+      {
+        index: "/consumableApply",
+        title: "耗材申请"
+      },
+    ]
   },
   {
     icon: "fas fa-ban fa-2x fa-fw",
     index: "/permissions",
-    title: "权限管理"
+    title: "权限管理",
+    subs: [
+      {
+        index: "/adminsList",
+        title: "管理员"
+      },
+      {
+        index: "/rolesManagement",
+        title: "角色管理"
+      },
+      {
+        index: "/operationLog",
+        title: "操作日志"
+      },
+    ]
   },
   {
     icon: "fas fa-vials fa-2x fa-fw",

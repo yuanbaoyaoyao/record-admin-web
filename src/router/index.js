@@ -19,36 +19,92 @@ const routes = [{
         },
         component: () => import("../views/Dashboard.vue")
     }, {
-        path: "/users",
-        name: "Users",
+        path: "/usersList",
+        name: "UsersList",
         meta:{
-            title:'用户管理'
+            title:'用户列表'
         },
-        component: () => import("../views/Users.vue"),
+        component: () => import("../views/users/UsersList.vue"),
 
     }, {
-        path: "/orders",
-        name: "Orders",
+        path: "/userTrace",
+        name: "UserTrace",
         meta:{
-            title:'需求单管理'
+            title:'用户足迹'
         },
-        component: () => import("../views/Orders.vue"),
+        component: () => import("../views/users/UserTrace.vue"),
+
+    },{
+        path: "/ordersList",
+        name: "OrdersList",
+        meta:{
+            title:'需求列表'
+        },
+        component: () => import("../views/orders/OrdersList.vue"),
 
     }, {
-        path: "/consumables",
-        name: "Consumables",
+        path: "/orderDetail",
+        name: "OrderDetail",
+        meta:{
+            title:'需求详情'
+        },
+        component: () => import("../views/orders/OrderDetail.vue"),
+
+    },{
+        path: "/consumablesList",
+        name: "ConsumablesList",
         meta:{
             title:'耗材管理'
         },
-        component: () => import("../views/Consumables.vue"),
+        component: () => import("../views/consumables/ConsumablesList.vue"),
+
+    },{
+        path: "/consumableAdd",
+        name: "ConsumableAdd",
+        meta:{
+            title:'添加耗材'
+        },
+        component: () => import("../views/consumables/ConsumableAdd.vue"),
+
+    },{
+        path: "/consumableDetail",
+        name: "ConsumableDetail",
+        meta:{
+            title:'耗材详情'
+        },
+        component: () => import("../views/consumables/ConsumableDetail.vue"),
 
     }, {
-        path: "/permissions",
-        name: "Permissions",
+        path: "/consumableApply",
+        name: "ConsumableApply",
         meta:{
-            title:'权限管理'
+            title:'耗材申请'
         },
-        component: () => import("../views/Permissions.vue"),
+        component: () => import("../views/consumables/ConsumableApply.vue"),
+
+    },   {
+        path: "/adminsList",
+        name: "adminsList",
+        meta:{
+            title:'管理员'
+        },
+        component: () => import("../views/permissions/adminsList.vue"),
+
+    },{
+        path: "/rolesManagement",
+        name: "RolesManagement",
+        meta:{
+            title:'角色管理'
+        },
+        component: () => import("../views/permissions/rolesManagement.vue"),
+
+    },{
+        path: "/operationLog",
+        name: "operationLog",
+        meta:{
+            title:'操作日志'
+        },
+        component: () => import("../views/permissions/operationLog.vue"),
 
     }, {
         path: "/charts",
@@ -56,7 +112,7 @@ const routes = [{
         meta:{
             title:'表格'
         },
-        component: () => import("../views/Charts.vue"),
+        component: () => import("../views/tests/Charts.vue"),
 
     }, {
         path: "/3d",
@@ -64,7 +120,7 @@ const routes = [{
         meta:{
             title:'3d'
         },
-        component: () => import("../views/3d.vue"),
+        component: () => import("../views/tests/3d.vue"),
 
     }, {
         path: "editor",
@@ -72,9 +128,16 @@ const routes = [{
         meta:{
             title:'富文本编辑器'
         },
-        component: () => import("../views/Editor.vue"),
+        component: () => import("../views/tests/Editor.vue"),
 
-    },]
+    },{
+        path: "editor",
+        name: "Editor",
+        meta:{
+            title:'富文本编辑器'
+        },
+        component: () => import("../views/tests/Editor.vue"),
+    }]
 }];
 
 const router = createRouter({

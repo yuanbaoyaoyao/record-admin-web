@@ -1,17 +1,19 @@
 <template>
-    <div>
+    <div class="layout">
         <v-header />
-        <v-sidebar />
-        <div class="content-box" :class="{ 'content-collapse': collapse }">
-            <v-tags></v-tags>
-            <div class="content">
-                <router-view v-slot="{ Component }">
-                    <transition name="move" mode="out-in">
-                        <keep-alive>
-                            <component :is="Component" />
-                        </keep-alive>
-                    </transition>
-                </router-view>
+        <div class="layout-center">
+            <v-sidebar />
+            <div class="content-box" :class="{ 'content-collapse': collapse }">
+                <v-tags></v-tags>
+                <div class="content">
+                    <router-view v-slot="{ Component }">
+                        <transition name="move" mode="out-in">
+                            <keep-alive>
+                                <component :is="Component" />
+                            </keep-alive>
+                        </transition>
+                    </router-view>
+                </div>
             </div>
         </div>
     </div>
