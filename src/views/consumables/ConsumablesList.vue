@@ -17,8 +17,8 @@
                 </el-row>
             </div>
             <div class="button-right">
+                <el-button :icon="CirclePlus" type="primary">添加</el-button>
                 <el-dropdown trigger="click">
-                    <el-button :icon="CirclePlus" type="primary">添加</el-button>
                     <el-button :icon="Download" type="primary">导出</el-button>
                     <template #dropdown>
                         <el-dropdown-menu>
@@ -52,9 +52,10 @@
                     ></el-image>
                 </el-table-column>
                 <el-table-column prop="date" label="时间" sortable width="180" />
-                <el-table-column prop="number" label="数量" />
+                <el-table-column prop="number" label="库存数量" />
                 <el-table-column fixed="right" label="操作" width="120">
                     <template #default>
+                        <el-button type="text" size="small">详情</el-button>
                         <el-button type="text" size="small">编辑</el-button>
                     </template>
                 </el-table-column>
@@ -81,6 +82,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { Search, Download, CirclePlus } from '@element-plus/icons';
+let multipleSelection = []
 const multipleTable = ref();
 const restaurants = ref([])
 const state2 = ref();
@@ -154,7 +156,6 @@ const tableData = [
         number: '4'
     },
 ]
-let multipleSelection = []
 const toggleSelection = (rows) => {
     if (rows) {
         rows.forEach((row) => {

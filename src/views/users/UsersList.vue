@@ -70,7 +70,9 @@
 </template>
 <script setup>
 import { ref, onMounted } from "vue";
-import { Search,Download } from '@element-plus/icons';
+import { Search, Download } from '@element-plus/icons';
+import { getListAPI } from '@/api/api'
+getListAPI().then(res => console.log(res)).catch(err => console.log(err))
 const multipleTable = ref();
 const restaurants = ref([])
 const state2 = ref();
@@ -151,10 +153,10 @@ const handleSelectionChange = (val) => {
     display: flex;
     justify-content: space-between;
 }
-.el-pagination{
+.el-pagination {
     --el-pagination-button-height: 40px;
 }
-.el-input--mini .el-input__inner{
+.el-input--mini .el-input__inner {
     height: 40px;
 }
 </style>

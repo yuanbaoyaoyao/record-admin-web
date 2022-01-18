@@ -5,6 +5,7 @@ export default createStore({
     state: {
         collapse: false,
         editableTabs: [],
+        token: null
     },
     mutations: {
         handleCollapse(state, data) {
@@ -16,7 +17,7 @@ export default createStore({
         },
         handleDeleteTags(state, data) {
             state.editableTabs.splice(data.i, 1)
-            
+
         },
         handleClearTags(state) {
             state.editableTabs = []

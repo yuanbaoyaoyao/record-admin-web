@@ -43,7 +43,7 @@
                 <el-table-column prop="name" label="姓名" width="180" />
                 <el-table-column prop="consumable" label="耗材名称" width="180"/>
                 <el-table-column prop="amount" label="数量" width="180"/>
-                <el-table-column prop="date" label="注册时间" sortable width="180" />
+                <el-table-column prop="date" label="领用时间" sortable width="180" />
                 <el-table-column fixed="right" label="操作" width="120">
                     <template #default>
                         <el-button type="text" size="small">详情</el-button>

@@ -46,7 +46,7 @@
                 <el-table-column prop="state" label="状态" />
                 <el-table-column fixed="right" label="操作" width="120">
                     <template #default>
-                        <el-button type="text" size="small">详情</el-button>
+                        <el-button type="text" size="small" @click="dialogTableVisible = true">详情</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -68,10 +68,20 @@
             </div>
         </div>
     </div>
+    <!-- 页面弹出框 -->
+    <el-dialog v-model="dialogTableVisible" title="需求详情">
+        <el-table :data="gridData">
+            <el-table-column property="date" label="Date" width="150"></el-table-column>
+            <el-table-column property="name" label="Name" width="200"></el-table-column>
+            <el-table-column property="address" label="Address"></el-table-column>
+        </el-table>
+    </el-dialog>
 </template>
 <script setup>
 import { ref, onMounted } from "vue";
 import { Search } from '@element-plus/icons';
+let dialogTableVisible = ref(false);
+let multipleSelection = []
 const multipleTable = ref();
 const restaurants = ref([])
 const state2 = ref();
@@ -107,34 +117,55 @@ const handleSelect = (item) => {
 onMounted(() => {
     restaurants.value = loadAll()
 })
+const gridData = [
+    {
+        date: '2016-05-02',
+        name: 'John Smith',
+        address: 'No.1518,  Jinshajiang Road, Putuo District',
+    },
+    {
+        date: '2016-05-04',
+        name: 'John Smith',
+        address: 'No.1518,  Jinshajiang Road, Putuo District',
+    },
+    {
+        date: '2016-05-01',
+        name: 'John Smith',
+        address: 'No.1518,  Jinshajiang Road, Putuo District',
+    },
+    {
+        date: '2016-05-03',
+        name: 'John Smith',
+        address: 'No.1518,  Jinshajiang Road, Putuo District',
+    },
+]
 
 const tableData = [
     {
-        number:"23423423423",
+        number: "23423423423",
         date: '2016-05-03',
         name: 'Tom',
-        state:'已收货',
+        state: '已收货',
     },
     {
-        number:"23423423423",
+        number: "23423423423",
         date: '2016-05-02',
         name: 'Tom',
-        state:'未处理',
+        state: '未处理',
     },
     {
-        number:"23423423423",
+        number: "23423423423",
         date: '2016-05-04',
         name: 'Tom',
-        state:'已收货',
+        state: '已收货',
     },
     {
-        number:"23423423423",
+        number: "23423423423",
         date: '2016-05-01',
         name: 'Tom',
-        state:'未处理',
+        state: '未处理',
     },
 ]
-let multipleSelection = []
 const toggleSelection = (rows) => {
     if (rows) {
         rows.forEach((row) => {
@@ -156,10 +187,10 @@ const handleSelectionChange = (val) => {
     display: flex;
     justify-content: space-between;
 }
-.el-pagination{
+.el-pagination {
     --el-pagination-button-height: 40px;
 }
-.el-input--mini .el-input__inner{
+.el-input--mini .el-input__inner {
     height: 40px;
 }
 </style>

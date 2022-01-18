@@ -13,5 +13,9 @@ export default defineConfig({
     alias: {
       "@": resolve(__dirname, "./src"),
     }
+  },
+  //process is not define
+  define:{
+    'process.env':{}
   }
 })
