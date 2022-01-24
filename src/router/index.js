@@ -88,7 +88,7 @@ const routes = [{
         meta:{
             title:'管理员'
         },
-        component: () => import("../views/permissions/adminsList.vue"),
+        component: () => import("../views/permissions/AdminsList.vue"),
 
     },{
         path: "/rolesManagement",
@@ -96,7 +96,7 @@ const routes = [{
         meta:{
             title:'角色管理'
         },
-        component: () => import("../views/permissions/rolesManagement.vue"),
+        component: () => import("../views/permissions/RolesManagement.vue"),
 
     },{
         path: "/operationLog",
@@ -104,7 +104,7 @@ const routes = [{
         meta:{
             title:'操作日志'
         },
-        component: () => import("../views/permissions/operationLog.vue"),
+        component: () => import("../views/permissions/OperationLog.vue"),
 
     }, {
         path: "/charts",

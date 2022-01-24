@@ -71,8 +71,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { Search, Download } from '@element-plus/icons';
-import { getListAPI } from '@/api/api'
-getListAPI().then(res => console.log(res.data)).catch(err => console.log(err))
+
 const multipleTable = ref();
 const restaurants = ref([])
 const state2 = ref();

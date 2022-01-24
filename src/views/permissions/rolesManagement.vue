@@ -31,8 +31,8 @@
             >
                 <el-table-column type="selection" width="55" />
                 <el-table-column prop="name" label="角色名称" width="180" />
-                <el-table-column prop="describe" label="描述" width="180" />
-                <el-table-column prop="date" label="创建时间" sortable />
+                <el-table-column prop="description" label="描述" width="180" />
+                <el-table-column prop="createdAt" label="创建时间" sortable />
                 <el-table-column fixed="right" label="操作" width="120">
                     <template #default>
                         <el-button type="text" size="small">编辑</el-button>
@@ -62,17 +62,21 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { Search, Download, CirclePlus } from '@element-plus/icons';
+import { getListAPI } from '@/api/admin-role'
+
 let multipleSelection = []
 const multipleTable = ref();
 const restaurants = ref([])
 const state2 = ref();
-const url = ref(
-    'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
-)
-const srcList = ref([
-    'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
+const tableData = ref([])
 
-])
+getListAPI().then(
+    res => {
+        tableData.value = res.data
+        console.log(res.data)
+    }).catch(
+        err => console.log(err)
+    )
 const querySearch = (queryString, cb) => {
     const results = queryString
         ? restaurants.value.filter(createFilter(queryString))
@@ -106,36 +110,8 @@ onMounted(() => {
     restaurants.value = loadAll()
 })
 
-const tableData = [
-    {
-        name: '硒鼓',
-        role: 'xx-99',
-        describe: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        date: '2016-05-03',
-        number: '4'
-    },
-    {
-        name: '硒鼓',
-        role: 'xx-99',
-        describe: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        date: '2016-05-02',
-        number: '4'
-    },
-    {
-        name: '硒鼓',
-        role: 'xx-99',
-        describe: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        date: '2016-05-04',
-        number: '4'
-    },
-    {
-        name: '硒鼓',
-        role: 'xx-99',
-        describe: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        date: '2016-05-01',
-        number: '4'
-    },
-]
+
+
 const toggleSelection = (rows) => {
     if (rows) {
         rows.forEach((row) => {

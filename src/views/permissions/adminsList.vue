@@ -31,16 +31,17 @@
             >
                 <el-table-column type="selection" width="55" />
                 <el-table-column prop="name" label="管理员名称" width="180" />
-                <el-table-column prop="pic" label="图片" width="180">
-                    <el-image
-                        style="width: 100px; height: 100px"
-                        :src="url"
-                        :preview-src-list="srcList"
-                        :initial-index="1"
-                    ></el-image>
+                <el-table-column label="图片" width="180">
+                    <template v-slot="scope">
+                        <el-image
+                            style="width: 100px; height: 100px"
+                            :src="scope.row.avatar"
+                            :initial-index="1"
+                        ></el-image>
+                    </template>
                 </el-table-column>
                 <el-table-column prop="role" label="管理员角色" width="180" />
-                <el-table-column prop="date" label="创建时间" sortable />
+                <el-table-column prop="createdAt" label="创建时间" sortable />
                 <el-table-column fixed="right" label="操作" width="120">
                     <template #default>
                         <el-button type="text" size="small">编辑</el-button>
@@ -55,32 +56,64 @@
             </div>
             <div class="pagination">
                 <el-pagination
-                    v-model:currentPage="currentPage4"
-                    :page-sizes="[100, 200, 300, 400]"
-                    :page-size="100"
+                    v-model:currentPage="listQuery.pageNum"
+                    :page-sizes="[5, 10, 15]"
+                    :page-size="listQuery.pageSize"
                     layout="total, sizes, prev, pager, next, jumper"
-                    :total="400"
+                    :total="pageTotal"
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
-                ></el-pagination>
+                >></el-pagination>
             </div>
         </div>
     </div>
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onBeforeMount, onActivated } from "vue";
 import { Search, Download, CirclePlus } from '@element-plus/icons';
-let multipleSelection = []
-const multipleTable = ref();
-const restaurants = ref([])
-const state2 = ref();
-const url = ref(
-    'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
-)
-const srcList = ref([
-    'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
+import { getListAPI } from '@/api/admin-user'
 
-])
+const currentPage1 = ref(5)
+
+const defaultList = ref({
+    pageNum: 1,
+    pageSize: 5,
+})
+
+const listQuery = ref(Object.assign({}, defaultList.value))
+const pageTotal = ref(null)
+
+let multipleSelection = []
+const multipleTable = ref()
+const restaurants = ref([])
+const state2 = ref()
+const urls = ref([])
+const srcList = ref([])
+const tableData = ref([])
+
+
+const getList = () => {
+    getListAPI(listQuery.value).then(res => {
+        tableData.value = res.data.records
+        pageTotal.value = res.data.total
+        console.log(res.data)
+    }).catch(err => console.log(err))
+}
+
+getList()
+
+const handleSizeChange = (val) => {
+    listQuery.value.pageNum = 1
+    listQuery.value.pageSize = val
+    console.log("yes")
+    getList()
+}
+
+const handleCurrentChange = (val) => {
+    listQuery.value.pageNum = val
+    getList()
+}
+
 const querySearch = (queryString, cb) => {
     const results = queryString
         ? restaurants.value.filter(createFilter(queryString))
@@ -114,36 +147,6 @@ onMounted(() => {
     restaurants.value = loadAll()
 })
 
-const tableData = [
-    {
-        name: '硒鼓',
-        role: 'xx-99',
-        pic: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        date: '2016-05-03',
-        number: '4'
-    },
-    {
-        name: '硒鼓',
-        role: 'xx-99',
-        pic: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        date: '2016-05-02',
-        number: '4'
-    },
-    {
-        name: '硒鼓',
-        role: 'xx-99',
-        pic: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        date: '2016-05-04',
-        number: '4'
-    },
-    {
-        name: '硒鼓',
-        role: 'xx-99',
-        pic: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-        date: '2016-05-01',
-        number: '4'
-    },
-]
 const toggleSelection = (rows) => {
     if (rows) {
         rows.forEach((row) => {
@@ -156,7 +159,6 @@ const toggleSelection = (rows) => {
 const handleSelectionChange = (val) => {
     multipleSelection = val
 }
-
 </script>
 <style>
 .user-footer,
