@@ -5,7 +5,7 @@
                 <el-row>
                     <el-col :span="12" class="search">
                         <el-autocomplete
-                            v-model="state2"
+                            v-model="searchKeyword"
                             :fetch-suggestions="querySearch"
                             :trigger-on-focus="false"
                             class="inline-input"
@@ -13,7 +13,7 @@
                             @select="handleSelect"
                         />
                     </el-col>
-                    <el-button :icon="Search" type="primary">搜索</el-button>
+                    <el-button :icon="Search" type="primary" @click="handleSearchList">搜索</el-button>
                 </el-row>
             </div>
             <div class="button-right">
@@ -78,9 +78,11 @@ const currentPage1 = ref(5)
 const defaultList = ref({
     pageNum: 1,
     pageSize: 5,
+    keyword: null
 })
 
 const listQuery = ref(Object.assign({}, defaultList.value))
+const searchKeyword = ref(null)
 const pageTotal = ref(null)
 
 let multipleSelection = []
@@ -101,6 +103,12 @@ const getList = () => {
 }
 
 getList()
+
+const handleSearchList = () => {
+    listQuery.value.pageNum = 1
+    listQuery.value.keyword = searchKeyword
+    getList()
+}
 
 const handleSizeChange = (val) => {
     listQuery.value.pageNum = 1
