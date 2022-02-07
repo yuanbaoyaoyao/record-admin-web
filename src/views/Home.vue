@@ -8,9 +8,11 @@
                 <div class="content">
                     <router-view v-slot="{ Component }">
                         <transition name="move" mode="out-in">
-                            <keep-alive>
-                                <component :is="Component" />
-                            </keep-alive>
+                            <div>
+                                <keep-alive>
+                                    <component :is="Component" />
+                                </keep-alive>
+                            </div>
                         </transition>
                     </router-view>
                 </div>

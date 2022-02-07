@@ -9,7 +9,7 @@
                             :fetch-suggestions="querySearch"
                             :trigger-on-focus="false"
                             class="inline-input"
-                            placeholder="Please Input"
+                            placeholder="名称/角色"
                             @select="handleSelect"
                         />
                     </el-col>
@@ -17,10 +17,9 @@
                 </el-row>
             </div>
             <div class="button-right">
-                <el-button :icon="CirclePlus" type="primary">添加</el-button>
+                <el-button :icon="CirclePlus" type="primary" @click="handleCreate">添加</el-button>
             </div>
         </div>
-
         <div>
             <el-table
                 ref="multipleTable"
@@ -43,8 +42,8 @@
                 <el-table-column prop="role" label="管理员角色" width="180" />
                 <el-table-column prop="createdAt" label="创建时间" sortable />
                 <el-table-column fixed="right" label="操作" width="120">
-                    <template #default>
-                        <el-button type="text" size="small">编辑</el-button>
+                    <template v-slot="scope">
+                        <el-button type="text" size="small" @click="handleUpdate(scope.row)">编辑</el-button>
                         <el-button type="text" size="small">删除</el-button>
                     </template>
                 </el-table-column>
@@ -56,9 +55,9 @@
             </div>
             <div class="pagination">
                 <el-pagination
-                    v-model:currentPage="listQuery.pageNum"
+                    v-model:currentPage="defaultList.pageNum"
                     :page-sizes="[5, 10, 15]"
-                    :page-size="listQuery.pageSize"
+                    :page-size="defaultList.pageSize"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="pageTotal"
                     @size-change="handleSizeChange"
@@ -67,13 +66,71 @@
             </div>
         </div>
     </div>
+    <div class="dialog">
+        <el-dialog v-model="dialogFormVisible" title="新增管理员">
+            <el-form :model="defaultForm">
+                <el-form-item label="管理员名称" :label-width="formLabelWidth">
+                    <el-input v-model="defaultForm.name" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="管理员密码" :label-width="formLabelWidth">
+                    <el-input v-model="defaultForm.password" autocomplete="off" type="password"></el-input>
+                </el-form-item>
+                <el-form-item label="头像" :label-width="formLabelWidth">
+                    <el-upload
+                        class="avatar-uploader"
+                        action="http://upload.qiniup.com"
+                        :data="qiniuUploadData"
+                        :on-success="handleAvatarSuccess"
+                        :before-upload="beforeAvatarUpload"
+                        :on-progress="handleProgress"
+                        :on-error="handleError"
+                    >
+                        <img v-if="defaultForm.avatar" :src="defaultForm.avatar" class="avatar" />
+                        <el-icon v-else class="avatar-uploader-icon">
+                            <plus />
+                        </el-icon>
+                    </el-upload>
+                </el-form-item>
+                <el-form-item label="管理员角色" :label-width="formLabelWidth">
+                    <el-select
+                        v-model="options.name"
+                        class="m-2"
+                        placeholder="请选择角色"
+                        size="large"
+                        @change="roleChange"
+                    >
+                        <el-option v-for="item in options" :key="item.id" :value="item.name"></el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="dialogFormVisible = false">取消</el-button>
+                    <el-button type="primary" @click="createData">确定</el-button>
+                </span>
+            </template>
+        </el-dialog>
+    </div>
 </template>
 <script setup>
-import { ref, onMounted, onBeforeMount, onActivated } from "vue";
-import { Search, Download, CirclePlus } from '@element-plus/icons';
-import { getListAPI } from '@/api/admin-user'
+import { ref, onMounted } from "vue";
+import { Search, Download, CirclePlus, Plus } from '@element-plus/icons';
+import { listAdminAPI, createAdminAPI } from '@/api/admin-user'
+import { listRoleAPI as getRole } from "../../api/admin-role"
+import { getToken } from "../../api/upload-pic"
+import { ElMessage } from 'element-plus'
+import {
+    UploadFile,
+    ElUploadProgressEvent,
+    ElFile,
+} from 'element-plus/es/components/upload/src/upload.type'
 
 const currentPage1 = ref(5)
+const qiniuDomain = 'r6ctg8uno.hd-bkt.clouddn.com';
+const qiniuUploadData = ref({
+    token: "",
+    key: ""
+})
 
 const defaultList = ref({
     pageNum: 1,
@@ -81,9 +138,9 @@ const defaultList = ref({
     keyword: null
 })
 
-const listQuery = ref(Object.assign({}, defaultList.value))
 const searchKeyword = ref(null)
 const pageTotal = ref(null)
+const dialogFormVisible = ref(false)
 
 let multipleSelection = []
 const multipleTable = ref()
@@ -92,33 +149,99 @@ const state2 = ref()
 const urls = ref([])
 const srcList = ref([])
 const tableData = ref([])
+const options = ref([])
 
+const defaultForm = ref({
+    name: '',
+    password: '',
+    avatar: '',
+    roleId: ''
+})
+
+getToken().then(res => {
+    qiniuUploadData.value.token = res.data.token
+})
+
+const handleCreate = () => {
+    restForm()
+    options.value.name = ''
+    dialogFormVisible.value = true
+}
+const createData = () => {
+    console.log(defaultForm.value)
+    createAdminAPI(defaultForm.value).then(res => {
+        console.log(res.data);
+    })
+    dialogFormVisible.value = false
+}
+
+const restForm = () => {
+    defaultForm.value.name = ''
+    defaultForm.value.password = ''
+    defaultForm.value.avatar = ''
+    defaultForm.value.roleId = ''
+}
+
+const handleAvatarSuccess = (res, file) => {
+    defaultForm.value.avatar = 'http://' + qiniuDomain + '/' + res.key;
+    alert('success');
+}
+const beforeAvatarUpload = (file) => {
+    qiniuUploadData.value.key = file.name
+    const isJPG = file.type === 'image/jpeg'
+    const isLt2M = file.size / 1024 / 1024 < 2
+
+    if (!isJPG) {
+        ElMessage.error('Avatar picture must be JPG format!')
+    }
+    if (!isLt2M) {
+        ElMessage.error('Avatar picture size can not exceed 2MB!')
+    }
+    return isJPG && isLt2M
+}
 
 const getList = () => {
-    getListAPI(listQuery.value).then(res => {
+    listAdminAPI(defaultList.value).then(res => {
         tableData.value = res.data.records
-        pageTotal.value = res.data.total
-        console.log(res.data)
+        pageTotal.value = res.data.total;
+
     }).catch(err => console.log(err))
 }
 
 getList()
+getRole().then(res => {
+    options.value = res.data.records
+}).catch(err => console.log(err))
+
+const roleChange = () => {
+    for (let i = 0; i < options.value.length; i++) {
+        if (options.value.name == options.value[i].name) {
+            defaultForm.value.roleId = options.value[i].id
+            break
+        }
+    }
+}
+const handleUpdate = (row) => {
+    dialogFormVisible.value = true
+    defaultForm.value = row
+    options.value.name = row.role
+    console.log(row)
+}
 
 const handleSearchList = () => {
-    listQuery.value.pageNum = 1
-    listQuery.value.keyword = searchKeyword
+    defaultList.value.pageNum = 1
+    defaultList.value.keyword = searchKeyword
     getList()
 }
 
 const handleSizeChange = (val) => {
-    listQuery.value.pageNum = 1
-    listQuery.value.pageSize = val
-    console.log("yes")
+    defaultList.value.pageNum = 1
+    defaultList.value.pageSize = val
     getList()
 }
 
 const handleCurrentChange = (val) => {
-    listQuery.value.pageNum = val
+    defaultList.value.pageNum = val
     getList()
 }
 
@@ -168,7 +291,7 @@ const handleSelectionChange = (val) => {
     multipleSelection = val
 }
 </script>
-<style>
+<style scoped>
 .user-footer,
 .user-header,
 .search {
@@ -180,5 +303,60 @@ const handleSelectionChange = (val) => {
 }
 .el-input--mini .el-input__inner {
     height: 40px;
+}
+:deep().avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9 !important;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #409eff;
+}
+:deep().avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d !important;
+    width: 120px;
+    height: 120px;
+    text-align: center !important;
+    line-height: 120px;
+}
+.avatar {
+    width: 120px;
+    height: 120px;
+    display: block;
+}
+:deep().el-form-item__label {
+    display: grid;
+    grid-template-columns: 100px;
+}
+:deep().el-dialog__body {
+    max-width: 500px !important;
+}
+:deep().el-dialog {
+    width: 800px;
+    height: 530px;
+}
+:deep().el-table__row .el-input__inner {
+    transition: background-color 0.25s ease;
+    transition-property: backgraound border;
+    transition-duration: 0.25s 0.25s;
+    transition-timing-function: ease ease;
+    background-color: white;
+    border: white;
+}
+
+:deep().el-table__row:hover .el-input__inner {
+    transition: background-color 0.25s ease;
+    transition-property: backgraound border;
+    transition-duration: 0.25s 0.25s;
+    transition-timing-function: ease ease;
+    border: #f5f7fa;
+    background-color: #f5f7fa;
+}
+
+.tablePassword :deep()span.el-input__suffix {
+    margin-right: 45px;
 }
 </style>

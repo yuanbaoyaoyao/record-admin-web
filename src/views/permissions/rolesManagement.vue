@@ -62,7 +62,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { Search, Download, CirclePlus } from '@element-plus/icons';
-import { getListAPI } from '@/api/admin-role'
+import { listAdminAPI } from '@/api/admin-role'
 
 let multipleSelection = []
 const multipleTable = ref();
@@ -70,7 +70,7 @@ const restaurants = ref([])
 const state2 = ref();
 const tableData = ref([])
 
-getListAPI().then(
+listAdminAPI().then(
     res => {
         tableData.value = res.data
         console.log(res.data)
