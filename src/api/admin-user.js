@@ -8,3 +8,6 @@ export function listAdminAPI(params){
 export function createAdminAPI(params){
     return http.post(`${resquest}`+`create`,params)
 }
+export function deleteAdminAPI(params){
+    return http.delete(`${resquest}`+`delete`,params)
+}

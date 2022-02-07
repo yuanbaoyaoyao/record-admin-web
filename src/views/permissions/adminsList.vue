@@ -44,7 +44,7 @@
                 <el-table-column fixed="right" label="操作" width="120">
                     <template v-slot="scope">
                         <el-button type="text" size="small" @click="handleUpdate(scope.row)">编辑</el-button>
-                        <el-button type="text" size="small">删除</el-button>
+                        <el-button type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -115,7 +115,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { Search, Download, CirclePlus, Plus } from '@element-plus/icons';
-import { listAdminAPI, createAdminAPI } from '@/api/admin-user'
+import { listAdminAPI, createAdminAPI, deleteAdminAPI } from '@/api/admin-user'
 import { listRoleAPI as getRole } from "../../api/admin-role"
 import { getToken } from "../../api/upload-pic"
 import { ElMessage } from 'element-plus'
@@ -168,9 +168,7 @@ const handleCreate = () => {
     dialogFormVisible.value = true
 }
 const createData = () => {
-    console.log(defaultForm.value)
     createAdminAPI(defaultForm.value).then(res => {
-        console.log(res.data);
     })
     dialogFormVisible.value = false
 }
@@ -226,6 +224,13 @@ const handleUpdate = (row) => {
     defaultForm.value = row
     options.value.name = row.role
     console.log(row)
+}
+
+const handleDelete = (row) => {
+    deleteAdminAPI(row).then(res => {
+        alert("deleted it")
+        getList()
+    }).catch(err => console.log(err))
 }
 
 const handleSearchList = () => {
