@@ -62,7 +62,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { Search, Download, CirclePlus } from '@element-plus/icons';
-import { listAdminAPI } from '@/api/admin-role'
+import { listRoleAPI } from '@/api/admin-role'
 
 let multipleSelection = []
 const multipleTable = ref();

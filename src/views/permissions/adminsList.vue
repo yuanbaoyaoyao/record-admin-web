@@ -6,6 +6,7 @@
                     <el-col :span="12" class="search">
                         <el-autocomplete
                             v-model="searchKeyword"
+                            value-key="name"
                             :fetch-suggestions="querySearch"
                             :trigger-on-focus="false"
                             class="inline-input"
@@ -126,17 +127,29 @@ import {
     ElFile,
 } from 'element-plus/es/components/upload/src/upload.type'
 
-const currentPage1 = ref(5)
-const qiniuDomain = 'r6ctg8uno.hd-bkt.clouddn.com';
-const qiniuUploadData = ref({
-    token: "",
-    key: ""
-})
-
 const defaultList = ref({
     pageNum: 1,
     pageSize: 5,
     keyword: null
+})
+
+const querySearchList = ref({
+    pageNum: 1,
+    pageSize: 5,
+    keyword: null
+})
+
+const defaultForm = ref({
+    name: '',
+    password: '',
+    avatar: '',
+    roleId: ''
+})
+
+const qiniuDomain = 'r6ctg8uno.hd-bkt.clouddn.com';
+const qiniuUploadData = ref({
+    token: "",
+    key: ""
 })
 
 const searchKeyword = ref(null)
@@ -146,24 +159,15 @@ const dialogStatus = ref('')
 
 let multipleSelection = []
 const multipleTable = ref()
-const restaurants = ref([])
-const state2 = ref()
-const urls = ref([])
-const srcList = ref([])
 const tableData = ref([])
 const options = ref([])
 
-const defaultForm = ref({
-    name: '',
-    password: '',
-    avatar: '',
-    roleId: ''
-})
-
-getToken().then(res => {
-    qiniuUploadData.value.token = res.data.token
-})
-
+const getList = () => {
+    listAdminAPI(defaultList.value).then(res => {
+        tableData.value = res.data.records
+        pageTotal.value = res.data.total;
+    }).catch(err => tableData(err))
+}
 const handleCreate = () => {
     restForm()
     options.value.name = ''
@@ -200,19 +204,6 @@ const beforeAvatarUpload = (file) => {
     return isJPG && isLt2M
 }
 
-const getList = () => {
-    listAdminAPI(defaultList.value).then(res => {
-        tableData.value = res.data.records
-        pageTotal.value = res.data.total;
-
-    }).catch(err => console.log(err))
-}
-
-getList()
-getRole().then(res => {
-    options.value = res.data.records
-}).catch(err => console.log(err))
-
 const roleChange = () => {
     for (let i = 0; i < options.value.length; i++) {
         if (options.value.name == options.value[i].name) {
@@ -231,7 +222,7 @@ const handleUpdate = (row) => {
 const updateData = () => {
     updateAdminAPI(defaultForm.value).then(res => {
         getList()
-    }).catch(err => console.log(err))
+    }).catch(err => tableData(err))
     dialogFormVisible.value = false
     dialogStatus == ''
 }
@@ -239,7 +230,7 @@ const updateData = () => {
 const handleDelete = (row) => {
     deleteAdminAPI(row).then(res => {
         getList()
-    }).catch(err => console.log(err))
+    }).catch(err => tableData(err))
 }
 
 const handleSearchList = () => {
@@ -260,37 +251,31 @@ const handleCurrentChange = (val) => {
 }
 
 const querySearch = (queryString, cb) => {
-    const results = queryString
-        ? restaurants.value.filter(createFilter(queryString))
-        : restaurants.value
-    // call callback function to return suggestions
-    cb(results)
+    let lists = []
+    querySearchList.value.pageSize = pageTotal.value
+    listAdminAPI(querySearchList.value).then(res => {
+        for (let i = 0; i < res.data.records.length; i++) {
+            lists[i] = res.data.records[i]
+        }
+        const results = queryString ? lists.filter(createFilter(queryString)) : lists
+        console.log(lists.filter(createFilter(queryString)))
+        console.log(createFilter(queryString))
+        console.log(queryString.toLowerCase())
+        cb(results)
+    })
 }
+
 const createFilter = (queryString) => {
-    return (restaurant) => {
+    return (list) => {
         return (
-            restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
-            0
+            list.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0
         )
     }
 }
-const loadAll = () => {
-    return [
-        { value: 'vue', link: 'https://github.com/vuejs/vue' },
-        { value: 'element', link: 'https://github.com/ElemeFE/element' },
-        { value: 'cooking', link: 'https://github.com/ElemeFE/cooking' },
-        { value: 'mint-ui', link: 'https://github.com/ElemeFE/mint-ui' },
-        { value: 'vuex', link: 'https://github.com/vuejs/vuex' },
-        { value: 'vue-router', link: 'https://github.com/vuejs/vue-router' },
-        { value: 'babel', link: 'https://github.com/babel/babel' },
-    ]
-}
+
 const handleSelect = (item) => {
     console.log(item)
 }
-onMounted(() => {
-    restaurants.value = loadAll()
-})
 
 const toggleSelection = (rows) => {
     if (rows) {
@@ -304,6 +289,14 @@ const toggleSelection = (rows) => {
 const handleSelectionChange = (val) => {
     multipleSelection = val
 }
+getList()
+getToken().then(res => {
+    qiniuUploadData.value.token = res.data.token
+})
+
+getRole().then(res => {
+    options.value = res.data.records
+}).catch(err => tableData(err))
 </script>
 <style scoped>
 .user-footer,
