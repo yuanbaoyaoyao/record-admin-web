@@ -1,7 +1,7 @@
 import axios from "axios";
 import {
     ElMessage
-} from "element-plus";
+}  from "element-plus";
 
 const service = axios.create({
     baseURL: process.env.VUE_APP_API_URL,

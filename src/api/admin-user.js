@@ -11,3 +11,6 @@ export function createAdminAPI(params){
 export function deleteAdminAPI(params){
     return http.delete(`${resquest}`+`delete`,params)
 }
+export function updateAdminAPI(params){
+    return http.post(`${resquest}`+`update`,params)
+}

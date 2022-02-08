@@ -106,7 +106,8 @@
             <template #footer>
                 <span class="dialog-footer">
                     <el-button @click="dialogFormVisible = false">取消</el-button>
-                    <el-button type="primary" @click="createData">确定</el-button>
+                    <el-button v-if="dialogStatus == 'update'" type="primary" @click="updateData">确定</el-button>
+                    <el-button v-else type="primary" @click="createData">确定</el-button>
                 </span>
             </template>
         </el-dialog>
@@ -115,7 +116,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { Search, Download, CirclePlus, Plus } from '@element-plus/icons';
-import { listAdminAPI, createAdminAPI, deleteAdminAPI } from '@/api/admin-user'
+import { listAdminAPI, createAdminAPI, deleteAdminAPI, updateAdminAPI } from '@/api/admin-user'
 import { listRoleAPI as getRole } from "../../api/admin-role"
 import { getToken } from "../../api/upload-pic"
 import { ElMessage } from 'element-plus'
@@ -141,6 +142,7 @@ const defaultList = ref({
 const searchKeyword = ref(null)
 const pageTotal = ref(null)
 const dialogFormVisible = ref(false)
+const dialogStatus = ref('')
 
 let multipleSelection = []
 const multipleTable = ref()
@@ -220,15 +222,22 @@ const roleChange = () => {
     }
 }
 const handleUpdate = (row) => {
+    dialogStatus.value = "update"
     dialogFormVisible.value = true
     defaultForm.value = row
     options.value.name = row.role
-    console.log(row)
+    roleChange()
+}
+const updateData = () => {
+    updateAdminAPI(defaultForm.value).then(res => {
+        getList()
+    }).catch(err => console.log(err))
+    dialogFormVisible.value = false
+    dialogStatus == ''
 }
 
 const handleDelete = (row) => {
     deleteAdminAPI(row).then(res => {
-        alert("deleted it")
         getList()
     }).catch(err => console.log(err))
 }
