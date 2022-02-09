@@ -5,19 +5,20 @@
                 <el-row>
                     <el-col :span="12" class="search">
                         <el-autocomplete
-                            v-model="state2"
+                            v-model="searchKeyword"
+                            value-key="name"
                             :fetch-suggestions="querySearch"
                             :trigger-on-focus="false"
                             class="inline-input"
-                            placeholder="Please Input"
+                            placeholder="名称"
                             @select="handleSelect"
                         />
                     </el-col>
-                    <el-button :icon="Search" type="primary">搜索</el-button>
+                    <el-button :icon="Search" type="primary" @click="handleSearchList">搜索</el-button>
                 </el-row>
             </div>
             <div class="button-right">
-                <el-button :icon="CirclePlus" type="primary">添加</el-button>
+                <el-button :icon="CirclePlus" type="primary" @click="handleCreate">添加</el-button>
             </div>
         </div>
 
@@ -34,9 +35,9 @@
                 <el-table-column prop="description" label="描述" width="180" />
                 <el-table-column prop="createdAt" label="创建时间" sortable />
                 <el-table-column fixed="right" label="操作" width="120">
-                    <template #default>
-                        <el-button type="text" size="small">编辑</el-button>
-                        <el-button type="text" size="small">删除</el-button>
+                    <template v-slot="scope">
+                        <el-button type="text" size="small" @click="handleUpdate(scope.row)">编辑</el-button>
+                        <el-button type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -47,70 +48,150 @@
             </div>
             <div class="pagination">
                 <el-pagination
-                    v-model:currentPage="currentPage4"
-                    :page-sizes="[100, 200, 300, 400]"
-                    :page-size="100"
+                    v-model:currentPage="defaultList.pageNum"
+                    :page-sizes="[5, 10, 15]"
+                    :page-size="defaultList.pageSize"
                     layout="total, sizes, prev, pager, next, jumper"
-                    :total="400"
+                    :total="pageTotal"
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                 ></el-pagination>
             </div>
         </div>
     </div>
+    <div class="dialog">
+        <el-dialog v-model="dialogFormVisible" title="新增角色">
+            <el-form :model="defaultForm">
+                <el-form-item label="角色名称" :label-width="formLabelWidth">
+                    <el-input v-model="defaultForm.name" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="角色描述" :label-width="formLabelWidth">
+                    <el-input v-model="defaultForm.description" autocomplete="off" type="textarea"></el-input>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="dialogFormVisible = false">取消</el-button>
+                    <el-button v-if="dialogStatus == 'update'" type="primary" @click="updateData">确定</el-button>
+                    <el-button v-else type="primary" @click="createData">确定</el-button>
+                </span>
+            </template>
+        </el-dialog>
+    </div>
 </template>
 <script setup>
 import { ref, onMounted } from "vue";
-import { Search, Download, CirclePlus } from '@element-plus/icons';
-import { listRoleAPI } from '@/api/admin-role'
+import { Search, Download, CirclePlus, Plus } from '@element-plus/icons';
+import { listRoleAPI,  createRoleAPI, deleteRoleAPI, updateRoleAPI } from '@/api/admin-role'
 
 let multipleSelection = []
 const multipleTable = ref();
-const restaurants = ref([])
-const state2 = ref();
 const tableData = ref([])
+const pageTotal = ref(null)
+const dialogFormVisible = ref(false)
+const dialogStatus = ref('')
+const searchKeyword = ref(null)
 
-listAdminAPI().then(
-    res => {
-        tableData.value = res.data
-        console.log(res.data)
-    }).catch(
-        err => console.log(err)
-    )
-const querySearch = (queryString, cb) => {
-    const results = queryString
-        ? restaurants.value.filter(createFilter(queryString))
-        : restaurants.value
-    // call callback function to return suggestions
-    cb(results)
+const defaultList = ref({
+    pageNum: 1,
+    pageSize: 5,
+    keyword: null
+})
+
+const querySearchList = ref({
+    pageNum: 1,
+    pageSize: 5,
+    keyword: null
+})
+
+const defaultForm = ref({
+    name: '',
+    description: '',
+})
+
+const getList = () => {
+    listRoleAPI(defaultList.value).then(res => {
+        tableData.value = res.data.records
+        pageTotal.value = res.data.total
+    }).catch(err => console.log(err))
 }
+
+const handleCreate = () => {
+    restForm()
+    dialogFormVisible.value = true
+}
+
+const createData = () => {
+    createRoleAPI(defaultForm.value).then(res => {
+    })
+    dialogFormVisible.value = false
+}
+
+const handleUpdate = (row) => {
+    dialogStatus.value = "update"
+    dialogFormVisible.value = true
+    defaultForm.value = row
+}
+
+const updateData = () => {
+    updateRoleAPI(defaultForm.value).then(res => {
+        getList()
+    }).catch(err => tableData(err))
+    dialogFormVisible.value = false
+    dialogStatus == ''
+}
+
+const handleDelete = (row) => {
+    deleteRoleAPI(row).then(res => {
+        getList()
+    }).catch(err => tableData(err))
+}
+
+const restForm = () => {
+    defaultForm.value.name = ''
+    defaultForm.value.description = ''
+}
+
+const handleSearchList = () => {
+    defaultList.value.pageNum = 1
+    defaultList.value.keyword = searchKeyword
+    getList()
+}
+
+const handleSizeChange = (val) => {
+    defaultList.value.pageNum = 1
+    defaultList.value.pageSize = val
+    getList()
+}
+
+const handleCurrentChange = (val) => {
+    defaultList.value.pageNum = val
+    getList()
+}
+
+const querySearch = (queryString, cb) => {
+    let lists = []
+    querySearchList.value.pageSize = pageTotal.value
+    listRoleAPI(querySearchList.value).then(res => {
+        for (let i = 0; i < res.data.records.length; i++) {
+            lists[i] = res.data.records[i]
+        }
+        const results = queryString ? lists.filter(createFilter(queryString)) : lists
+        cb(results)
+    })
+}
+
 const createFilter = (queryString) => {
-    return (restaurant) => {
+    return (list) => {
         return (
-            restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) ===
-            0
+            list.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0
         )
     }
 }
-const loadAll = () => {
-    return [
-        { value: 'vue', link: 'https://github.com/vuejs/vue' },
-        { value: 'element', link: 'https://github.com/ElemeFE/element' },
-        { value: 'cooking', link: 'https://github.com/ElemeFE/cooking' },
-        { value: 'mint-ui', link: 'https://github.com/ElemeFE/mint-ui' },
-        { value: 'vuex', link: 'https://github.com/vuejs/vuex' },
-        { value: 'vue-router', link: 'https://github.com/vuejs/vue-router' },
-        { value: 'babel', link: 'https://github.com/babel/babel' },
-    ]
-}
+
 const handleSelect = (item) => {
     console.log(item)
 }
-onMounted(() => {
-    restaurants.value = loadAll()
-})
-
-
 
 const toggleSelection = (rows) => {
     if (rows) {
@@ -124,9 +205,10 @@ const toggleSelection = (rows) => {
 const handleSelectionChange = (val) => {
     multipleSelection = val
 }
+getList()
 
 </script>
-<style>
+<style scoped>
 .user-footer,
 .user-header,
 .search {
@@ -138,5 +220,15 @@ const handleSelectionChange = (val) => {
 }
 .el-input--mini .el-input__inner {
     height: 40px;
+}
+:deep().el-textarea__inner,:deep().el-input__inner{
+    max-width: 500px !important;
+}
+:deep().el-dialog__footer,:deep().el-dialog__body {
+    background-color: white;
+}
+:deep().el-dialog {
+    width: 800px;
+    height: 330px;
 }
 </style>

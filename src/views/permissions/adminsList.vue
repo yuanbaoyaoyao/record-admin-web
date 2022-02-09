@@ -165,7 +165,7 @@ const options = ref([])
 const getList = () => {
     listAdminAPI(defaultList.value).then(res => {
         tableData.value = res.data.records
-        pageTotal.value = res.data.total;
+        pageTotal.value = res.data.total
     }).catch(err => tableData(err))
 }
 const handleCreate = () => {
@@ -236,6 +236,8 @@ const handleDelete = (row) => {
 const handleSearchList = () => {
     defaultList.value.pageNum = 1
     defaultList.value.keyword = searchKeyword
+        console.log(searchKeyword)
+
     getList()
 }
 
@@ -258,9 +260,6 @@ const querySearch = (queryString, cb) => {
             lists[i] = res.data.records[i]
         }
         const results = queryString ? lists.filter(createFilter(queryString)) : lists
-        console.log(lists.filter(createFilter(queryString)))
-        console.log(createFilter(queryString))
-        console.log(queryString.toLowerCase())
         cb(results)
     })
 }
