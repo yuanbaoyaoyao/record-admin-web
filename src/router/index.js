@@ -59,12 +59,12 @@ const routes = [{
         component: () => import("../views/consumables/ConsumablesList.vue"),
 
     },{
-        path: "/consumableAdd",
-        name: "ConsumableAdd",
+        path: "/consumableCategory",
+        name: "ConsumableCategory",
         meta:{
-            title:'添加耗材'
+            title:'耗材类别'
         },
-        component: () => import("../views/consumables/ConsumableAdd.vue"),
+        component: () => import("../views/consumables/ConsumableCategory.vue"),
 
     },{
         path: "/consumableDetail",

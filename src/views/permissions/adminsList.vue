@@ -68,7 +68,7 @@
         </div>
     </div>
     <div class="dialog">
-        <el-dialog v-model="dialogFormVisible" title="新增管理员">
+        <el-dialog v-model="dialogFormVisible" :title="textMap[dialogStatus]">
             <el-form :model="defaultForm">
                 <el-form-item label="管理员名称" :label-width="formLabelWidth">
                     <el-input v-model="defaultForm.name" autocomplete="off"></el-input>
@@ -116,7 +116,7 @@
 </template>
 <script setup>
 import { ref, onMounted } from "vue";
-import { Search, Download, CirclePlus, Plus } from '@element-plus/icons';
+import { Search, Download, CirclePlus, Plus, LocationFilled } from '@element-plus/icons';
 import { listAdminAPI, createAdminAPI, deleteAdminAPI, updateAdminAPI } from '@/api/admin-user'
 import { listRoleAPI as getRole } from "../../api/admin-role"
 import { getToken } from "../../api/upload-pic"
@@ -139,12 +139,14 @@ const querySearchList = ref({
     keyword: null
 })
 
-const defaultForm = ref({
+const defaultFormTemp = ref({
     name: '',
     password: '',
     avatar: '',
     roleId: ''
 })
+
+const defaultForm = ref(Object.assign({},defaultFormTemp.value));
 
 const qiniuDomain = 'r6ctg8uno.hd-bkt.clouddn.com';
 const qiniuUploadData = ref({
@@ -161,6 +163,10 @@ let multipleSelection = []
 const multipleTable = ref()
 const tableData = ref([])
 const options = ref([])
+const textMap = {
+    update: '编辑',
+    create: '创建'
+}
 
 const getList = () => {
     listAdminAPI(defaultList.value).then(res => {
@@ -170,6 +176,7 @@ const getList = () => {
 }
 const handleCreate = () => {
     restForm()
+    dialogStatus.value = "create"
     options.value.name = ''
     dialogFormVisible.value = true
 }
@@ -180,10 +187,7 @@ const createData = () => {
 }
 
 const restForm = () => {
-    defaultForm.value.name = ''
-    defaultForm.value.password = ''
-    defaultForm.value.avatar = ''
-    defaultForm.value.roleId = ''
+    defaultForm.value = Object.assign({},defaultFormTemp.value)
 }
 
 const handleAvatarSuccess = (res, file) => {
@@ -236,8 +240,6 @@ const handleDelete = (row) => {
 const handleSearchList = () => {
     defaultList.value.pageNum = 1
     defaultList.value.keyword = searchKeyword
-        console.log(searchKeyword)
-
     getList()
 }
 
@@ -295,6 +297,7 @@ getToken().then(res => {
 
 getRole().then(res => {
     options.value = res.data.records
+   console.log(options.value)
 }).catch(err => tableData(err))
 </script>
 <style scoped>

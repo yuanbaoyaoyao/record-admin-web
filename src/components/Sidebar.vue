@@ -103,8 +103,8 @@ const menus = [
         title: "耗材列表"
       },
       {
-        index: "/consumableAdd",
-        title: "添加耗材"
+        index: "/consumableCategory",
+        title: "耗材类别"
       },
       {
         index: "/consumableDetail",

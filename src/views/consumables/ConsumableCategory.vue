@@ -6,11 +6,11 @@
                     <el-col :span="12" class="search">
                         <el-autocomplete
                             v-model="searchKeyword"
-                            value-key="name"
+                            value-key="title"
                             :fetch-suggestions="querySearch"
                             :trigger-on-focus="false"
                             class="inline-input"
-                            placeholder="名称"
+                            placeholder="耗材类别"
                             @select="handleSelect"
                         />
                     </el-col>
@@ -21,7 +21,6 @@
                 <el-button :icon="CirclePlus" type="primary" @click="handleCreate">添加</el-button>
             </div>
         </div>
-
         <div>
             <el-table
                 ref="multipleTable"
@@ -31,8 +30,8 @@
                 @selection-change="handleSelectionChange"
             >
                 <el-table-column type="selection" width="55" />
-                <el-table-column prop="name" label="角色名称" width="180" />
-                <el-table-column prop="description" label="描述" width="180" />
+                <el-table-column prop="title" label="耗材类别" width="180" />
+                <el-table-column prop="description" label="类别描述" width="180" />
                 <el-table-column prop="createdAt" label="创建时间" sortable />
                 <el-table-column fixed="right" label="操作" width="120">
                     <template v-slot="scope">
@@ -55,17 +54,17 @@
                     :total="pageTotal"
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
-                ></el-pagination>
+                >></el-pagination>
             </div>
         </div>
     </div>
     <div class="dialog">
-        <el-dialog v-model="dialogFormVisible" title="新增角色">
+        <el-dialog v-model="dialogFormVisible" title="新增耗材类别">
             <el-form :model="defaultForm">
-                <el-form-item label="角色名称" :label-width="formLabelWidth">
-                    <el-input v-model="defaultForm.name" autocomplete="off"></el-input>
+                <el-form-item label="耗材类别" :label-width="formLabelWidth">
+                    <el-input v-model="defaultForm.title" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="角色描述" :label-width="formLabelWidth">
+                <el-form-item label="类别描述" :label-width="formLabelWidth">
                     <el-input v-model="defaultForm.description" autocomplete="off" type="textarea"></el-input>
                 </el-form-item>
             </el-form>
@@ -82,15 +81,13 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { Search, Download, CirclePlus, Plus } from '@element-plus/icons';
-import { listRoleAPI, createRoleAPI, deleteRoleAPI, updateRoleAPI } from '@/api/admin-role'
-
-let multipleSelection = []
-const multipleTable = ref();
-const tableData = ref([])
-const pageTotal = ref(null)
-const dialogFormVisible = ref(false)
-const dialogStatus = ref('')
-const searchKeyword = ref(null)
+import { listProductAPI, createProductAPI, deleteProductAPI, updateProductAPI } from '@/api/product'
+import { ElMessage } from 'element-plus'
+import {
+    UploadFile,
+    ElUploadProgressEvent,
+    ElFile,
+} from 'element-plus/es/components/upload/src/upload.type'
 
 const defaultList = ref({
     pageNum: 1,
@@ -105,28 +102,40 @@ const querySearchList = ref({
 })
 
 const defaultFormTemp = ref({
-    name: '',
+    title: '',
     description: '',
 })
 
 const defaultForm = ref(Object.assign({}, defaultFormTemp.value));
 
+const searchKeyword = ref(null)
+const pageTotal = ref(null)
+const dialogFormVisible = ref(false)
+const dialogStatus = ref('')
+
+let multipleSelection = []
+const multipleTable = ref()
+const tableData = ref([])
+
 const getList = () => {
-    listRoleAPI(defaultList.value).then(res => {
+    listProductAPI(defaultList.value).then(res => {
         tableData.value = res.data.records
         pageTotal.value = res.data.total
-    }).catch(err => console.log(err))
+    }).catch(err => tableData(err))
 }
-
 const handleCreate = () => {
     restForm()
     dialogFormVisible.value = true
 }
-
 const createData = () => {
-    createRoleAPI(defaultForm.value).then(res => {
+    createProductAPI(defaultForm.value).then(res => {
     })
     dialogFormVisible.value = false
+}
+
+const restForm = () => {
+    defaultForm.value = Object.assign({}, defaultFormTemp.value)
+
 }
 
 const handleUpdate = (row) => {
@@ -134,9 +143,8 @@ const handleUpdate = (row) => {
     dialogFormVisible.value = true
     defaultForm.value = row
 }
-
 const updateData = () => {
-    updateRoleAPI(defaultForm.value).then(res => {
+    updateProductAPI(defaultForm.value).then(res => {
         getList()
     }).catch(err => tableData(err))
     dialogFormVisible.value = false
@@ -144,13 +152,9 @@ const updateData = () => {
 }
 
 const handleDelete = (row) => {
-    deleteRoleAPI(row).then(res => {
+    deleteProductAPI(row).then(res => {
         getList()
     }).catch(err => tableData(err))
-}
-
-const restForm = () => {
-    defaultForm.value = Object.assign({}, defaultFormTemp.value)
 }
 
 const handleSearchList = () => {
@@ -173,7 +177,7 @@ const handleCurrentChange = (val) => {
 const querySearch = (queryString, cb) => {
     let lists = []
     querySearchList.value.pageSize = pageTotal.value
-    listRoleAPI(querySearchList.value).then(res => {
+    listProductAPI(querySearchList.value).then(res => {
         for (let i = 0; i < res.data.records.length; i++) {
             lists[i] = res.data.records[i]
         }
@@ -185,7 +189,7 @@ const querySearch = (queryString, cb) => {
 const createFilter = (queryString) => {
     return (list) => {
         return (
-            list.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+            list.title.toLowerCase().indexOf(queryString.toLowerCase()) === 0
         )
     }
 }
@@ -207,7 +211,6 @@ const handleSelectionChange = (val) => {
     multipleSelection = val
 }
 getList()
-
 </script>
 <style scoped>
 .user-footer,
@@ -222,16 +225,64 @@ getList()
 .el-input--mini .el-input__inner {
     height: 40px;
 }
+:deep().avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9 !important;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #409eff;
+}
+:deep().avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d !important;
+    width: 120px;
+    height: 120px;
+    text-align: center !important;
+    line-height: 120px;
+}
+.avatar {
+    width: 120px;
+    height: 120px;
+    display: block;
+}
+:deep().el-form-item__label {
+    display: grid;
+    grid-template-columns: 100px;
+}
 :deep().el-textarea__inner,
 :deep().el-input__inner {
     max-width: 500px !important;
+}
+:deep().el-dialog {
+    width: 800px;
+    height: 330px;
 }
 :deep().el-dialog__footer,
 :deep().el-dialog__body {
     background-color: white;
 }
-:deep().el-dialog {
-    width: 800px;
-    height: 330px;
+:deep().el-table__row .el-input__inner {
+    transition: background-color 0.25s ease;
+    transition-property: backgraound border;
+    transition-duration: 0.25s 0.25s;
+    transition-timing-function: ease ease;
+    background-color: white;
+    border: white;
+}
+
+:deep().el-table__row:hover .el-input__inner {
+    transition: background-color 0.25s ease;
+    transition-property: backgraound border;
+    transition-duration: 0.25s 0.25s;
+    transition-timing-function: ease ease;
+    border: #f5f7fa;
+    background-color: #f5f7fa;
+}
+
+.tablePassword :deep()span.el-input__suffix {
+    margin-right: 45px;
 }
 </style>
