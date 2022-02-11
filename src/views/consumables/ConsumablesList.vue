@@ -6,7 +6,7 @@
                     <el-col :span="12" class="search">
                         <el-autocomplete
                             v-model="searchKeyword"
-                            value-key="name"
+                            value-key="title"
                             :fetch-suggestions="querySearch"
                             :trigger-on-focus="false"
                             class="inline-input"
@@ -27,7 +27,7 @@
                             <el-dropdown-item>导出当前页为pdf</el-dropdown-item>
                             <el-dropdown-item divided>导出已选为excel</el-dropdown-item>
                             <el-dropdown-item>导出已选为pdf</el-dropdown-item>
-                            <el-dropdown-item divided>导出全部为excel</el-dropdown-item>
+                            <el-dropdown-item divided @click="handleDowloadAllURL">导出全部为excel</el-dropdown-item>
                             <el-dropdown-item>导出全部为pdf</el-dropdown-item>
                         </el-dropdown-menu>
                     </template>
@@ -137,6 +137,7 @@ import { ref, onMounted } from "vue";
 import { Search, Download, CirclePlus, Plus } from '@element-plus/icons';
 import { listProductSkusAPI, createProductSkusAPI, deleteProductSkusAPI, updateProductSkusAPI } from '@/api/product-skus'
 import { listProductAPI as getProduct } from "../../api/product"
+import { listAllProductSkusURL } from "../../api/excel";
 import { getToken } from "../../api/upload-pic"
 import { ElMessage } from 'element-plus'
 import * as XLSX from 'xlsx'
@@ -145,6 +146,7 @@ import {
     ElUploadProgressEvent,
     ElFile,
 } from 'element-plus/es/components/upload/src/upload.type'
+import router from "../../router";
 
 const defaultList = ref({
     pageNum: 1,
@@ -288,7 +290,7 @@ const querySearch = (queryString, cb) => {
 const createFilter = (queryString) => {
     return (list) => {
         return (
-            list.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+            list.title.toLowerCase().indexOf(queryString.toLowerCase()) === 0
         )
     }
 }
@@ -334,6 +336,12 @@ const formatJson = (filterVal, jsonData) => {
     return jsonData.map(v => filterVal.map(j => {
         return v[j]
     }))
+}
+
+//excel backEnd
+const handleDowloadAllURL = () => {
+    let url = listAllProductSkusURL()
+    window.open(url)
 }
 
 getList()
