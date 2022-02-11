@@ -83,7 +83,7 @@
         </div>
     </div>
     <div class="dialog">
-        <el-dialog v-model="dialogFormVisible" title="新增耗材">
+        <el-dialog v-model="dialogFormVisible" :title="textMap[dialogStatus]">
             <el-form :model="defaultForm">
                 <el-form-item label="耗材类别" :label-width="formLabelWidth">
                     <el-select
@@ -159,9 +159,6 @@ const querySearchList = ref({
     pageSize: 5,
     keyword: null
 })
-const log = () => {
-    console.log("yes")
-}
 
 const defaultFormTemp = ref({
     title: '',
@@ -169,6 +166,10 @@ const defaultFormTemp = ref({
     avatar: '',
     productId: ''
 })
+const textMap = {
+    update: '编辑',
+    create: '创建'
+}
 
 const defaultForm = ref(Object.assign({}, defaultFormTemp.value));
 
@@ -196,6 +197,7 @@ const getList = () => {
     }).catch(err => tableData(err))
 }
 const handleCreate = () => {
+    dialogStatus.value = "create"
     restForm()
     options.value.title = ''
     dialogFormVisible.value = true

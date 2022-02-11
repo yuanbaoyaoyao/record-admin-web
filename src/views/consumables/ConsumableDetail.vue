@@ -25,6 +25,8 @@
                             <el-dropdown-item>导出当前页为pdf</el-dropdown-item>
                             <el-dropdown-item divided>导出已选为excel</el-dropdown-item>
                             <el-dropdown-item>导出已选为pdf</el-dropdown-item>
+                            <el-dropdown-item divided >导出全部为excel</el-dropdown-item>
+                            <el-dropdown-item>导出全部为pdf</el-dropdown-item>
                         </el-dropdown-menu>
                     </template>
                 </el-dropdown>

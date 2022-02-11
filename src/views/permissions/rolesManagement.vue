@@ -36,6 +36,7 @@
                 <el-table-column prop="createdAt" label="创建时间" sortable />
                 <el-table-column fixed="right" label="操作" width="120">
                     <template v-slot="scope">
+                        <el-button type="text" size="small">分配资源</el-button>
                         <el-button type="text" size="small" @click="handleUpdate(scope.row)">编辑</el-button>
                         <el-button type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
                     </template>
@@ -60,7 +61,7 @@
         </div>
     </div>
     <div class="dialog">
-        <el-dialog v-model="dialogFormVisible" title="新增角色">
+        <el-dialog v-model="dialogFormVisible" :title="textMap[dialogStatus]">
             <el-form :model="defaultForm">
                 <el-form-item label="角色名称" :label-width="formLabelWidth">
                     <el-input v-model="defaultForm.name" autocomplete="off"></el-input>
@@ -91,6 +92,10 @@ const pageTotal = ref(null)
 const dialogFormVisible = ref(false)
 const dialogStatus = ref('')
 const searchKeyword = ref(null)
+const textMap = {
+    update: '编辑',
+    create: '创建'
+}
 
 const defaultList = ref({
     pageNum: 1,
@@ -119,6 +124,7 @@ const getList = () => {
 }
 
 const handleCreate = () => {
+    dialogStatus.value = "create"
     restForm()
     dialogFormVisible.value = true
 }
