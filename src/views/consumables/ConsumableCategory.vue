@@ -118,6 +118,7 @@ const multipleTable = ref()
 const tableData = ref([])
 
 const getList = () => {
+        // console.log(defaultList.value)
     listProductAPI(defaultList.value).then(res => {
         tableData.value = res.data.records
         pageTotal.value = res.data.total

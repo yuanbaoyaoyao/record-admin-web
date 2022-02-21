@@ -21,9 +21,9 @@
     </div>
 </template>
 <script setup>
-import vSidebar from "../components/Sidebar.vue";
-import vHeader from "../components/Header.vue";
-import vTags from "../components/Tags.vue";
+import vSidebar from "./Sidebar.vue";
+import vHeader from "./Header.vue";
+import vTags from "./Tags.vue";
 import { useStore } from "vuex";
 import { computed } from 'vue';
 const store = useStore();

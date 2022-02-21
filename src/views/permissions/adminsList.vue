@@ -169,6 +169,7 @@ const textMap = {
 }
 
 const getList = () => {
+    console.log(defaultList.value)
     listAdminAPI(defaultList.value).then(res => {
         tableData.value = res.data.records
         pageTotal.value = res.data.total
@@ -297,7 +298,6 @@ getToken().then(res => {
 
 getRole().then(res => {
     options.value = res.data.records
-   console.log(options.value)
 }).catch(err => tableData(err))
 </script>
 <style scoped>

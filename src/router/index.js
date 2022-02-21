@@ -2,148 +2,210 @@ import {
     createRouter,
     createWebHashHistory
 } from "vue-router";
-import Home from "../views/Home.vue";
+import Layout from "../components/Layout/Home.vue";
 
-const routes = [{
-    path: '/',
-    redirect: '/dashboard'
-}, {
-    path: "/",
-    name: "Home",
-    component: Home,
-    children: [{
-        path: "/dashboard",
-        name: "dashboard",
+export const constantRouters = [
+    {
+        path: '/login',
+        component: () => import('../views/login/index.vue'),
+    },
+    {
+        path: "/",
+        name: "Home",
+        component: Layout,
+        children: [{
+            path: "/dashboard",
+            name: "dashboard",
+            meta: {
+                title: '系统首页'
+            },
+            component: () => import("../views/Dashboard.vue")
+        },
+
+        ]
+    }
+]
+
+export const asyncRoutes = [
+    {
+        path: '/user',
+        component: Layout,
+        redirect: 'noredirect',
+        name: 'userManage',
         meta: {
-            title: '系统首页'
+            title: '用户管理',
         },
-        component: () => import("../views/Dashboard.vue")
-    }, {
-        path: "/usersList",
-        name: "UsersList",
-        meta:{
-            title:'用户列表'
-        },
-        component: () => import("../views/users/UsersList.vue"),
+        children: [
+            {
+                path: "/usersList",
+                name: "UsersList",
+                meta: {
+                    title: '用户列表'
+                },
+                component: () => import("../views/users/UsersList.vue"),
 
-    }, {
-        path: "/userTrace",
-        name: "UserTrace",
-        meta:{
-            title:'用户足迹'
-        },
-        component: () => import("../views/users/UserTrace.vue"),
+            }, {
+                path: "/userTrace",
+                name: "UserTrace",
+                meta: {
+                    title: '用户足迹'
+                },
+                component: () => import("../views/users/UserTrace.vue"),
 
-    },{
-        path: "/ordersList",
-        name: "OrdersList",
-        meta:{
-            title:'需求列表'
+            },
+        ]
+    },
+    {
+        path: '/order',
+        component: Layout,
+        redirect: 'noredirect',
+        name: 'orderManage',
+        meta: {
+            title: '订单管理'
         },
-        component: () => import("../views/orders/OrdersList.vue"),
+        children: [
+            {
+                path: "/ordersList",
+                name: "OrdersList",
+                meta: {
+                    title: '需求列表'
+                },
+                component: () => import("../views/orders/OrdersList.vue"),
 
-    }, {
-        path: "/orderDetail",
-        name: "OrderDetail",
-        meta:{
-            title:'需求详情'
-        },
-        component: () => import("../views/orders/OrderDetail.vue"),
+            }, {
+                path: "/orderDetail",
+                name: "OrderDetail",
+                meta: {
+                    title: '需求详情'
+                },
+                component: () => import("../views/orders/OrderDetail.vue"),
 
-    },{
-        path: "/consumablesList",
-        name: "ConsumablesList",
-        meta:{
-            title:'耗材管理'
+            },
+        ]
+    },
+    {
+        path: '/consumables',
+        component: Layout,
+        redirect: 'noredirect',
+        name: 'consumablesManage',
+        meta: {
+            title: '耗材管理'
         },
-        component: () => import("../views/consumables/ConsumablesList.vue"),
+        children: [
+            {
+                path: "/consumablesList",
+                name: "ConsumablesList",
+                meta: {
+                    title: '耗材管理'
+                },
+                component: () => import("../views/consumables/ConsumablesList.vue"),
 
-    },{
-        path: "/consumableCategory",
-        name: "ConsumableCategory",
-        meta:{
-            title:'耗材类别'
-        },
-        component: () => import("../views/consumables/ConsumableCategory.vue"),
+            }, {
+                path: "/consumableCategory",
+                name: "ConsumableCategory",
+                meta: {
+                    title: '耗材类别'
+                },
+                component: () => import("../views/consumables/ConsumableCategory.vue"),
 
-    },{
-        path: "/consumableDetail",
-        name: "ConsumableDetail",
-        meta:{
-            title:'耗材详情'
-        },
-        component: () => import("../views/consumables/ConsumableDetail.vue"),
+            }, {
+                path: "/consumableDetail",
+                name: "ConsumableDetail",
+                meta: {
+                    title: '耗材详情'
+                },
+                component: () => import("../views/consumables/ConsumableDetail.vue"),
 
-    }, {
-        path: "/consumableApply",
-        name: "ConsumableApply",
-        meta:{
-            title:'耗材申请'
-        },
-        component: () => import("../views/consumables/ConsumableApply.vue"),
+            }, {
+                path: "/consumableApply",
+                name: "ConsumableApply",
+                meta: {
+                    title: '耗材申请'
+                },
+                component: () => import("../views/consumables/ConsumableApply.vue"),
 
-    },   {
-        path: "/adminsList",
-        name: "adminsList",
-        meta:{
-            title:'管理员'
+            },
+        ]
+    },
+    {
+        path: '/admin',
+        component: Layout,
+        redirect: 'noredirect',
+        name: 'adminManage',
+        meta: {
+            title: "权限管理"
         },
-        component: () => import("../views/permissions/AdminsList.vue"),
+        children: [
+            {
+                path: "/adminsList",
+                name: "adminsList",
+                meta: {
+                    title: '管理员'
+                },
+                component: () => import("../views/permissions/AdminsList.vue"),
 
-    },{
-        path: "/rolesManagement",
-        name: "RolesManagement",
-        meta:{
-            title:'角色管理'
-        },
-        component: () => import("../views/permissions/RolesManagement.vue"),
+            }, {
+                path: "/rolesManagement",
+                name: "RolesManagement",
+                meta: {
+                    title: '角色管理'
+                },
+                component: () => import("../views/permissions/RolesManagement.vue"),
 
-    },{
-        path: "/operationLog",
-        name: "operationLog",
-        meta:{
-            title:'操作日志'
-        },
-        component: () => import("../views/permissions/OperationLog.vue"),
+            }, {
+                path: "/operationLog",
+                name: "operationLog",
+                meta: {
+                    title: '操作日志'
+                },
+                component: () => import("../views/permissions/OperationLog.vue"),
 
-    }, {
-        path: "/charts",
-        name: "Charts",
-        meta:{
-            title:'表格'
+            },
+        ]
+    },
+    {
+        path: '/test',
+        component: Layout,
+        redirect: 'noredirect',
+        name: 'testManage',
+        meta: {
+            title: '测试管理'
         },
-        component: () => import("../views/tests/Charts.vue"),
+        children: [
+            {
+                path: "/charts",
+                name: "Charts",
+                meta: {
+                    title: '表格'
+                },
+                component: () => import("../views/tests/Charts.vue"),
 
-    }, {
-        path: "/3d",
-        name: "3d",
-        meta:{
-            title:'3d'
-        },
-        component: () => import("../views/tests/3d.vue"),
+            }, {
+                path: "/3d",
+                name: "3d",
+                meta: {
+                    title: '3d'
+                },
+                component: () => import("../views/tests/3d.vue"),
 
-    }, {
-        path: "editor",
-        name: "Editor",
-        meta:{
-            title:'富文本编辑器'
-        },
-        component: () => import("../views/tests/Editor.vue"),
+            }, {
+                path: "editor",
+                name: "Editor",
+                meta: {
+                    title: '富文本编辑器'
+                },
+                component: () => import("../views/tests/Editor.vue"),
 
-    },{
-        path: "editor",
-        name: "Editor",
-        meta:{
-            title:'富文本编辑器'
-        },
-        component: () => import("../views/tests/Editor.vue"),
-    }]
-}];
+            }, 
+        ]
+    }
+]
 
 const router = createRouter({
     //路由模式带“#”号
     history: createWebHashHistory(),
-    routes
+    scrollBehavior: () => ({ y: 0 }),
+    routes: constantRouters
 })
 
 export default router;
