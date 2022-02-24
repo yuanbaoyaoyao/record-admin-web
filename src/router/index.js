@@ -1,18 +1,19 @@
 import {
-    createRouter,
-    createWebHashHistory
+    createWebHashHistory,
+    createRouter
 } from "vue-router";
 import Layout from "../components/Layout/Home.vue";
 
-export const constantRouters = [
+export const constantRoutes = [
     {
         path: '/login',
         component: () => import('../views/login/index.vue'),
     },
     {
-        path: "/",
+        path: "",
         name: "Home",
         component: Layout,
+        redirect:'/dashboard',
         children: [{
             path: "/dashboard",
             name: "dashboard",
@@ -23,14 +24,15 @@ export const constantRouters = [
         },
 
         ]
-    }
+    },
 ]
 
 export const asyncRoutes = [
+
     {
         path: '/user',
         component: Layout,
-        redirect: 'noredirect',
+        redirect: '/user/usersList',
         name: 'userManage',
         meta: {
             title: '用户管理',
@@ -58,7 +60,7 @@ export const asyncRoutes = [
     {
         path: '/order',
         component: Layout,
-        redirect: 'noredirect',
+        redirect: '/order/ordersList',
         name: 'orderManage',
         meta: {
             title: '订单管理'
@@ -86,7 +88,7 @@ export const asyncRoutes = [
     {
         path: '/consumables',
         component: Layout,
-        redirect: 'noredirect',
+        redirect: '/consumables/consumablesList',
         name: 'consumablesManage',
         meta: {
             title: '耗材管理'
@@ -130,7 +132,7 @@ export const asyncRoutes = [
     {
         path: '/admin',
         component: Layout,
-        redirect: 'noredirect',
+        redirect: '/admin/adminsList',
         name: 'adminManage',
         meta: {
             title: "权限管理"
@@ -166,7 +168,7 @@ export const asyncRoutes = [
     {
         path: '/test',
         component: Layout,
-        redirect: 'noredirect',
+        redirect: '/test/charts',
         name: 'testManage',
         meta: {
             title: '测试管理'
@@ -196,7 +198,7 @@ export const asyncRoutes = [
                 },
                 component: () => import("../views/tests/Editor.vue"),
 
-            }, 
+            },
         ]
     }
 ]
@@ -205,7 +207,7 @@ const router = createRouter({
     //路由模式带“#”号
     history: createWebHashHistory(),
     scrollBehavior: () => ({ y: 0 }),
-    routes: constantRouters
+    routes: constantRoutes
 })
 
 export default router;

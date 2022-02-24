@@ -13,12 +13,12 @@
             <!-- <span>耗材管理系统</span> -->
         </div>
         <div class="login-form">
-            <el-form ref="formRef" :model="form" label-width="60px">
-                <el-form-item label="用户名">
-                    <el-input v-model="form.name"></el-input>
+            <el-form ref="formRef" status-icon :rules="rules" :model="form" label-width="60px">
+                <el-form-item label="用户名" prop="username">
+                    <el-input v-model="form.username" type="text"></el-input>
                 </el-form-item>
-                <el-form-item label="密码">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item label="密码" prop="password">
+                    <el-input v-model="form.password" type="password"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">登录</el-button>
@@ -29,18 +29,32 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 
+
+
+const validateUserName = (rule, value, callback) => {
+    if (!value) {
+        return callback(new Error('请输入用户名'))
+    }
+    callback()
+}
+
+const validatePassWord = (rule, value, callback) => {
+    if (value === '') {
+        callback(new Error('请输入密码'))
+    }
+    callback()
+}
+
+const rules = reactive({
+    username: [{ validator: validateUserName, trigger: 'blur' }],
+    password: [{ validator: validatePassWord, trigger: 'blur' }],
+})
 // do not use same name with ref
 const form = reactive({
-    name: '',
-    region: '',
-    date1: '',
-    date2: '',
-    delivery: false,
-    type: [],
-    resource: '',
-    desc: '',
+    username: '',
+    password: ''
 })
 
 const onSubmit = () => {
@@ -49,9 +63,9 @@ const onSubmit = () => {
 </script>
 
 <style scoped>
-.login-title{
+.login-title {
     font-size: x-large;
-    font-family: serif ;
+    font-family: serif;
 }
 .login {
     display: flex;
@@ -62,7 +76,7 @@ const onSubmit = () => {
     padding-top: 30px;
     padding-bottom: 15px;
 }
-.login-title{
+.login-title {
     padding: 20px;
 }
 .login-form {

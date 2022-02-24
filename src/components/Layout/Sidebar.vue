@@ -24,7 +24,7 @@
                 <template #title>
                   <span class="title">{{ subMenu.title }}</span>
                 </template>
-                <el-menu-item v-for="(third,i) in subMenu.subs" :index="third.index" :key="i">
+                <el-menu-item v-for="(third, i) in subMenu.subs" :index="third.index" :key="i">
                   <span class="title">{{ third.title }}</span>
                 </el-menu-item>
               </el-sub-menu>
@@ -69,7 +69,7 @@ const menus = [
     title: "用户管理",
     subs: [
       {
-        index: "/usersList",
+        index: "/users/usersList",
         title: "用户列表"
       },
       {
@@ -168,7 +168,7 @@ const onRoutes = computed(() => {
 })
 
 const store = useStore();
-const collapse = computed(() => store.state.collapse);
+const collapse = computed(() => store.getters.collapse);
 
 </script>
 

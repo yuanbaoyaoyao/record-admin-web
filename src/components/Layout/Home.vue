@@ -27,6 +27,6 @@ import vTags from "./Tags.vue";
 import { useStore } from "vuex";
 import { computed } from 'vue';
 const store = useStore();
-const collapse = computed(() => store.state.collapse);
+const collapse = computed(() => store.getters.collapse);
 
 </script>

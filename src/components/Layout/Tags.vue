@@ -46,7 +46,7 @@ const route = useRoute();
 const router = useRouter();
 
 const store = useStore();
-const editableTabs = computed(() => store.state.editableTabs);
+const editableTabs = computed(() => store.getters.editableTabs);
 const showTags = computed(() => editableTabs.value.length > 0);
 
 const addTags = (route) => {
@@ -54,7 +54,7 @@ const addTags = (route) => {
         return menu.path === route.fullPath;
     })
     if (!isExist) {
-        store.commit("handleAddTags", {
+        store.commit("HANDLE_ADD_TAGS", {
             name: route.name,
             title: route.meta.title,
             path: route.fullPath
@@ -78,7 +78,7 @@ const handleRemove = (name) => {
         if (editableTabs.value[i].title === name) {
             delItem = editableTabs.value[i];
             tabIndex = i;
-            store.commit("handleDeleteTags", { i });
+            store.commit("HANDLE_DELETE_TAGS", { i });
             break;
         }
     }
@@ -93,7 +93,7 @@ const handleRemove = (name) => {
 }
 
 const closeAll = () => {
-    store.commit("handleClearTags");
+    store.commit("HANDLE_CLEAR_TAGS");
     router.push("/")
 }
 
@@ -101,7 +101,7 @@ const closeOthers = () => {
     const curItem = editableTabs.value.filter((item) => {
         return item.path === route.fullPath;
     });
-    store.commit("handleDeleteOtherTags", curItem);
+    store.commit("HANDLE_DELETE_OTHER_TAGS", curItem);
 };
 
 const handleCloseTags = (command) => {

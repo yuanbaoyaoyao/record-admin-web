@@ -1,29 +1,19 @@
-import {
-    createStore
-} from "vuex";
-export default createStore({
-    state: {
-        collapse: false,
-        editableTabs: [],
-        token: null
+import { createStore } from "vuex";
+
+import app from "./modules/app";
+import permission from "./modules/permission";
+import tag from "./modules/tag";
+import user from "./modules/user"
+import getters from "./getters"
+
+const store = createStore({
+    modules: {
+        app,
+        permission,
+        tag,
+        user
     },
-    mutations: {
-        handleCollapse(state, data) {
-            state.collapse = data;
-        },
-
-        handleAddTags(state, data) {
-            state.editableTabs.push(data)
-        },
-        handleDeleteTags(state, data) {
-            state.editableTabs.splice(data.i, 1)
-
-        },
-        handleClearTags(state) {
-            state.editableTabs = []
-        },
-        handleDeleteOtherTags(state, data) {
-            state.editableTabs = data
-        }
-    }
+    getters
 })
+
+export default store

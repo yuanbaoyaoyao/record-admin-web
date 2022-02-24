@@ -55,9 +55,9 @@ import { ArrowDown, BellFilled, Expand, Fold } from '@element-plus/icons';
 import { computed } from '@vue/reactivity';
 import { useStore } from 'vuex';
 const store = useStore();
-const collapse = computed(() => store.state.collapse);
+const collapse = computed(() => store.getters.collapse);
 const collapseChage = () => {
-    store.commit("handleCollapse", !collapse.value);
+    store.commit("HANDLE_COLLAPSE", !collapse.value);
 };
 </script>
 
