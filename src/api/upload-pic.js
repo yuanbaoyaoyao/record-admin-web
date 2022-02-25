@@ -1,6 +1,6 @@
 import http from "../utils/http";
 
-let resquest = "/testIp/upload/"
+let resquest = "/adminIp/upload/"
 
 export function getToken(params){
     return http.get(`${resquest}`+'qiniu/policy',params)

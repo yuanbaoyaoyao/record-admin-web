@@ -67,7 +67,7 @@
 
 import router from './router'
 import store from './store'
-import { Message } from 'element-ui'
+import { ElMessage } from 'element-plus'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css'// progress bar style
 import { getToken } from '@/utils/auth' // getToken from cookie
@@ -84,6 +84,7 @@ function hasPermission(perms, permissions) {
 const whiteList = ['/login', '/auth-redirect']// no redirect whitelist
 
 router.beforeEach((to, from, next) => {
+  console.log("router.beforeEach")
   NProgress.start() // start progress bar
   if (getToken()) { // determine if there has token
     /* has token*/
@@ -93,7 +94,7 @@ router.beforeEach((to, from, next) => {
     } else {
       if (store.getters.perms.length === 0) { // 判断当前用户是否已拉取完user_info信息
         store.dispatch('GetUserInfo').then(res => { // 拉取user_info
-          console.log("res.data.data",res.data.data)
+          console.log("res.data.data", res.data.data)
           const perms = res.data.data.perms // note: perms must be a array! such as: ['GET /aaa','POST /bbb']
           store.dispatch('GenerateRoutes', { perms }).then(() => { // 根据perms权限生成可访问的路由表
             router.addRoutes(store.getters.addRoutes) // 动态添加可访问路由表
@@ -101,7 +102,7 @@ router.beforeEach((to, from, next) => {
           })
         }).catch((err) => {
           store.dispatch('FedLogOut').then(() => {
-            Message.error(err || 'Verification failed, please login again')
+            ElMessage.error(err || 'Verification failed, please login again')
             next({ path: '/' })
           })
         })
@@ -109,9 +110,10 @@ router.beforeEach((to, from, next) => {
         // 没有动态改变权限的需求可直接next() 删除下方权限判断 ↓
         if (hasPermission(store.getters.perms, to.meta.perms)) {
           next()
-        } else {
-          next({ path: '/401', replace: true, query: { noGoBack: true } })
-        }
+        } 
+        // else {
+        //   next({ path: '/401', replace: true, query: { noGoBack: true } })
+        // }
         // 可删 ↑
       }
     }
@@ -122,6 +124,7 @@ router.beforeEach((to, from, next) => {
       next()
     } else {
       next(`/login?redirect=${to.path}`) // 否则全部重定向到登录页
+      console.log("to.path", to.path)
       NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
     }
   }

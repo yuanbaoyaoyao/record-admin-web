@@ -1,6 +1,6 @@
 import http from "../utils/http";
 
-let resquest = "/testIp/excel/"
+let resquest = "/adminIp/excel/"
 
 export function listAllProductSkusURL(){
     return (`${resquest}`+`productSkus`)

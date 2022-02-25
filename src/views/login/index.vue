@@ -18,10 +18,10 @@
                     <el-input v-model="form.username" type="text"></el-input>
                 </el-form-item>
                 <el-form-item label="密码" prop="password">
-                    <el-input v-model="form.password" type="password"></el-input>
+                    <el-input v-model="form.password" type="password" @keyup.enter="handleLogin"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="onSubmit">登录</el-button>
+                    <el-button :loading="loading" type="primary" @click="handleLogin">登录</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -30,8 +30,10 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
+import { useRouter } from 'vue-router';
+import store from '../../store';
 
-
+const loading = ref(false)
 
 const validateUserName = (rule, value, callback) => {
     if (!value) {
@@ -57,8 +59,21 @@ const form = reactive({
     password: ''
 })
 
-const onSubmit = () => {
-    console.log('submit!')
+const router = useRouter();
+
+const handleLogin = () => {
+    if (!loading.value) {
+        loading.value = true
+        store.dispatch('LoginByUsername', form).then(() => {
+            loading.value = false
+            router.push({ path: '/' })
+        }).catch(res => {
+            console.log("catch", res)
+            loading.value = false
+        })
+    } else {
+        return false
+    }
 }
 </script>
 

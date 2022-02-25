@@ -8,7 +8,7 @@
                     </div>
                     <hr class="hr" />
                     <div class="admin-info">
-                        <img src="../assets/logo.png" class="admin-avator" />
+                        <img src="../assets/logo.jpg" class="admin-avator" />
                         <div class="admin-info-cont">
                             <div class="admin-info-name">元宝</div>
                             <div class="admin-info-role">超级管理员</div>

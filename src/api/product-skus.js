@@ -1,6 +1,6 @@
 import http from "../utils/http";
 
-let resquest = "/testIp/productSkus/"
+let resquest = "/adminIp/productSkus/"
 
 export function listProductSkusAPI(params){
     return http.get(`${resquest}`+`list`,params)

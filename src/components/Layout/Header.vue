@@ -27,7 +27,7 @@
             </div>
             <!-- 头像 -->
             <div class="user-avator">
-                <img src="../assets/logo.png" />
+                <img src="../../assets/logo.jpg" />
             </div>
             <!-- 头像下拉 -->
             <el-dropdown class="user-name" trigger="click">
@@ -42,7 +42,7 @@
                         <el-dropdown-item>Action 1</el-dropdown-item>
                         <el-dropdown-item>Action 2</el-dropdown-item>
                         <el-dropdown-item disabled>Action 4</el-dropdown-item>
-                        <el-dropdown-item divided>退出登录</el-dropdown-item>
+                        <el-dropdown-item divided @click="logout">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </template>
             </el-dropdown>
@@ -53,12 +53,21 @@
 <script setup>
 import { ArrowDown, BellFilled, Expand, Fold } from '@element-plus/icons';
 import { computed } from '@vue/reactivity';
+import { useRoute, useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 const store = useStore();
+const router = useRouter();
+const route = useRoute();
 const collapse = computed(() => store.getters.collapse);
 const collapseChage = () => {
     store.commit("HANDLE_COLLAPSE", !collapse.value);
 };
+
+const logout = () => {
+    store.dispatch('LogOut').then(() => {
+        router.push(`/login?redirect=${route.fullPath}`)
+    })
+}
 </script>
 
 <style scoped>

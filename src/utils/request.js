@@ -1,7 +1,9 @@
 import axios from "axios";
 import {
     ElMessage
-}  from "element-plus";
+} from "element-plus";
+import store from "../store";
+import { getToken } from "./auth";
 
 const service = axios.create({
     baseURL: process.env.VUE_APP_API_URL,
@@ -13,18 +15,21 @@ const service = axios.create({
 
 service.interceptors.request.use(
     config => {
-
+        if (store.getters.token) {
+            config.headers['Authorization'] = getToken()
+        }
         return config;
     },
     error => {
-
+        console.log(error) // for debug
         return Promise.reject(error);
     }
 )
 
+let message
+
 service.interceptors.response.use(
     response => {
-
         return response.data;
     },
     error => {

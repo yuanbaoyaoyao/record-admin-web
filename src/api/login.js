@@ -1,6 +1,6 @@
 import http from "../utils/http";
 
-let resquest = "/testIp/auth/"
+let resquest = "/shiroIp/auth/"
 
 export function loginByUsername(username, password, code) {
     const data = {

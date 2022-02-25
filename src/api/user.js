@@ -1,6 +1,6 @@
 import http from "../utils/http";
 
-let resquest = "/testIp/user/"
+let resquest = "/adminIp/user/"
 
 export function listUserAPI(params){
     return http.get(`${resquest}`+`list`,params)

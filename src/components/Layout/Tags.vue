@@ -50,6 +50,7 @@ const editableTabs = computed(() => store.getters.editableTabs);
 const showTags = computed(() => editableTabs.value.length > 0);
 
 const addTags = (route) => {
+    console.log(editableTabs.value)
     const isExist = editableTabs.value.some((menu) => {
         return menu.path === route.fullPath;
     })

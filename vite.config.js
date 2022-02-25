@@ -45,11 +45,16 @@ export default defineConfig(({
       cors: true,
       base: process.env.VITE_BASE_URL,
       proxy: {
-        "/testIp": {
+        "/adminIp": {
           target: "http://localhost:8081",
           changeOrgin: true,
-          rewrite: (path) => path.replace(/^\/testIp/, '')
-        }
+          rewrite: (path) => path.replace(/^\/adminIp/, '')
+        },
+        "/shiroIp": {
+          target: "http://localhost:8082",
+          changeOrgin: true,
+          rewrite: (path) => path.replace(/^\/shiroIp/, '')
+        },
       }
     }
   })

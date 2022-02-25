@@ -13,7 +13,7 @@ export const constantRoutes = [
         path: "",
         name: "Home",
         component: Layout,
-        redirect:'/dashboard',
+        redirect: '/dashboard',
         children: [{
             path: "/dashboard",
             name: "dashboard",
@@ -42,6 +42,7 @@ export const asyncRoutes = [
                 path: "/usersList",
                 name: "UsersList",
                 meta: {
+                    perms:['GET /user/usersList'],
                     title: '用户列表'
                 },
                 component: () => import("../views/users/UsersList.vue"),
@@ -50,6 +51,7 @@ export const asyncRoutes = [
                 path: "/userTrace",
                 name: "UserTrace",
                 meta: {
+                    perms:['GET /user/usersTrace'],
                     title: '用户足迹'
                 },
                 component: () => import("../views/users/UserTrace.vue"),
@@ -70,6 +72,7 @@ export const asyncRoutes = [
                 path: "/ordersList",
                 name: "OrdersList",
                 meta: {
+                    perms:['GET /order/ordersList'],
                     title: '需求列表'
                 },
                 component: () => import("../views/orders/OrdersList.vue"),
@@ -78,6 +81,7 @@ export const asyncRoutes = [
                 path: "/orderDetail",
                 name: "OrderDetail",
                 meta: {
+                    perms:['GET /order/ordersDetail'],
                     title: '需求详情'
                 },
                 component: () => import("../views/orders/OrderDetail.vue"),
@@ -98,6 +102,7 @@ export const asyncRoutes = [
                 path: "/consumablesList",
                 name: "ConsumablesList",
                 meta: {
+                    perms:['GET /productSku/list','POST /productSku/create','DELETE /productSku/delete','PUT /productSku/update'],
                     title: '耗材管理'
                 },
                 component: () => import("../views/consumables/ConsumablesList.vue"),
@@ -106,6 +111,7 @@ export const asyncRoutes = [
                 path: "/consumableCategory",
                 name: "ConsumableCategory",
                 meta: {
+                    perms:['GET /product/list','POST /product/create','DELETE /product/delete','PUT /product/update'],
                     title: '耗材类别'
                 },
                 component: () => import("../views/consumables/ConsumableCategory.vue"),
@@ -114,6 +120,7 @@ export const asyncRoutes = [
                 path: "/consumableDetail",
                 name: "ConsumableDetail",
                 meta: {
+                    perms:['GET /consumables/consumableDetail'],
                     title: '耗材详情'
                 },
                 component: () => import("../views/consumables/ConsumableDetail.vue"),
@@ -122,6 +129,7 @@ export const asyncRoutes = [
                 path: "/consumableApply",
                 name: "ConsumableApply",
                 meta: {
+                    perms:['GET /consumables/consumableApply'],
                     title: '耗材申请'
                 },
                 component: () => import("../views/consumables/ConsumableApply.vue"),
@@ -209,5 +217,16 @@ const router = createRouter({
     scrollBehavior: () => ({ y: 0 }),
     routes: constantRoutes
 })
+
+export function resetRouter() {
+    const newRouter = createRouter({
+        //路由模式带“#”号
+        history: createWebHashHistory(),
+        scrollBehavior: () => ({ y: 0 }),
+        routes: constantRoutes
+    })
+    router.matcher = newRouter.matcher // reset router
+}
+
 
 export default router;

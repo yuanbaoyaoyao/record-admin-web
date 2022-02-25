@@ -1,6 +1,6 @@
 import http from "../utils/http";
 
-let resquest = "/testIp/adminRole/"
+let resquest = "/adminIp/adminRole/"
 
 export function listRoleAPI(params){
     return http.get(`${resquest}`+`list`,params)
