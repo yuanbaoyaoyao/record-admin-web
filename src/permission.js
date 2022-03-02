@@ -86,18 +86,34 @@ const whiteList = ['/login', '/auth-redirect']// no redirect whitelist
 router.beforeEach((to, from, next) => {
   console.log("router.beforeEach")
   NProgress.start() // start progress bar
+  console.log("getToken", getToken())
   if (getToken()) { // determine if there has token
+    console.log("有token")
     /* has token*/
     if (to.path === '/login') {
       next({ path: '/' })
       NProgress.done() // if current page is dashboard will not trigger	afterEach hook, so manually handle it
     } else {
+      console.log("不是去login")
       if (store.getters.perms.length === 0) { // 判断当前用户是否已拉取完user_info信息
+        console.log("没有拉取完user_info")
         store.dispatch('GetUserInfo').then(res => { // 拉取user_info
-          console.log("res.data.data", res.data.data)
-          const perms = res.data.data.perms // note: perms must be a array! such as: ['GET /aaa','POST /bbb']
+          console.log("res.data", res.data)
+          const perms = res.data.perms // note: perms must be a array! such as: ['GET /aaa','POST /bbb']
+          console.log("已经复制完perms")
           store.dispatch('GenerateRoutes', { perms }).then(() => { // 根据perms权限生成可访问的路由表
-            router.addRoutes(store.getters.addRoutes) // 动态添加可访问路由表
+            console.log("生成可访问路由")
+            // router.addRoute(store.getters.addRoutes) // 动态添加可访问路由表
+            // // console.log("router",router)
+            // console.log("router.option.routes",router.options.routes)
+            // console.log("router.option.routes",router.options.routes)
+            for (let i = 0; i < store.getters.addRoutes.length; i++) {
+              console.log(store.getters.addRoutes[i])
+              router.addRoute(store.getters.addRoutes[i])
+            }
+            // console.log("store.getters.addRoutes", store.getters.addRoutes[0])
+
+            console.log("路由生成完毕")
             next({ ...to, replace: true }) // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
           })
         }).catch((err) => {
@@ -110,7 +126,7 @@ router.beforeEach((to, from, next) => {
         // 没有动态改变权限的需求可直接next() 删除下方权限判断 ↓
         if (hasPermission(store.getters.perms, to.meta.perms)) {
           next()
-        } 
+        }
         // else {
         //   next({ path: '/401', replace: true, query: { noGoBack: true } })
         // }

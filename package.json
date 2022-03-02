@@ -30,6 +30,7 @@
     "xlsx": "^0.18.0"
   },
   "devDependencies": {
+    "@types/node": "^16.11.24",
     "@vitejs/plugin-vue": "^1.9.3",
     "script-loader": "^0.7.2"
   }

@@ -95,16 +95,18 @@ const user = {
 
         // 获取用户信息
         GetUserInfo({ commit, state }) {
+            console.log("正在调用GetUserInfo")
             return new Promise((resolve, reject) => {
                 getUserInfo(state.token).then(response => {
-                    const data = response.data.data
+                    console.log("getUserInfo(state.token).then(response => {")
+                    const data = response.data
 
                     if (data.perms && data.perms.length > 0) { // 验证返回的perms是否是一个非空数组
                         commit('SET_PERMS', data.perms)
                     } else {
                         reject('getInfo: perms must be a non-null array !')
                     }
-
+                    console.log(" if (data.perms && data.perms.length > 0) {")
                     commit('SET_ROLES', data.roles)
                     commit('SET_NAME', data.name)
                     commit('SET_AVATAR', data.avatar)
@@ -114,6 +116,7 @@ const user = {
                 })
             })
         },
+
         // 登出
         LogOut({ commit, state, dispatch }) {
             return new Promise((resolve, reject) => {
