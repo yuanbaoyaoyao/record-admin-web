@@ -42,14 +42,21 @@
                 @selection-change="handleSelectionChange"
             >
                 <el-table-column type="selection" width="55" />
-                <el-table-column prop="productName" label="需求单号" width="180" />
-                <el-table-column prop="title" label="申请人" width="180" />
+                <el-table-column prop="orderSn" label="需求单号" width="180" />
+                <el-table-column prop="receiver" label="申请人" width="180" />
+                <el-table-column prop="productTitle" label="耗材类别" width="180" />
+                <el-table-column prop="productSkusTitle" label="耗材型号" width="180" />
+                <el-table-column prop="productNumber" label="耗材数量" width="180" />
                 <el-table-column prop="createdAt" label="创建时间" sortable />
-                <el-table-column prop="description" label="状态" width="180" sortable />
+                <el-table-column prop="orderStatus" label="状态" width="180" sortable />
                 <el-table-column fixed="right" label="操作" width="120">
                     <template v-slot="scope">
-                        <el-button type="text" size="small" @click="handleUpdate(scope.row)">详情</el-button>
-                        <el-button type="text" size="small" @click="handleDelete(scope.row)">删除</el-button>
+                        <el-button
+                            type="text"
+                            size="small"
+                            @click="handleUpdate(scope.$index, scope.row)"
+                        >详情</el-button>
+                        <!-- <el-button type="text" size="small" @click="handleDelete(scope.row)">删除</el-button> -->
                     </template>
                 </el-table-column>
             </el-table>
@@ -71,64 +78,137 @@
             </div>
         </div>
     </div>
-    <div class="dialog">
-        <el-dialog v-model="dialogFormVisible" :title="textMap[dialogStatus]">
-            <el-form :model="defaultForm">
-                <el-form-item label="耗材类别" :label-width="formLabelWidth">
-                    <el-select
-                        v-model="options.title"
-                        class="m-2"
-                        placeholder="请选择类别"
-                        size="large"
-                        @change="productChange"
-                    >
-                        <el-option v-for="item in options" :key="item.id" :value="item.title"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="耗材型号" :label-width="formLabelWidth">
-                    <el-input v-model="defaultForm.title" autocomplete="off" type="productName"></el-input>
-                </el-form-item>
-                <el-form-item label="图片" :label-width="formLabelWidth">
-                    <el-upload
-                        class="avatar-uploader"
-                        action="http://upload.qiniup.com"
-                        :data="qiniuUploadData"
-                        :on-success="handleAvatarSuccess"
-                        :before-upload="beforeAvatarUpload"
-                        :on-progress="handleProgress"
-                        :on-error="handleError"
-                    >
-                        <img v-if="defaultForm.avatar" :src="defaultForm.avatar" class="avatar" />
-                        <el-icon v-else class="avatar-uploader-icon">
-                            <plus />
-                        </el-icon>
-                    </el-upload>
-                </el-form-item>
-                <el-form-item label="耗材描述" :label-width="formLabelWidth">
-                    <el-input v-model="defaultForm.description" type="textarea" autocomplete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="库存" :label-width="formLabelWidth">
-                    <el-input v-model="defaultForm.stock" autocomplete="off"></el-input>
-                </el-form-item>
-            </el-form>
-            <template #footer>
-                <span class="dialog-footer">
-                    <el-button @click="dialogFormVisible = false">取消</el-button>
-                    <el-button v-if="dialogStatus == 'update'" type="primary" @click="updateData">确定</el-button>
-                    <el-button v-else type="primary" @click="createData">确定</el-button>
-                </span>
-            </template>
-        </el-dialog>
-    </div>
+    <el-dialog v-model="dialogFormVisible" title="查看订单详情">
+        <el-descriptions class="margin-top" :column="3" :size="size" border>
+            <el-descriptions-item>
+                <template #label>
+                    <div class="cell-item">
+                        <el-icon :style="iconStyle">
+                            <user />
+                        </el-icon>耗材类别
+                    </div>
+                </template>
+                {{ tableDetail.productTitle }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+                <template #label>
+                    <div class="cell-item">
+                        <el-icon :style="iconStyle">
+                            <iphone />
+                        </el-icon>耗材型号
+                    </div>
+                </template>
+                {{ tableDetail.productSkusTitle }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+                <template #label>
+                    <div class="cell-item">
+                        <el-icon :style="iconStyle">
+                            <location />
+                        </el-icon>耗材数量
+                    </div>
+                </template>
+                {{ tableDetail.productNumber }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+                <template #label>
+                    <div class="cell-item">
+                        <el-icon :style="iconStyle">
+                            <tickets />
+                        </el-icon>订单状态
+                    </div>
+                </template>
+                <el-tag size="small">{{ tableDetail.orderStatus }}</el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item>
+                <template #label>
+                    <div class="cell-item">
+                        <el-icon :style="iconStyle">
+                            <office-building />
+                        </el-icon>订单号
+                    </div>
+                </template>
+                {{ tableDetail.orderSn }}
+            </el-descriptions-item>
+        </el-descriptions>
+        <el-descriptions class="margin-top" :column="3" :size="size" border>
+            <el-descriptions-item>
+                <template #label>
+                    <div class="cell-item">
+                        <el-icon :style="iconStyle">
+                            <office-building />
+                        </el-icon>申请人
+                    </div>
+                </template>
+                {{ tableDetail.receiver }}
+            </el-descriptions-item>
+            <el-descriptions-item>
+                <template #label>
+                    <div class="cell-item">
+                        <el-icon :style="iconStyle">
+                            <office-building />
+                        </el-icon>使用人
+                    </div>
+                </template>
+                {{ tableDetail.user }}
+            </el-descriptions-item>
+        </el-descriptions>
+
+        <el-descriptions class="margin-top" :column="3" :size="size" border>
+            <el-descriptions-item>
+                <template #label>
+                    <div class="cell-item">
+                        <el-icon :style="iconStyle">
+                            <office-building />
+                        </el-icon>地址
+                    </div>
+                </template>
+                {{ tableDetail.userAddressId }}
+            </el-descriptions-item>
+        </el-descriptions>
+
+        <el-descriptions class="margin-top" :column="3" :size="size" border>
+            <el-descriptions-item>
+                <template #label>
+                    <div class="cell-item">
+                        <el-icon :style="iconStyle">
+                            <office-building />
+                        </el-icon>备注
+                    </div>
+                </template>
+                {{ tableDetail.orderRemarks }}
+            </el-descriptions-item>
+        </el-descriptions>
+
+        <template #footer>
+            <span class="dialog-footer">
+                <template v-if="tableDetail && tableDetail.orderStatus == '审核中'">
+                    <el-button type="danger" @click="updateDataReject(tableDetail)">驳回需求</el-button>
+                </template>
+                <el-button type="info" @click="dialogFormVisible = false">取消</el-button>
+                <template v-if="tableDetail && tableDetail.orderStatus == '审核中'">
+                    <el-button type="primary" @click="updateDataArrivals(tableDetail)">到货通知</el-button>
+                </template>
+            </span>
+        </template>
+    </el-dialog>
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
-import { Search, Download, CirclePlus, Plus } from '@element-plus/icons';
+import { ref, onMounted, reactive, computed } from "vue"
+import { Search, Download, CirclePlus, Plus } from '@element-plus/icons'
+import {
+    User,
+    Iphone,
+    Location,
+    Tickets,
+    OfficeBuilding,
+} from '@element-plus/icons-vue'
 import { listProductSkusAPI, createProductSkusAPI, deleteProductSkusAPI, updateProductSkusAPI } from '@/api/product-skus'
 import { listProductAPI as getProduct } from "../../api/product"
-import { listAllProductSkusURL } from "../../api/excel";
+import { listAllProductSkusURL } from "../../api/excel"
+import { listUserOrderAPI, updateUserOrderAPI } from "../../api/user-order"
 import { getToken } from "../../api/upload-pic"
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import * as XLSX from 'xlsx'
 import {
     UploadFile,
@@ -136,32 +216,71 @@ import {
     ElFile,
 } from 'element-plus/es/components/upload/src/upload.type'
 import router from "../../router";
+import { getUserInfo } from "../../api/login"
+
+const tableDetail = ref()
+
+const size = ref('')
+const iconStyle = computed(() => {
+    const marginMap = {
+        large: '8px',
+        default: '6px',
+        small: '4px',
+    }
+    return {
+        marginRight: marginMap[size.value] || marginMap.default,
+    }
+})
+const blockMargin = computed(() => {
+    const marginMap = {
+        large: '32px',
+        default: '28px',
+        small: '24px',
+    }
+    return {
+        marginTop: marginMap[size.value] || marginMap.default,
+    }
+})
 
 const defaultList = ref({
     pageNum: 1,
     pageSize: 5,
-    keyword: null
+    keyword1: null
 })
 
 const querySearchList = ref({
     pageNum: 1,
     pageSize: 5,
-    keyword: null
+    keyword1: null
 })
 
-const defaultFormTemp = ref({
-    title: '',
-    productName: '',
-    avatar: '',
-    productId: ''
-})
+const defaultFormTemp = {
+    receiver: '',
+    user: '',
+    productTitle: '',
+    productSkusTitle: '',
+    productNumber: '',
+    orderSn: '',
+    orderStatus: null,
+}
+const defaultForm = ref(Object.assign({}, defaultFormTemp))
 const textMap = {
     update: '编辑',
     create: '创建'
 }
 
-const defaultForm = ref(Object.assign({}, defaultFormTemp.value));
+const status = {
+    "1": "审核中",
+    "2": "已到货",
+    "3": "已收货",
+    "4": "已结束(评价)",
+    "0": "已驳回",
+    "-1": "已取消",
+}
 
+const changeStatus = (i, index) => {
+    tableData.value[index].orderStatus = status[i]
+}
 
 const qiniuDomain = 'r6ctg8uno.hd-bkt.clouddn.com';
 const qiniuUploadData = ref({
@@ -177,14 +296,90 @@ const dialogStatus = ref('')
 let multipleSelection = []
 const multipleTable = ref()
 const tableData = ref([])
+const addressInfo = ref([])
 const options = ref([])
 
+const updateDataReject = (tableDetail) => {
+
+    //添加handleconfirm
+    ElMessageBox.confirm(
+        console.log("tableDetail1", tableDetail),
+        '是否确认驳回需求',
+        {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+        },
+    ).then(() => {
+        let tableDetailTemp = Object.assign({}, tableDetail);
+        defaultForm.value = tableDetailTemp
+        defaultForm.value.orderStatus = 0
+        updateUserOrderAPI(defaultForm.value).then(res => {
+            ElMessage({
+                type: 'success',
+                message: '驳回成功',
+            })
+            dialogFormVisible.value = false
+            defaultForm.value = Object.assign({}, defaultFormTemp)
+            getList()
+        })
+
+    })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: '取消驳回',
+            })
+        })
+}
+
+const updateDataArrivals = (tableDetail) => {
+
+    //添加handleconfirm
+    ElMessageBox.confirm(
+        console.log("tableDetail1", tableDetail),
+        '是否确认到货',
+        {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+        },
+    ).then(() => {
+        let tableDetailTemp = Object.assign({}, tableDetail);
+        defaultForm.value = tableDetailTemp
+        defaultForm.value.orderStatus = 2
+        updateUserOrderAPI(defaultForm.value).then(res => {
+            ElMessage({
+                type: 'success',
+                message: '确认到货成功',
+            })
+            dialogFormVisible.value = false
+            defaultForm.value = Object.assign({}, defaultFormTemp)
+            getList()
+        })
+
+    })
+        .catch(() => {
+            ElMessage({
+                type: 'info',
+                message: '取消确认到货',
+            })
+        })
+}
+
 const getList = () => {
-    listProductSkusAPI(defaultList.value).then(res => {
+    // defaultForm.value.userId = store.getters.userId
+    console.log("defaultFormGetList", defaultForm.value)
+    listUserOrderAPI(defaultForm.value).then(res => {
+        console.log("res", res)
         tableData.value = res.data.records
         pageTotal.value = res.data.total
-    }).catch(err => tableData(err))
+        for (let i = 0; i < tableData.value.length; i++) {
+            changeStatus(tableData.value[i].orderStatus, i)
+        }
+    }).catch()
 }
+
 const handleCreate = () => {
     dialogStatus.value = "create"
     restForm()
@@ -227,31 +422,29 @@ const productChange = () => {
         }
     }
 }
-const handleUpdate = (row) => {
-    console.log(row)
-    dialogStatus.value = "update"
+const handleUpdate = (index, row) => {
+    console.log("row", row)
+    tableDetail.value = row
     dialogFormVisible.value = true
-    defaultForm.value = row
-    options.value.title = row.productName
-    productChange()
 }
-const updateData = () => {
-    updateProductSkusAPI(defaultForm.value).then(res => {
-        getList()
-    }).catch(err => tableData(err))
-    dialogFormVisible.value = false
-    dialogStatus == ''
-}
+// const updateData = () => {
+//     updateProductSkusAPI(defaultForm.value).then(res => {
+//         console.log("resUpdate", res)
+//         // getList()
+//     }).catch(err => tableData(err))
+//     dialogFormVisible.value = false
+//     dialogStatus == ''
+// }
 
-const handleDelete = (row) => {
-    deleteProductSkusAPI(row).then(res => {
-        getList()
-    }).catch(err => tableData(err))
-}
+// const handleDelete = (row) => {
+//     deleteProductSkusAPI(row).then(res => {
+//         getList()
+//     }).catch(err => tableData(err))
+// }
 
 const handleSearchList = () => {
     defaultList.value.pageNum = 1
-    defaultList.value.keyword = searchKeyword
+    defaultList.value.keyword1 = searchKeyword
     getList()
 }
 
@@ -416,5 +609,8 @@ getProduct().then(res => {
 
 .tableproductName :deep()span.el-input__suffix {
     margin-right: 45px;
+}
+:deep()td.el-descriptions__cell.el-descriptions__label.is-bordered-label.is-left {
+    width: 150px !important;
 }
 </style>

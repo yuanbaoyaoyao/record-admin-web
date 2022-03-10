@@ -5,12 +5,13 @@
         <el-scrollbar wrap-class="scrollbar-wrapper">
             <el-menu
                 :router="true"
-                :unique-opened="false"
+                unique-opened
                 :default-active="onRoutes"
                 class="el-menu-vertical-demo"
                 :collapse="isCollapse"
                 background-color="#545c64"
-                text-color="#fff"
+                text-color="#bfcbd9"
+                active-text-color="#20a0ff"
             >
                 <!--递归路由对象-->
                 <sidebar-item
@@ -27,7 +28,7 @@
 
 <script setup>
 import { computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { onBeforeRouteUpdate, useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import { isExternal } from '../../../utils/validate'
 // import logo form './Logo.vue'
@@ -38,7 +39,6 @@ const store = useStore()
 const isCollapse = computed(() => store.getters.collapse)
 // const showLogo = computed(() => store.state.settingsModule.sideBarLogo)
 const routes = computed(() => store.getters.routes)
-console.log("routes.value1:", routes.value)
 // const activeMenu = computed(() => store.getters['tabModule/getCurrentIndex'])
 const onRoutes = computed(() => {
     return route.path;
@@ -54,15 +54,14 @@ const resolvePath = (routePath) => {
         return routePath
     }
 }
+onBeforeRouteUpdate((to) => {
+    console.log("to:", to)
+    console.log("触发了sidebar中的onBeforeRouteUpdate")
+})
 
 </script>
 
 <style scoped>
-.icon {
-    display: block;
-    margin: 14px;
-    /* margin-top: 2px; */
-}
 .sidebar {
     position: absolute;
     top: 80px;
@@ -78,8 +77,10 @@ const resolvePath = (routePath) => {
     min-height: 100%;
     background-color: #545c64;
 }
-ul {
-    border-color: #545c64;
+
+:deep().el-menu-vertical-demo:not(.el-menu--collapse) {
+    width: 200px;
+    min-height: 100%;
 }
 </style>
 

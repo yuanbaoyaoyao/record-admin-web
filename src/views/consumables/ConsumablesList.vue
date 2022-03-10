@@ -8,7 +8,7 @@
                             v-model="searchKeyword"
                             value-key="title"
                             :fetch-suggestions="querySearch"
-                            :trigger-on-focus="false"
+                            :trigger-on-focus="true"
                             class="inline-input"
                             placeholder="类别/型号"
                             @select="handleSelect"
@@ -78,7 +78,7 @@
                     :total="pageTotal"
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
-                >></el-pagination>
+                ></el-pagination>
             </div>
         </div>
     </div>
@@ -151,13 +151,13 @@ import router from "../../router";
 const defaultList = ref({
     pageNum: 1,
     pageSize: 5,
-    keyword: null
+    keyword1: null
 })
 
 const querySearchList = ref({
     pageNum: 1,
     pageSize: 5,
-    keyword: null
+    keyword1: null
 })
 
 const defaultFormTemp = ref({
@@ -172,7 +172,6 @@ const textMap = {
 }
 
 const defaultForm = ref(Object.assign({}, defaultFormTemp.value));
-
 
 const qiniuDomain = 'r6ctg8uno.hd-bkt.clouddn.com';
 const qiniuUploadData = ref({
@@ -194,7 +193,7 @@ const getList = () => {
     listProductSkusAPI(defaultList.value).then(res => {
         tableData.value = res.data.records
         pageTotal.value = res.data.total
-    }).catch(err => tableData(err))
+    }).catch()
 }
 const handleCreate = () => {
     dialogStatus.value = "create"
@@ -249,7 +248,7 @@ const handleUpdate = (row) => {
 const updateData = () => {
     updateProductSkusAPI(defaultForm.value).then(res => {
         getList()
-    }).catch(err => tableData(err))
+    }).catch(console.log("false"))
     dialogFormVisible.value = false
     dialogStatus == ''
 }
@@ -257,12 +256,12 @@ const updateData = () => {
 const handleDelete = (row) => {
     deleteProductSkusAPI(row).then(res => {
         getList()
-    }).catch(err => tableData(err))
+    }).catch(console.log("false"))
 }
 
 const handleSearchList = () => {
     defaultList.value.pageNum = 1
-    defaultList.value.keyword = searchKeyword
+    defaultList.value.keyword1 = searchKeyword
     getList()
 }
 

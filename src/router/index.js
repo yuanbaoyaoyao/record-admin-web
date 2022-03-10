@@ -115,7 +115,7 @@ export const asyncRoutes = [
                 name: "ConsumablesList",
                 meta: {
                     perms: ['GET /productSku/list', 'POST /productSku/create', 'DELETE /productSku/delete', 'PUT /productSku/update'],
-                    title: '耗材管理'
+                    title: '耗材列表'
                 },
                 component: () => import("../views/consumables/ConsumablesList.vue"),
 

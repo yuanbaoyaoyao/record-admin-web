@@ -40,6 +40,7 @@ import { toRef } from '@vue/reactivity'
 import { computed, onMounted } from '@vue/runtime-core'
 import { useStore } from 'vuex'
 
+
 export default defineComponent({
     name: 'SidebarItem',
     props: {
@@ -63,35 +64,27 @@ export default defineComponent({
         const collapse = computed(() => store.getters.collapse);
         // const lang = computed(()=>store.getters[''])
         onMounted(() => {
-            console.log('basePath.value', basePath.value)
+            // console.log('basePath.value', basePath.value)
         })
         const routes = computed(() => store.getters.routes)
         const hasOneShowingChild = (children, parent) => {
-            console.log("parent:", parent)
-            console.log("children:", children)
+            // console.log("parent:", parent)
+            // console.log("children:", children)
             if (!children) {
                 onlyOneChild.value = { ...parent, noShowingChildren: true }
                 return true
             }
             const showingChildren = children.filter((item) => {
-                // console.log("item.meta.hidden前")
-                // console.log("item.meta.hidden:", item.meta.hidden)
-                // if (item.meta.hidden) {
-                //     console.log("item.meta.hidden1111111111111")
-                //     return false
-                // }
-                // console.log("item.meta.hidden后")
                 onlyOneChild.value = item
                 return true
             })
-            console.log("showingChildren:", showingChildren)
             if (showingChildren.length === 1) {
                 return true
             }
-            if (showingChildren.length === 0) {
-                onlyOneChild.value = { ...parent, noShowingChildren: true }
-                return true
-            }
+            // if (showingChildren.length === 0) {
+            //     onlyOneChild.value = { ...parent, noShowingChildren: true }
+            //     return true
+            // }
             return false
         }
         return {
@@ -104,20 +97,11 @@ export default defineComponent({
 })
 </script>
 <style scoped>
-/* .item-title {
-    width: 200px;
-} */
-:deep().el-sub-menu {
-    -webkit-transition: right 0.3s ease-in-out;
-    transition: right 0.3s ease-in-out;
-    width: 200px;
-}
 .title {
     font-size: 15px;
 }
 .icon {
     display: block;
     margin: 14px;
-    /* margin-top: 2px; */
 }
 </style>

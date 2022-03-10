@@ -53,15 +53,9 @@ const permission = {
     },
     mutations: {
         SET_ROUTES: (state, routes) => {
-            // console.log("constantRoutes1",constantRoutes)
 
             state.routes = constantRoutes.concat(routes)
-            console.log("state.routes",state.routes)
             state.addRoutes = routes
-            // console.log("constantRoutes2",constantRoutes)
-            // console.log("state.addRoutes",state.addRoutes)
-            // console.log("constantRoutes.concat(routes)",constantRoutes.concat(routes))
-            // console.log("state.routes:",state.routes)
         }
     },
     actions: {
@@ -69,15 +63,12 @@ const permission = {
             return new Promise(resolve => {
                 const { perms } = data
                 let accessedRoutes
-                console.log("perms:" + perms)
                 if (perms.includes('*')) {
                     accessedRoutes = asyncRoutes
                 } else {
                     accessedRoutes = filterAsyncRoutes(asyncRoutes, perms)
-                    console.log("accessedRoutes:", accessedRoutes)
                 }
                 commit('SET_ROUTES', accessedRoutes)
-                console.log("constantRoutes:", constantRoutes)
                 resolve()
             })
         },

@@ -22,13 +22,26 @@
 </template>
 <script setup>
 // import vSidebar from "./Sidebar.vue";
-// import vSideBar from "./Sidebar/index.vue"
 import vSidebar from "./Sidebar/index.vue"
 import vHeader from "./Header.vue";
 import vTags from "./Tags.vue";
 import { useStore } from "vuex";
 import { computed } from 'vue';
+// import { markRaw } from "vue";
+// export default {
+//     components: {
+//         vSidebar: markRaw(vSidebar),
+//         vHeader: markRaw(vHeader),
+//         vTags: markRaw(vTags)
+//     },
+//     setup() {
 const store = useStore();
 const collapse = computed(() => store.getters.collapse);
+//         return {
+//             store,
+//             collapse
+//         }
+//     },
+// }
 
 </script>

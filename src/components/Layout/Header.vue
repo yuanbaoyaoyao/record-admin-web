@@ -65,6 +65,8 @@ const collapseChage = () => {
 
 const logout = () => {
     store.dispatch('LogOut').then(() => {
+        store.commit("HANDLE_CLEAR_TAGS")
+
         router.push(`/login?redirect=${route.fullPath}`)
     })
 }

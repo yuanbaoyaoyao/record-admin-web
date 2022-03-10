@@ -92,13 +92,13 @@ import {
 const defaultList = ref({
     pageNum: 1,
     pageSize: 5,
-    keyword: null
+    keyword1: null
 })
 
 const querySearchList = ref({
     pageNum: 1,
     pageSize: 5,
-    keyword: null
+    keyword1: null
 })
 
 const defaultFormTemp = ref({
@@ -160,7 +160,7 @@ const handleDelete = (row) => {
 
 const handleSearchList = () => {
     defaultList.value.pageNum = 1
-    defaultList.value.keyword = searchKeyword
+    defaultList.value.keyword1 = searchKeyword
     getList()
 }
 

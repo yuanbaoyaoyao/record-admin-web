@@ -50,7 +50,7 @@ const editableTabs = computed(() => store.getters.editableTabs);
 const showTags = computed(() => editableTabs.value.length > 0);
 
 const addTags = (route) => {
-    console.log(editableTabs.value)
+    console.log("editableTabs.value", editableTabs.value)
     const isExist = editableTabs.value.some((menu) => {
         return menu.path === route.fullPath;
     })
@@ -111,8 +111,10 @@ const handleCloseTags = (command) => {
 addTags(route)
 
 onBeforeRouteUpdate((to) => {
+    console.log("触发onBeforeRouteUpdate")
     addTags(to)
 })
+
 </script>
 
 <style>
@@ -129,7 +131,7 @@ onBeforeRouteUpdate((to) => {
 .tags-management {
     float: right;
 }
-.el-tabs--border-card>.el-tabs__content {
-    padding: 0px!important;
+.el-tabs--border-card > .el-tabs__content {
+    padding: 0px !important;
 }
 </style>
