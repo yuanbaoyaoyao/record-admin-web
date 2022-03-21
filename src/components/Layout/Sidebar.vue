@@ -76,6 +76,10 @@ const menus = [
         index: "/userTrace",
         title: "用户足迹"
       },
+      {
+        index: "/userStatistics",
+        title: "用户统计"
+      },
     ]
   },
   {
@@ -88,8 +92,8 @@ const menus = [
         title: "需求列表"
       },
       {
-        index: "/orderDetail",
-        title: "需求详情"
+        index: "/orderStatistics",
+        title: "需求统计"
       },
     ]
   },
@@ -107,13 +111,13 @@ const menus = [
         title: "耗材类别"
       },
       {
-        index: "/consumableDetail",
-        title: "耗材详情"
+        index: "/consumableStatistics",
+        title: "耗材统计"
       },
-      {
-        index: "/consumableApply",
-        title: "耗材申请"
-      },
+      // {
+      //   index: "/consumableApply",
+      //   title: "耗材申请"
+      // },
     ]
   },
   {

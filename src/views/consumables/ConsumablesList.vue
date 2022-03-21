@@ -71,9 +71,9 @@
             </div>
             <div class="pagination">
                 <el-pagination
-                    v-model:currentPage="defaultList.pageNum"
+                    v-model:currentPage="defaultForm.pageNum"
                     :page-sizes="[5, 10, 15]"
-                    :page-size="defaultList.pageSize"
+                    :page-size="defaultForm.pageSize"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="pageTotal"
                     @size-change="handleSizeChange"
@@ -95,6 +95,9 @@
                     >
                         <el-option v-for="item in options" :key="item.id" :value="item.title"></el-option>
                     </el-select>
+                    <router-link to="/consumableCategory">
+                        <el-button type="primary" round>添加新类别</el-button>
+                    </router-link>
                 </el-form-item>
                 <el-form-item label="耗材型号" :label-width="formLabelWidth">
                     <el-input v-model="defaultForm.title" autocomplete="off" type="productName"></el-input>
@@ -148,11 +151,11 @@ import {
 } from 'element-plus/es/components/upload/src/upload.type'
 import router from "../../router";
 
-const defaultList = ref({
-    pageNum: 1,
-    pageSize: 5,
-    keyword1: null
-})
+// const defaultList = ref({
+//     pageNum: 1,
+//     pageSize: 5,
+//     keyword1: null
+// })
 
 const querySearchList = ref({
     pageNum: 1,
@@ -164,7 +167,10 @@ const defaultFormTemp = ref({
     title: '',
     productName: '',
     avatar: '',
-    productId: ''
+    productId: '',
+    pageNum: 1,
+    pageSize: 5,
+    keyword1: null
 })
 const textMap = {
     update: '编辑',
@@ -190,10 +196,11 @@ const tableData = ref([])
 const options = ref([])
 
 const getList = () => {
-    listProductSkusAPI(defaultList.value).then(res => {
+    listProductSkusAPI(defaultForm.value).then(res => {
+        console.log("res", res)
         tableData.value = res.data.records
         pageTotal.value = res.data.total
-    }).catch()
+    }).catch(console.log("getList fail"))
 }
 const handleCreate = () => {
     dialogStatus.value = "create"
@@ -260,19 +267,24 @@ const handleDelete = (row) => {
 }
 
 const handleSearchList = () => {
-    defaultList.value.pageNum = 1
-    defaultList.value.keyword1 = searchKeyword
+    // defaultList.value.pageNum = 1
+    // defaultList.value.keyword1 = searchKeyword
+    defaultForm.value.pageNum = 1
+    defaultForm.value.keyword1 = searchKeyword
     getList()
 }
 
 const handleSizeChange = (val) => {
-    defaultList.value.pageNum = 1
-    defaultList.value.pageSize = val
+    // defaultList.value.pageNum = 1
+    // defaultList.value.pageSize = val
+    defaultForm.value.pageNum = 1
+    defaultForm.value.pageSize = val
     getList()
 }
 
 const handleCurrentChange = (val) => {
-    defaultList.value.pageNum = val
+    // defaultList.value.pageNum = val
+    defaultForm.value.pageNum = val
     getList()
 }
 
@@ -310,7 +322,6 @@ const toggleSelection = (rows) => {
     }
 }
 
-
 const handleSelectionChange = (val) => {
     multipleSelection = val
 }
@@ -321,9 +332,7 @@ const handleDowloadPage = () => {
         const tHeader = ['耗材类别', '耗材型号', '耗材描述', '库存', '创建时间']
         const filterVal = ['productName', 'title', 'description', 'stock', 'createdAt']
         const list = tableData.value
-        console.log(list)
         const data = formatJson(filterVal, list)
-        console.log(data)
         excel.export_json_to_excel({
             header: tHeader, //表头 必填
             data, //具体数据 必填

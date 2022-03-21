@@ -66,6 +66,15 @@ export const asyncRoutes = [
                 },
                 component: () => import("../views/users/UserTrace.vue"),
 
+            }, {
+                path: "/userStatistics",
+                name: "UserStatistics",
+                meta: {
+                    perms: ['GET /user/userStatistics'],
+                    title: '用户统计'
+                },
+                component: () => import("../views/users/UserStatistics.vue"),
+
             },
         ]
     },
@@ -89,13 +98,13 @@ export const asyncRoutes = [
                 component: () => import("../views/orders/OrdersList.vue"),
 
             }, {
-                path: "/orderDetail",
-                name: "OrderDetail",
+                path: "/orderStatistics",
+                name: "orderStatistics",
                 meta: {
                     perms: ['GET /order/ordersDetail'],
-                    title: '需求详情'
+                    title: '需求统计'
                 },
-                component: () => import("../views/orders/OrderDetail.vue"),
+                component: () => import("../views/orders/orderStatistics.vue"),
 
             },
         ]
@@ -129,24 +138,25 @@ export const asyncRoutes = [
                 component: () => import("../views/consumables/ConsumableCategory.vue"),
 
             }, {
-                path: "/consumableDetail",
-                name: "ConsumableDetail",
+                path: "/consumableStatistics",
+                name: "consumableStatistics",
                 meta: {
                     perms: ['GET /product/list'],
-                    title: '耗材详情'
+                    title: '耗材统计'
                 },
-                component: () => import("../views/consumables/ConsumableDetail.vue"),
+                component: () => import("../views/consumables/consumableStatistics.vue"),
 
-            }, {
-                path: "/consumableApply",
-                name: "ConsumableApply",
-                meta: {
-                    perms: ['GET /consumables/consumableApply'],
-                    title: '耗材申请'
-                },
-                component: () => import("../views/consumables/ConsumableApply.vue"),
+            }, 
+            // {
+            //     path: "/consumableApply",
+            //     name: "ConsumableApply",
+            //     meta: {
+            //         perms: ['GET /consumables/consumableApply'],
+            //         title: '耗材申请'
+            //     },
+            //     component: () => import("../views/consumables/ConsumableApply.vue"),
 
-            },
+            // },
         ]
     },
     {

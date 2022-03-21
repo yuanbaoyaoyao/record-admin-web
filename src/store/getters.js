@@ -22,5 +22,6 @@ const getters = {
   routes: state => state.permission.routes,
   editableTabs: state => state.tag.editableTabs,
   collapse: state => state.tag.collapse,
+  userId: state => state.user.userId
 }
 export default getters

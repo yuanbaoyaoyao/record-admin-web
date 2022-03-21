@@ -11,7 +11,8 @@ const user = {
         name: '',
         avatar: '',
         roles: [],
-        perms: []
+        perms: [],
+        userId: ''
     },
 
     mutations: {
@@ -29,6 +30,9 @@ const user = {
         },
         SET_PERMS: (state, perms) => {
             state.perms = perms
+        },
+        SET_USERID: (state, userId) => {
+            state.userId = userId
         }
     },
     actions: {
@@ -98,7 +102,7 @@ const user = {
             return new Promise((resolve, reject) => {
                 getUserInfo(state.token).then(response => {
                     const data = response.data
-
+                    console.log("data", data)
                     if (data.perms && data.perms.length > 0) { // 验证返回的perms是否是一个非空数组
                         commit('SET_PERMS', data.perms)
                     } else {
@@ -107,6 +111,7 @@ const user = {
                     commit('SET_ROLES', data.roles)
                     commit('SET_NAME', data.name)
                     commit('SET_AVATAR', data.avatar)
+                    commit('SET_USERID', data.adminUserId)
                     resolve(response)
                 }).catch(error => {
                     reject(error)

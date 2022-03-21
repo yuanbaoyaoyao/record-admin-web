@@ -5,6 +5,9 @@ let resquest = "/adminIp/userOrder/"
 export function listUserOrderAPI(params){
     return http.get(`${resquest}`+`list`,params)
 }
+export function listUserDateOrderAPI(params){
+    return http.get(`${resquest}`+`dateList`,params)
+}
 // export function createUserOrderAPI(params){
 //     return http.post(`${resquest}`+`create`,params)
 // }
