@@ -59,7 +59,7 @@
                         <span>库存信息</span>
                         <hr />
                         <div class="chart">
-                            <Bar />
+                            <Bar :list="list"/>
                         </div>
                     </div>
                 </el-card>
@@ -94,6 +94,10 @@
 import Bar from "../components/Charts/Bar.vue"
 import Pie from "../components/Charts/Pie.vue"
 import Line from "../components/Charts/Line.vue"
+import { ref } from "vue";
+
+const list = ref(['1','JavaScript', 'HTML', 'CSS'])
+
 const listData = [
     {
         name: "qwe",

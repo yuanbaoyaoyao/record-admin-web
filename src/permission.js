@@ -1,76 +1,10 @@
-// import NProgress from 'nprogress'
-// import 'nprogress/nprogress.css'
-// import { OAUTH2_LOGIN_PAGE_PATH, ACCESS_TOKEN, INDEX_MAIN_PAGE_PATH } from '@/store/mutation-types'
-// import router from './router'
-// import store from './store'
-// import storage from './utils/storage'
-// import { isOAuth2AppEnv } from './utils/util'
-
-// NProgress.configure({ showSpinner: false })
-
-// const whiteList = ['/login']
-// whiteList.push(OAUTH2_LOGIN_PAGE_PATH)
-
-// router.beforeEach((to, from, next) => {
-//     NProgress.start()
-
-//     if (storage.get(ACCESS_TOKEN)) {
-//         if (to.path === '/login' || to.path === OAUTH2_LOGIN_PAGE_PATH) {
-//             next({ path: INDEX_MAIN_PAGE_PATH })
-//             NProgress.done()
-//         } else {
-//             if (store.getters.permissionList.length === 0) {
-//                 store.dispatch('GetPermissionList').then(res => {
-//                     const menuData = res.result.menu;
-//                     if (menuData === null || menuData === "" || menuData === undefined) {
-//                         return;
-//                     }
-//                     let constRoutes = [];
-//                     constRoutes = generateIndexRouter(menuData)
-//                     store.dispatch('UpdateAppRouter', { constRoutes }).then(() => {
-//                         router.addRoute(store.getters.addRoutes)
-//                         const redirect = decodeURIComponent(from.query.redirect || to.path)
-//                         if (to.path === redirect) {
-//                             next({ ...to, replace: true })
-//                         } else {
-//                             next({ path: redirect })
-//                         }
-//                     })
-//                 }).catch(() => {
-//                     store.dispatch('Logout').then(() => {
-//                         next({ path: '/login', query: { redirect: to.fullPath } })
-//                     })
-//                 })
-//             } else {
-//                 next()
-//             }
-//         }
-//     }
-//     else {
-//         if (whiteList.indexOf(to.path) !== -1) {
-//             if (to.path === '/login' && isOAuth2AppEnv()) {
-//                 next({ path: OAUTH2_LOGIN_PAGE_PATH })
-//             } else {
-//                 next()
-//             }
-//             NProgress.done()
-//         } else {
-//             let path = isOAuth2AppEnv() ? OAUTH2_LOGIN_PAGE_PATH : '/login'
-//             next({ path: path, query: { redirect: to.fullPath } })
-//             NProgress.done()
-//         }
-//     }
-// })
-// router.afterEach(() => {
-//     NProgress.done()
-// })
-
 import router from './router'
 import store from './store'
 import { ElMessage } from 'element-plus'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css'// progress bar style
 import { getToken } from '@/utils/auth' // getToken from cookie
+import { computed } from '@vue/reactivity';
 
 NProgress.configure({ showSpinner: false })// NProgress Configuration
 
@@ -82,8 +16,40 @@ function hasPermission(perms, permissions) {
 }
 
 const whiteList = ['/login', '/auth-redirect']// no redirect whitelist
+const editableTabs = computed(() => store.getters.editableTabs);
+
+const addTags = (route) => {
+  const isExist = editableTabs.value.some((menu) => {
+    return menu.name === route.name;
+  })
+  const isNoName = editableTabs.value.some((menu) => {
+    return menu.name === undefined;
+  })
+  if (!isExist) {
+    store.commit("HANDLE_ADD_TAGS", {
+      name: route.name,
+      title: route.meta.title,
+      path: route.fullPath
+    })
+  }
+  if (isNoName) {
+    var tabIndex, delItem;
+    for (var i = 0; i < editableTabs.value.length; i++) {
+      if (editableTabs.value[i].title === undefined) {
+        delItem = editableTabs.value[i];
+        tabIndex = i;
+        store.commit("HANDLE_DELETE_TAGS", { i });
+        break;
+      }
+    }
+  }
+}
 
 router.beforeEach((to, from, next) => {
+  // console.log("全局监听路由变化:", to)
+
+  addTags(to)
+
   NProgress.start() // start progress bar
   if (getToken()) { // determine if there has token
     /* has token*/
@@ -94,7 +60,7 @@ router.beforeEach((to, from, next) => {
       if (store.getters.perms.length === 0) { // 判断当前用户是否已拉取完user_info信息
         store.dispatch('GetUserInfo').then(res => { // 拉取user_info
           const perms = res.data.perms // note: perms must be a array! such as: ['GET /aaa','POST /bbb']
-          console.log("perms:",perms)
+          console.log("perms:", perms)
           store.dispatch('GenerateRoutes', { perms }).then(() => { // 根据perms权限生成可访问的路由表
             for (let i = 0; i < store.getters.addRoutes.length; i++) {
               router.addRoute(store.getters.addRoutes[i])

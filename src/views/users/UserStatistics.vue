@@ -23,7 +23,8 @@
                             type="daterange"
                             unlink-panels
                             range-separator="To"
-                            value-format=“yyyy-MM-dd”
+                            format="YYYY/MM/DD"
+                            value-format="YYYY-MM-DD"
                             start-placeholder="开始时间"
                             end-placeholder="结束时间"
                             :shortcuts="shortcuts"
@@ -39,18 +40,18 @@
                 >搜索</el-button>
             </div>
             <div class="button-right">
-                <!-- <el-dropdown trigger="click">
+                <el-dropdown trigger="click">
                     <el-button :icon="Grid" type="primary" class="button-data-type">数据类型</el-button>
                     <template #dropdown>
                         <el-dropdown-menu>
-                            <el-dropdown-item>显示数据为表格</el-dropdown-item>
-                            <el-dropdown-item divided>显示数据为柱状图</el-dropdown-item>
-                            <el-dropdown-item>显示数据为饼图</el-dropdown-item>
-                            <el-dropdown-item>显示数据为折线图</el-dropdown-item>
-                            <el-dropdown-item divided>全部显示</el-dropdown-item>
+                            <el-dropdown-item @click="echartsVisible = 1">显示数据为表格</el-dropdown-item>
+                            <el-dropdown-item @click="echartsVisible = 2" divided>显示数据为柱状图</el-dropdown-item>
+                            <el-dropdown-item @click="echartsVisible = 3">显示数据为折线图</el-dropdown-item>
+                            <el-dropdown-item @click="echartsVisible = 4">显示数据为饼图</el-dropdown-item>
+                            <el-dropdown-item @click="echartsVisible = 5" divided>全部显示</el-dropdown-item>
                         </el-dropdown-menu>
                     </template>
-                </el-dropdown>-->
+                </el-dropdown>
                 <el-dropdown trigger="click">
                     <el-button :icon="Download" type="primary">导出</el-button>
                     <template #dropdown>
@@ -66,52 +67,117 @@
                 </el-dropdown>
             </div>
         </div>
-        <div>
-            <el-table
-                ref="multipleTable"
-                :data="tableData"
-                :default-sort="{ prop: 'date', order: 'descending' }"
-                style="width: 100%"
-                @selection-change="handleSelectionChange"
-            >
-                <el-table-column type="selection" width="55" />
-                <el-table-column prop="receiver" label="领用人" width="180" />
-                <el-table-column prop="countOrderNumber" label="订单总数" width="180" sortable></el-table-column>
-                <el-table-column prop="sumProductNumber" label="申请耗材总数" width="180" sortable />
-                <el-table-column prop="maxNumSkuName" label="最多申请耗材型号" width="180" />
-                <el-table-column prop="timeFrame" label="时间范围" width="360" />
-                <el-table-column fixed="right" label="操作" width="120">
-                    <template v-slot="scope">
-                        <!-- <el-button type="text" size="small" @click="handleUpdate(scope.row)">编辑</el-button> -->
-                        <!-- <el-button type="text" size="small" @click="handleDelete(scope.row)">删除</el-button> -->
-                        <el-button type="text" size="small" @click="handleDetail(scope.row)">查看详情</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </div>
-        <div class="user-footer">
+        <div v-if="echartsVisible == 1 || echartsVisible == 5">
             <div>
-                <el-button @click="toggleSelection()">清除已选</el-button>
+                <el-table
+                    ref="multipleTable"
+                    :data="tableData"
+                    :default-sort="{ prop: 'date', order: 'descending' }"
+                    style="width: 100%"
+                    @selection-change="handleSelectionChange"
+                >
+                    <el-table-column type="selection" width="55" />
+                    <el-table-column prop="receiver" label="领用人" width="180" />
+                    <el-table-column prop="countOrderNumber" label="订单总数" width="180" sortable></el-table-column>
+                    <el-table-column prop="sumProductNumber" label="申请耗材总数" width="180" sortable />
+                    <el-table-column prop="maxNumSkuName" label="最多申请耗材型号" width="180" />
+                    <el-table-column prop="timeFrame" label="时间范围" width="360" />
+                    <el-table-column fixed="right" label="操作" width="120">
+                        <template v-slot="scope">
+                            <el-button
+                                type="text"
+                                size="small"
+                                @click="handleDetail(scope.row)"
+                            >查看详情</el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
             </div>
-            <div class="pagination">
-                <el-pagination
-                    v-model:currentPage="defaultList.pageNum"
-                    :page-sizes="[5, 10, 15]"
-                    :page-size="defaultList.pageSize"
-                    layout="total, sizes, prev, pager, next, jumper"
-                    :total="pageTotal"
-                    @size-change="handleSizeChange"
-                    @current-change="handleCurrentChange"
-                >></el-pagination>
+            <div class="user-footer">
+                <div>
+                    <el-button @click="toggleSelection()">清除已选</el-button>
+                </div>
+                <div class="pagination">
+                    <el-pagination
+                        v-model:currentPage="defaultList.pageNum"
+                        :page-sizes="[5, 10, 15]"
+                        :page-size="defaultList.pageSize"
+                        layout="total, sizes, prev, pager, next, jumper"
+                        :total="pageTotal"
+                        @size-change="handleSizeChange"
+                        @current-change="handleCurrentChange"
+                    >></el-pagination>
+                </div>
             </div>
+        </div>
+        <div class="charts">
+            <el-card
+                class="echarts"
+                v-if="echartsVisible == 2 || echartsVisible == 5"
+                shadow="hover"
+            >
+                <div class="stock-info">
+                    <span>柱状图</span>
+                    <hr />
+                    <div class="chart">
+                        <Bar
+                            v-if="chartsReset"
+                            :xAxisData="xAxisData"
+                            :yAxisData="yAxisData"
+                            :selection="selection"
+                        />
+                    </div>
+                </div>
+            </el-card>
+            <el-card
+                class="echarts"
+                v-if="echartsVisible == 3 || echartsVisible == 5"
+                shadow="hover"
+            >
+                <div class="month-info">
+                    <span>折线图</span>
+                    <hr />
+                    <div class="chart">
+                        <Line
+                            v-if="chartsReset"
+                            :xAxisData="xAxisData"
+                            :yAxisData="yAxisData"
+                            :selection="selection"
+                        />
+                    </div>
+                </div>
+            </el-card>
+            <el-card
+                class="echarts"
+                v-if="echartsVisible == 4 || echartsVisible == 5"
+                shadow="hover"
+            >
+                <div class="year-info">
+                    <span>饼图</span>
+                    <hr />
+                    <div class="chart">
+                        <Pie
+                            v-if="chartsReset"
+                            :xAxisData="xAxisData"
+                            :yAxisData="yAxisData"
+                            :selection="selection"
+                        />
+                    </div>
+                </div>
+            </el-card>
         </div>
     </div>
 </template>
+
 <script setup>
-import { ref, onMounted } from "vue";
+import Bar from "../../components/Charts/Bar.vue"
+import Pie from "../../components/Charts/Pie.vue"
+import Line from "../../components/Charts/Line.vue"
+import { ref, onMounted, nextTick } from "vue";
 import { Search, Download, CirclePlus, Plus, Grid } from '@element-plus/icons'
 // import { listUserAPI, deleteUserAPI, updateUserAPI } from '@/api/user'
-import { listUserDateOrderAPI, listUserOrderAPI, updateUserOrderAPI } from '@/api/user-order'
+import { listAllUserStatisticsURL } from '@/api/excel'
+import { listUserDateOrderAPI, listUserDateOrderAllListAPI, listUserOrderAPI, updateUserOrderAPI } from '@/api/user-order'
 import { ElMessage } from 'element-plus'
 import * as XLSX from 'xlsx'
 import {
@@ -126,10 +192,38 @@ import moment from 'moment'
 
 const timePickerValue = ref()
 
+const xAxisData = ref([])
+const yAxisData = ref([])
+const selection = ref('订单总数')
+
+const setXAxisData = () => {
+    xAxisData.value = []
+    for (let i = 0; i < tableDataAllList.value.length; i++) {
+        xAxisData.value[i] = tableDataAllList.value[i].receiver
+    }
+    console.log("xAxisData11111111", xAxisData.value)
+}
+
+const setYAxisData = (selection) => {
+    yAxisData.value = []
+    if (selection == '订单总数') {
+        for (let i = 0; i < tableDataAllList.value.length; i++) {
+            yAxisData.value[i] = tableDataAllList.value[i].countOrderNumber
+        }
+    } else if (selection == '耗材数量') {
+        for (let i = 0; i < tableDataAllList.value.length; i++) {
+            yAxisData.value[i] = tableDataAllList.value[i].sumProductNumber
+        }
+    }
+    console.log("yAxisData:", yAxisData.value)
+
+}
+
 const radio = ref(1)
 const startTime = ref()
 const endTime = ref()
 const timeFrame = ref()
+
 const currentMonth = () => {
     const startTime = moment().startOf("month").format('YYYY-MM-DD');
     const endTime = moment().endOf("month").format('YYYY-MM-DD');
@@ -229,38 +323,75 @@ const defaultForm = ref(Object.assign({}, defaultFormTemp.value));
 
 const searchKeyword = ref(null)
 const pageTotal = ref(null)
+
 const dialogFormVisible = ref(false)
+const echartsVisible = ref(1)
 
 let multipleSelection = []
 const multipleTable = ref()
 const tableData = ref(null)
+const tableDataAllList = ref(null)
 
 const getList = () => {
-    console.log("defaultList.value.dateState:", defaultList.value.dateState)
     if (defaultList.value.dateState == 2) {
         listUserDateOrderAPI(defaultList.value).then(res => {
             tableData.value = res.data.records
-            currentYear()
             pageTotal.value = res.data.total
-            console.log("1")
+            currentYear()
         }).catch(console.log("false"))
 
     } else if (defaultList.value.dateState == 3) {
-        listUserDateOrderAPI(defaultList.value).then(res => {
-            tableData.value = res.data.records
-            // currentMonth()
-            pageTotal.value = res.data.total
-            console.log("2")
-        }).catch(console.log("false"))
-        // currentYear()
+        if (defaultList.value.specifiedTime1 != '' && defaultList.value.specifiedTime2 != '') {
+            listUserDateOrderAPI(defaultList.value).then(res => {
+                tableData.value = res.data.records
+                const timeFrames = (defaultList.value.specifiedTime1 + '----' + defaultList.value.specifiedTime2)
+                if (tableData.value != null) {
+                    for (let i = 0; i < tableData.value.length; i++) {
+                        tableData.value[i].timeFrame = timeFrames
+                    }
+                }
+                pageTotal.value = res.data.total
+
+            }).catch(console.log("false"))
+        } else {
+            ElMessage.error('请选择开始时间与结束时间')
+        }
     }
     else {
         listUserDateOrderAPI(defaultList.value).then(res => {
             tableData.value = res.data.records
-            currentMonth()
             pageTotal.value = res.data.total
-            console.log("3")
+            currentMonth()
         }).catch(console.log("false"))
+    }
+}
+const chartsReset = ref(true)
+
+const getAllList = () => {
+    chartsReset.value = false
+    nextTick(() => {
+        setTimeout(() => {
+            chartsReset.value = true
+        }, 500)
+    })
+    if (defaultList.value.dateState == 2) {
+        listUserDateOrderAllListAPI(defaultList.value).then(res => {
+            tableDataAllList.value = res.data
+            setXAxisData()
+            setYAxisData(selection.value)
+        })
+    } else if (defaultList.value.dateState == 3) {
+        listUserDateOrderAllListAPI(defaultList.value).then(res => {
+            tableDataAllList.value = res.data
+            setXAxisData()
+            setYAxisData(selection.value)
+        })
+    } else {
+        listUserDateOrderAllListAPI(defaultList.value).then(res => {
+            tableDataAllList.value = res.data
+            setXAxisData()
+            setYAxisData(selection.value)
+        })
     }
 }
 
@@ -268,6 +399,7 @@ const handleSearchList = () => {
     defaultList.value.pageNum = 1
     defaultList.value.receiver = searchKeyword
     getList()
+    getAllList()
 }
 
 const handleSizeChange = (val) => {
@@ -322,14 +454,14 @@ const handleSelectionChange = (val) => {
 //excel fontEnd
 const handleDowloadPage = () => {
     import('@/utils/Export2Excel').then(excel => {
-        const tHeader = ['领用人', '订单数', '申请耗材总量', '最多申请耗材型号', '开始时间', '结束时间']
-        const filterVal = ['receiver', 'count', 'email', 'emailVerifiedAt', 'createdAt']
+        const tHeader = ['领用人', '订单总数', '申请耗材总量', '最多申请耗材型号', '时间范围']
+        const filterVal = ['receiver', 'countOrderNumber', 'sumProductNumber', 'maxNumSkuName', 'timeFrame']
         const list = tableData.value
         const data = formatJson(filterVal, list)
         excel.export_json_to_excel({
             header: tHeader, //表头 必填
             data, //具体数据 必填
-            filename: '用户列表', //非必填
+            filename: '用户统计', //非必填
             autoWidth: true, //非必填
             bookType: 'xlsx' //非必填
         })
@@ -343,14 +475,18 @@ const formatJson = (filterVal, jsonData) => {
 
 //excel backEnd
 const handleDowloadAllURL = () => {
-    let url = listAllUserURL()
+    let url = listAllUserStatisticsURL()
     window.open(url)
 }
 
 getList()
+getAllList()
 
 </script>
 <style scoped>
+.echarts {
+    margin-top: 10px;
+}
 :deep().el-autocomplete.inline-input {
     margin-right: 20px !important;
 }
@@ -359,6 +495,9 @@ getList()
 }
 .button-search {
     height: 0px;
+}
+button.el-button.el-button--primary.button-data-type.el-dropdown-selfdefine {
+    margin-right: 5px;
 }
 /* .button-data-type{
     margin-right: 5px;

@@ -1,6 +1,4 @@
 <template>
-    <!-- <div :class="{ 'has-logo': showLogo }"> -->
-    <!-- <logo v-if="showLogo" :collapse="isCollapse" /> -->
     <div class="sidebar">
         <el-scrollbar wrap-class="scrollbar-wrapper">
             <el-menu
@@ -28,10 +26,9 @@
 
 <script setup>
 import { computed, onMounted } from 'vue'
-import { onBeforeRouteUpdate, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import { isExternal } from '../../../utils/validate'
-// import logo form './Logo.vue'
 import sidebarItem from './SidebarItem.vue'
 
 const route = useRoute()
@@ -44,20 +41,21 @@ const onRoutes = computed(() => {
     return route.path;
 })
 
-onMounted(() => {
-    const routePath = route.path
-    // store.commit('tabModule/SET_TAB', routePath)
-})
+// onMounted(() => {
+//     // const routePath = route.path
+//     // const routeName = route.name
+//     // const routeTitle = route.meta.title
+//     // // store.commit('tabModule/SET_TAB', routePath)
+//     // console.log("route.name", routeName)
+//     // console.log("route.meta.title", route.meta.title)
+//     // console.log("route.fullPath", routePath)
+// })
 
 const resolvePath = (routePath) => {
     if (isExternal(routePath)) {
         return routePath
     }
 }
-onBeforeRouteUpdate((to) => {
-    console.log("to:", to)
-    console.log("触发了sidebar中的onBeforeRouteUpdate")
-})
 
 </script>
 

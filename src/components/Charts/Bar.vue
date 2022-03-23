@@ -1,13 +1,26 @@
-<script>
-export default {
-    name:"Bar"
-}
-</script>>
-
 <script setup>
 import echarts from "@/plugins/echarts";
 import { onBeforeMount, onMounted, nextTick } from "vue";
 import { useEventListener, tryOnUnmounted, useTimeoutFn } from "@vueuse/core"
+import { defineProps } from 'vue'
+
+const props = defineProps({
+    xAxisData: {
+        type: Array,
+        default: () => [],
+    },
+    yAxisData: {
+        type: Array,
+        default: () => [],
+    },
+    selection: {
+        type: String,
+        default: () => '',
+    },
+})
+console.log("xAxisData:", props.xAxisData)
+console.log("yAxisData:", props.yAxisData)
+console.log("selection:", props.selection)
 
 let echartInstance;
 
@@ -18,6 +31,24 @@ function initechartInstance() {
     echartInstance.clear();
 
     echartInstance.setOption({
+        dataZoom: [{
+            id: 'dataZoomX',
+            type: 'slider',
+            xAxisIndex: [0],
+            filterMode: 'filter'
+        }],
+        toolbox: {
+            show: true,
+            feature: {
+                saveAsImage: {
+                    show: true,
+                    name: "柱状图",
+                    excludeComponents: ['toolbox'],
+                    pixelRatio: 2,
+                    title: '下载'
+                }
+            }
+        },
         tooltip: {
             trigger: "axis",
             axisPointer: {
@@ -40,19 +71,21 @@ function initechartInstance() {
                     // width: "70",
                     // overflow: "truncate"
                 },
-                data: ["open_issues", "forks", "watchers", "star"]
+                data: props.xAxisData,
+
             }
         ],
         yAxis: [
             {
-                type: "value"
+                type: "value",
+                minInterval: 1
             }
         ],
         series: [
             {
-                name: "GitHub信息",
+                name: props.selection,
                 type: "bar",
-                data: [3, 204, 1079, 1079]
+                data: props.yAxisData
             }
         ]
     });
@@ -88,7 +121,7 @@ tryOnUnmounted(() => {
 </template>
 
 <style scoped>
-.bar{
+.bar {
     width: 100%;
     height: 35vh;
 }

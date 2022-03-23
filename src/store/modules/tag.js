@@ -22,7 +22,14 @@ const tag = {
         HANDLE_DELETE_OTHER_TAGS(state, data) {
             state.editableTabs = data
         }
-    }
+    },
+    // actions:{
+    //     AddTags({ commit }, editableTabs) {
+    //         return new Promise((resolve,reject)=>{
+    //             commit('HANDLE_ADD_TAGS')
+    //         })
+    //     }
+    // }
 }
 
 export default tag

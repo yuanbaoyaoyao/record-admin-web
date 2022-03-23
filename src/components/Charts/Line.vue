@@ -1,13 +1,25 @@
-<script>
-export default {
-  name: "Line"
-};
-</script>
-
 <script setup>
 import echarts from "@/plugins/echarts";
 import { onBeforeMount, onMounted, nextTick } from "vue";
 import { useEventListener, tryOnUnmounted, useTimeoutFn } from "@vueuse/core";
+
+const props = defineProps({
+  xAxisData: {
+    type: Array,
+    default: () => [],
+  },
+  yAxisData: {
+    type: Array,
+    default: () => [],
+  },
+  selection: {
+    type: String,
+    default: () => '',
+  },
+})
+console.log("xAxisData:", props.xAxisData)
+console.log("yAxisData:", props.yAxisData)
+console.log("selection:", props.selection)
 
 let echartInstance;
 
@@ -18,6 +30,24 @@ function initechartInstance() {
   echartInstance.clear(); //清除旧画布 重新渲染
 
   echartInstance.setOption({
+    dataZoom: [{
+      id: 'dataZoomX',
+      type: 'slider',
+      xAxisIndex: [0],
+      filterMode: 'filter'
+    }],
+    toolbox: {
+      show: true,
+      feature: {
+        saveAsImage: {
+          show: true,
+          name: "折线图",
+          excludeComponents: ['toolbox'],
+          pixelRatio: 2,
+          title:'下载'
+        }
+      }
+    },
     grid: {
       bottom: "20%",
       height: "68%",
@@ -31,14 +61,16 @@ function initechartInstance() {
       axisLabel: {
         interval: 0
       },
-      data: ["open_issues", "forks", "watchers", "star"]
+      data: props.xAxisData,
     },
     yAxis: {
-      type: "value"
+      type: "value",
+      minInterval: 1
     },
     series: [
       {
-        data: [3, 204, 1079, 1079],
+        name: props.selection,
+        data: props.yAxisData,
         type: "line",
         areaStyle: {}
       }

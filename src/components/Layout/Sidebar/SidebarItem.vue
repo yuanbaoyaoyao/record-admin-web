@@ -39,6 +39,7 @@ import { defineComponent, ref } from 'vue'
 import { toRef } from '@vue/reactivity'
 import { computed, onMounted } from '@vue/runtime-core'
 import { useStore } from 'vuex'
+import { onBeforeRouteUpdate } from 'vue-router';
 
 
 export default defineComponent({
@@ -58,6 +59,7 @@ export default defineComponent({
         }
     },
     setup(props) {
+
         const onlyOneChild = ref()
         const store = useStore()
         const basePath = toRef(props, 'basePath')

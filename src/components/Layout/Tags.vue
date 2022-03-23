@@ -54,6 +54,7 @@ const addTags = (route) => {
     const isExist = editableTabs.value.some((menu) => {
         return menu.path === route.fullPath;
     })
+
     if (!isExist) {
         store.commit("HANDLE_ADD_TAGS", {
             name: route.name,
@@ -108,13 +109,12 @@ const closeOthers = () => {
 const handleCloseTags = (command) => {
     command === "other" ? closeOthers() : closeAll()
 }
-addTags(route)
+// addTags(route)
 
-onBeforeRouteUpdate((to) => {
-    console.log("触发onBeforeRouteUpdate")
-    addTags(to)
-})
-
+// onBeforeRouteUpdate((to) => {
+//     console.log("触发onBeforeRouteUpdate")
+//     addTags(to)
+// })
 </script>
 
 <style>

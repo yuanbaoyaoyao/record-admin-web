@@ -5,3 +5,6 @@ let resquest = "/adminIp/excel/"
 export function listAllProductSkusURL(){
     return (`${resquest}`+`productSkus`)
 }
+export function listAllUserStatisticsURL(){
+    return (`${resquest}`+`userStatistics`)
+}

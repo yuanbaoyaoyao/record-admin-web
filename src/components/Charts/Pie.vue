@@ -1,13 +1,36 @@
-<script>
-export default {
-  name: "Pie"
-};
-</script>
-
 <script setup>
 import echarts from "@/plugins/echarts";
-import { onBeforeMount, onMounted, nextTick } from "vue";
+import { onBeforeMount, onMounted, nextTick, ref } from "vue";
 import { useEventListener, tryOnUnmounted, useTimeoutFn } from "@vueuse/core";
+
+const props = defineProps({
+  xAxisData: {
+    type: Array,
+    default: () => [],
+  },
+  yAxisData: {
+    type: Array,
+    default: () => [],
+  },
+  selection: {
+    type: String,
+    default: () => '',
+  },
+})
+const pieData = ref([])
+console.log("xAxisData:", props.xAxisData)
+console.log("yAxisData:", props.yAxisData)
+console.log("length:", props.xAxisData.length)
+console.log("selection:", props.selection)
+
+
+
+for (let i = 0; i < props.xAxisData.length; i++) {
+  let name = props.xAxisData[i]
+  let value = props.yAxisData[i]
+  pieData.value[i] = { value, name }
+}
+console.log("pieData:", pieData.value)
 
 let echartInstance;
 
@@ -18,6 +41,18 @@ function initechartInstance() {
   echartInstance.clear(); //清除旧画布 重新渲染
 
   echartInstance.setOption({
+    toolbox: {
+      show: true,
+      feature: {
+        saveAsImage: {
+          show: true,
+          name: "饼图",
+          excludeComponents: ['toolbox'],
+          pixelRatio: 2,
+          title: '下载'
+        }
+      }
+    },
     tooltip: {
       trigger: "item"
     },
@@ -27,16 +62,11 @@ function initechartInstance() {
     },
     series: [
       {
-        name: "Github信息",
+        name: props.selection,
         type: "pie",
         radius: "60%",
         center: ["40%", "50%"],
-        data: [
-          { value: 1079, name: "watchers" },
-          { value: 1079, name: "star" },
-          { value: 204, name: "forks" },
-          { value: 3, name: "open_issues" }
-        ],
+        data: pieData.value,
         emphasis: {
           itemStyle: {
             shadowBlur: 10,
