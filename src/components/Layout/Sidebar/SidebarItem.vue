@@ -1,5 +1,5 @@
 <template>
-    <div v-if="item.meta.title != '登录'" class="sidebar-item">
+    <div v-if="!item.meta.hidden" class="sidebar-item">
         <template v-if="hasOneShowingChild(item.children, item)">
             <el-menu-item
                 :key="onlyOneChild.path"
@@ -14,6 +14,7 @@
                 </template>
             </el-menu-item>
         </template>
+
         <el-sub-menu v-else ref="subMenu" :index="item.path" popper-append-to-body>
             <template #title>
                 <div>
@@ -25,7 +26,6 @@
             <sidebar-item
                 v-for="child in item.children"
                 :key="child.path"
-                :is-nest="true"
                 :item="child"
                 :base-path="child.path"
                 class="nest-menu"
@@ -36,11 +36,8 @@
 
 <script>
 import { defineComponent, ref } from 'vue'
-import { toRef } from '@vue/reactivity'
 import { computed, onMounted } from '@vue/runtime-core'
 import { useStore } from 'vuex'
-import { onBeforeRouteUpdate } from 'vue-router';
-
 
 export default defineComponent({
     name: 'SidebarItem',
@@ -49,50 +46,36 @@ export default defineComponent({
             type: Object,
             required: true
         },
-        isNested: {
-            type: Boolean,
-            default: false
-        },
-        basePath: {
-            type: String,
-            default: ''
-        }
     },
     setup(props) {
-
         const onlyOneChild = ref()
         const store = useStore()
-        const basePath = toRef(props, 'basePath')
         const collapse = computed(() => store.getters.collapse);
-        // const lang = computed(()=>store.getters[''])
-        onMounted(() => {
-            // console.log('basePath.value', basePath.value)
-        })
-        const routes = computed(() => store.getters.routes)
-        const hasOneShowingChild = (children, parent) => {
-            // console.log("parent:", parent)
-            // console.log("children:", children)
-            if (!children) {
-                onlyOneChild.value = { ...parent, noShowingChildren: true }
-                return true
-            }
+        const hasOneShowingChild = (children = [], parent) => {
+            // if (!children) {
+            //     onlyOneChild.value = { ...parent, noShowingChildren: true }
+            //     return true
+            // }
             const showingChildren = children.filter((item) => {
+                if (item.meta.hidden) {
+                    return false
+                }
                 onlyOneChild.value = item
                 return true
             })
             if (showingChildren.length === 1) {
                 return true
             }
-            // if (showingChildren.length === 0) {
-            //     onlyOneChild.value = { ...parent, noShowingChildren: true }
-            //     return true
-            // }
+            if (showingChildren.length === 0) {
+                onlyOneChild.value = { ...parent, noShowingChildren: true }
+                return true
+            }
+            console.log("onlyOneChild:", onlyOneChild.value)
             return false
         }
         return {
             onlyOneChild,
             hasOneShowingChild,
-            // lang,
             collapse
         }
     },

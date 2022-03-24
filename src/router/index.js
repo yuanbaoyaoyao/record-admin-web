@@ -10,7 +10,6 @@ export const constantRoutes = [
         meta: {
             title: "登录",
             hidden: true,
-            hiddenTab: true
         },
         component: () => import('../views/login/index.vue'),
     },
@@ -75,6 +74,15 @@ export const asyncRoutes = [
                 },
                 component: () => import("../views/users/UserStatistics.vue"),
 
+            }, {
+                path: "/userStatisticsDetail",
+                name: "UserStatisticsDetail",
+                meta: {
+                    perms: ['GET /user/userStatistics'],
+                    title: '用户统计详情',
+                    hidden: true,
+                },
+                component: () => import("../views/users/UserStatisticsDetail.vue"),
             },
         ]
     },
@@ -146,7 +154,7 @@ export const asyncRoutes = [
                 },
                 component: () => import("../views/consumables/consumableStatistics.vue"),
 
-            }, 
+            },
             // {
             //     path: "/consumableApply",
             //     name: "ConsumableApply",
@@ -257,6 +265,5 @@ export function resetRouter() {
     })
     router.matcher = newRouter.matcher // reset router
 }
-
 
 export default router;

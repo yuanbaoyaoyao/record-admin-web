@@ -21,35 +21,24 @@
             </el-menu>
         </el-scrollbar>
     </div>
-    <!-- </div> -->
 </template>
 
 <script setup>
+import path from 'path/posix'
 import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
 import { isExternal } from '../../../utils/validate'
 import sidebarItem from './SidebarItem.vue'
-
 const route = useRoute()
 const store = useStore()
 const isCollapse = computed(() => store.getters.collapse)
-// const showLogo = computed(() => store.state.settingsModule.sideBarLogo)
+
 const routes = computed(() => store.getters.routes)
-// const activeMenu = computed(() => store.getters['tabModule/getCurrentIndex'])
+
 const onRoutes = computed(() => {
     return route.path;
 })
-
-// onMounted(() => {
-//     // const routePath = route.path
-//     // const routeName = route.name
-//     // const routeTitle = route.meta.title
-//     // // store.commit('tabModule/SET_TAB', routePath)
-//     // console.log("route.name", routeName)
-//     // console.log("route.meta.title", route.meta.title)
-//     // console.log("route.fullPath", routePath)
-// })
 
 const resolvePath = (routePath) => {
     if (isExternal(routePath)) {

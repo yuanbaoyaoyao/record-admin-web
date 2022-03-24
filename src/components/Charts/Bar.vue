@@ -2,7 +2,6 @@
 import echarts from "@/plugins/echarts";
 import { onBeforeMount, onMounted, nextTick } from "vue";
 import { useEventListener, tryOnUnmounted, useTimeoutFn } from "@vueuse/core"
-import { defineProps } from 'vue'
 
 const props = defineProps({
     xAxisData: {

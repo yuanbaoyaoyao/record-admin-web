@@ -25,7 +25,7 @@ const addTags = (route) => {
   const isNoName = editableTabs.value.some((menu) => {
     return menu.name === undefined;
   })
-  if (!isExist) {
+  if (!isExist&&route.meta.title!='登录') {
     store.commit("HANDLE_ADD_TAGS", {
       name: route.name,
       title: route.meta.title,

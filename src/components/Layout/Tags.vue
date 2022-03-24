@@ -49,20 +49,20 @@ const store = useStore();
 const editableTabs = computed(() => store.getters.editableTabs);
 const showTags = computed(() => editableTabs.value.length > 0);
 
-const addTags = (route) => {
-    console.log("editableTabs.value", editableTabs.value)
-    const isExist = editableTabs.value.some((menu) => {
-        return menu.path === route.fullPath;
-    })
+// const addTags = (route) => {
+//     console.log("editableTabs.value", editableTabs.value)
+//     const isExist = editableTabs.value.some((menu) => {
+//         return menu.path === route.fullPath;
+//     })
 
-    if (!isExist) {
-        store.commit("HANDLE_ADD_TAGS", {
-            name: route.name,
-            title: route.meta.title,
-            path: route.fullPath
-        })
-    }
-}
+//     if (!isExist) {
+//         store.commit("HANDLE_ADD_TAGS", {
+//             name: route.name,
+//             title: route.meta.title,
+//             path: route.fullPath
+//         })
+//     }
+// }
 
 const handleClick = (tab) => {
     //将当前tab名字与store中的edableTabs中的名字比对，获得路由
