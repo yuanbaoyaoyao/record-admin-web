@@ -8,6 +8,9 @@ export function listUserOrderAPI(params){
 export function listUserDateOrderAPI(params){
     return http.get(`${resquest}`+`dateList`,params)
 }
+export function listUserDateOrderNoGroupAPI(params){
+    return http.get(`${resquest}`+`dateListNoGroup`,params)
+}
 export function listUserDateOrderAllListAPI(params){
     return http.get(`${resquest}`+`dateListAll`,params)
 }

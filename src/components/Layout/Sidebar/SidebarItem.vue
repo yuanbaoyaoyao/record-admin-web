@@ -70,7 +70,6 @@ export default defineComponent({
                 onlyOneChild.value = { ...parent, noShowingChildren: true }
                 return true
             }
-            console.log("onlyOneChild:", onlyOneChild.value)
             return false
         }
         return {

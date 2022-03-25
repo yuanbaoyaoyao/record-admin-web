@@ -5,6 +5,7 @@ import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css'// progress bar style
 import { getToken } from '@/utils/auth' // getToken from cookie
 import { computed } from '@vue/reactivity';
+import storage from '../src/utils/storage'
 
 NProgress.configure({ showSpinner: false })// NProgress Configuration
 
@@ -17,6 +18,13 @@ function hasPermission(perms, permissions) {
 
 const whiteList = ['/login', '/auth-redirect']// no redirect whitelist
 const editableTabs = computed(() => store.getters.editableTabs);
+const userDetailName = computed(() => {
+  if (store.getters.userDetailName != '') {
+    return store.getters.userDetailName
+  } else {
+    return storage.get("USER_DETAIL_NAME")
+  }
+})
 
 const addTags = (route) => {
   const isExist = editableTabs.value.some((menu) => {
@@ -25,12 +33,37 @@ const addTags = (route) => {
   const isNoName = editableTabs.value.some((menu) => {
     return menu.name === undefined;
   })
-  if (!isExist&&route.meta.title!='登录') {
-    store.commit("HANDLE_ADD_TAGS", {
-      name: route.name,
-      title: route.meta.title,
-      path: route.fullPath
-    })
+  if (!isExist && route.meta.title != '登录') {
+    if (route.meta.title == '用户统计详情') {
+
+      store.commit("HANDLE_ADD_TAGS", {
+        name: route.name,
+        title: userDetailName.value + route.meta.title,
+        path: route.fullPath
+      })
+    } else {
+      store.commit("HANDLE_ADD_TAGS", {
+        name: route.name,
+        title: route.meta.title,
+        path: route.fullPath
+      })
+    }
+  }
+  if (isExist) {
+    if (route.meta.title == '用户统计详情') {
+      for (var i = 0; i < editableTabs.value.length; i++) {
+        if (editableTabs.value[i].path === route.fullPath) {
+          store.commit("HANDLE_CHANGE_TAGS", {
+            i,
+            name: route.name,
+            title: userDetailName.value + route.meta.title,
+            path: route.fullPath
+
+          });
+          break;
+        }
+      }
+    }
   }
   if (isNoName) {
     var tabIndex, delItem;
@@ -46,8 +79,6 @@ const addTags = (route) => {
 }
 
 router.beforeEach((to, from, next) => {
-  // console.log("全局监听路由变化:", to)
-
   addTags(to)
 
   NProgress.start() // start progress bar

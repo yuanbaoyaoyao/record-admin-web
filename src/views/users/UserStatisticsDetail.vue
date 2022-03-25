@@ -3,7 +3,7 @@
         <div class="user-header">
             <div>
                 <el-col :span="12" class="search">
-                    <el-autocomplete
+                    <!-- <el-autocomplete
                         v-model="searchKeyword"
                         value-key="receiver"
                         :fetch-suggestions="querySearch"
@@ -11,7 +11,8 @@
                         class="inline-input"
                         placeholder="名称"
                         @select="handleSelect"
-                    />
+                    />-->
+                    用户名：{{ userDetailName }}
                 </el-col>
                 <!-- 可以换成el-select -->
                 <el-radio-group v-model="radio" @change="changeRadio(radio)">
@@ -45,11 +46,9 @@
                     <el-button :icon="Grid" type="primary" class="button-data-type">数据类型</el-button>
                     <template #dropdown>
                         <el-dropdown-menu>
-                            <el-dropdown-item @click="echartsVisible = 1">显示数据为表格</el-dropdown-item>
                             <el-dropdown-item @click="echartsVisible = 2" divided>显示数据为柱状图</el-dropdown-item>
                             <el-dropdown-item @click="echartsVisible = 3">显示数据为折线图</el-dropdown-item>
                             <el-dropdown-item @click="echartsVisible = 4">显示数据为饼图</el-dropdown-item>
-                            <el-dropdown-item @click="echartsVisible = 5" divided>全部显示</el-dropdown-item>
                         </el-dropdown-menu>
                     </template>
                 </el-dropdown>
@@ -68,7 +67,7 @@
                 </el-dropdown>
             </div>
         </div>
-        <div v-if="echartsVisible == 1 || echartsVisible == 5">
+        <div class="default-info">
             <div>
                 <el-table
                     ref="multipleTable"
@@ -77,12 +76,68 @@
                     style="width: 100%"
                     @selection-change="handleSelectionChange"
                 >
-                    <el-table-column type="selection" width="55" />
-                    <el-table-column prop="receiver" label="领用人" width="180" />
-                    <el-table-column prop="countOrderNumber" label="订单总数" width="180" sortable></el-table-column>
-                    <el-table-column prop="sumProductNumber" label="申请耗材总数" width="180" sortable />
-                    <el-table-column prop="maxNumSkuName" label="最多申请耗材型号" width="180" />
-                    <el-table-column prop="timeFrame" label="时间范围" width="360" />
+                    <el-table-column prop="receiver" label="订单总数" width="180" />
+                    <el-table-column prop="countOrderNumber" label="申请耗材总数" width="180" sortable></el-table-column>
+                    <el-table-column prop="sumProductNumber" label="最多申请耗材型号" width="180" sortable />
+                </el-table>
+            </div>
+            <div class="charts">
+                <el-card class="echarts" v-if="echartsVisible == 2" shadow="hover">
+                    <div class="stock-info">
+                        <span>柱状图</span>
+                        <hr />
+                        <div class="chart">
+                            <Bar
+                                v-if="chartsReset"
+                                :xAxisData="xAxisData"
+                                :yAxisData="yAxisData"
+                                :selection="selection"
+                            />
+                        </div>
+                    </div>
+                </el-card>
+                <el-card class="echarts" v-if="echartsVisible == 3" shadow="hover">
+                    <div class="month-info">
+                        <span>折线图</span>
+                        <hr />
+                        <div class="chart">
+                            <Line
+                                v-if="chartsReset"
+                                :xAxisData="xAxisData"
+                                :yAxisData="yAxisData"
+                                :selection="selection"
+                            />
+                        </div>
+                    </div>
+                </el-card>
+                <el-card class="echarts" v-if="echartsVisible == 4" shadow="hover">
+                    <div class="year-info">
+                        <span>饼图</span>
+                        <hr />
+                        <div class="chart">
+                            <Pie
+                                v-if="chartsReset"
+                                :xAxisData="xAxisData"
+                                :yAxisData="yAxisData"
+                                :selection="selection"
+                            />
+                        </div>
+                    </div>
+                </el-card>
+            </div>
+        </div>
+        <div>
+            <div>
+                <el-table
+                    :data="tableData"
+                    :span-method="objectSpanMethod"
+                    border
+                    style="width: 100%; margin-top: 20px"
+                >
+                    <el-table-column prop="orderSn" label="订单号" width="180" />
+                    <el-table-column prop="orderProductVoList.productTitle" label="耗材类别" />
+                    <el-table-column prop="productSkusTitle" label="耗材型号" />
+                    <el-table-column prop="createdAt" label="创建时间" />
                     <el-table-column fixed="right" label="操作" width="120">
                         <template v-slot="scope">
                             <el-button
@@ -111,62 +166,6 @@
                 </div>
             </div>
         </div>
-        <div class="charts">
-            <el-card
-                class="echarts"
-                v-if="echartsVisible == 2 || echartsVisible == 5"
-                shadow="hover"
-            >
-                <div class="stock-info">
-                    <span>柱状图</span>
-                    <hr />
-                    <div class="chart">
-                        <Bar
-                            v-if="chartsReset"
-                            :xAxisData="xAxisData"
-                            :yAxisData="yAxisData"
-                            :selection="selection"
-                        />
-                    </div>
-                </div>
-            </el-card>
-            <el-card
-                class="echarts"
-                v-if="echartsVisible == 3 || echartsVisible == 5"
-                shadow="hover"
-            >
-                <div class="month-info">
-                    <span>折线图</span>
-                    <hr />
-                    <div class="chart">
-                        <Line
-                            v-if="chartsReset"
-                            :xAxisData="xAxisData"
-                            :yAxisData="yAxisData"
-                            :selection="selection"
-                        />
-                    </div>
-                </div>
-            </el-card>
-            <el-card
-                class="echarts"
-                v-if="echartsVisible == 4 || echartsVisible == 5"
-                shadow="hover"
-            >
-                <div class="year-info">
-                    <span>饼图</span>
-                    <hr />
-                    <div class="chart">
-                        <Pie
-                            v-if="chartsReset"
-                            :xAxisData="xAxisData"
-                            :yAxisData="yAxisData"
-                            :selection="selection"
-                        />
-                    </div>
-                </div>
-            </el-card>
-        </div>
     </div>
 </template>
 
@@ -174,11 +173,11 @@
 import Bar from "../../components/Charts/Bar.vue"
 import Pie from "../../components/Charts/Pie.vue"
 import Line from "../../components/Charts/Line.vue"
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onMounted, nextTick, computed } from "vue";
 import { Search, Download, CirclePlus, Plus, Grid } from '@element-plus/icons'
 // import { listUserAPI, deleteUserAPI, updateUserAPI } from '@/api/user'
 import { listAllUserStatisticsURL } from '@/api/excel'
-import { listUserDateOrderAPI, listUserDateOrderAllListAPI, listUserOrderAPI, updateUserOrderAPI } from '@/api/user-order'
+import { listUserDateOrderAPI, listUserDateOrderNoGroupAPI, listUserDateOrderAllListAPI, listUserOrderAPI, updateUserOrderAPI } from '@/api/user-order'
 import { ElMessage } from 'element-plus'
 import * as XLSX from 'xlsx'
 import {
@@ -187,9 +186,46 @@ import {
     ElFile,
 } from 'element-plus/es/components/upload/src/upload.type'
 import router from "../../router";
+import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router';
 import store from "../../store";
 import moment from 'moment'
+import storage from "../../utils/storage";
+import { watch } from "vue";
 
+const mergeOrderInfo = ref({
+    orderSnArr: [],
+    orderSnPos: 0,
+})
+
+const objectSpanMethod = ({
+    row,
+    column,
+    rowIndex,
+    columnIndex,
+}) => {
+    if (columnIndex === 0) {
+        if (rowIndex % 2 === 0) {
+            return {
+                rowspan: 2,
+                colspan: 1,
+            }
+        } else {
+            return {
+                rowspan: 0,
+                colspan: 0,
+            }
+        }
+    }
+}
+
+const userDetailName = computed(() => {
+    if (store.getters.userDetailName != '') {
+        return store.getters.userDetailName
+    } else {
+        return storage.get("USER_DETAIL_NAME")
+    }
+})
+const route = useRoute();
 
 const timePickerValue = ref()
 
@@ -202,7 +238,7 @@ const setXAxisData = () => {
     for (let i = 0; i < tableDataAllList.value.length; i++) {
         xAxisData.value[i] = tableDataAllList.value[i].receiver
     }
-    console.log("xAxisData11111111", xAxisData.value)
+    // console.log("xAxisData11111111", xAxisData.value)
 }
 
 const setYAxisData = (selection) => {
@@ -216,11 +252,11 @@ const setYAxisData = (selection) => {
             yAxisData.value[i] = tableDataAllList.value[i].sumProductNumber
         }
     }
-    console.log("yAxisData:", yAxisData.value)
+    // console.log("yAxisData:", yAxisData.value)
 
 }
 
-const radio = ref(1)
+const radio = ref(storage.get("USER_RADIO"))
 const startTime = ref()
 const endTime = ref()
 const timeFrame = ref()
@@ -248,7 +284,7 @@ const currentYear = () => {
 const changeRadio = (radio) => {
     console.log("radio:", radio)
     if (radio == 1) {
-        defaultList.value.dateState = null
+        defaultList.value.dateState = 1
         defaultList.value.specifiedTime1 = ''
         defaultList.value.specifiedTime2 = ''
         timePickerValue.value = null
@@ -300,8 +336,8 @@ const defaultList = ref({
     pageNum: 1,
     pageSize: 5,
     userId: null,
-    receiver: null,
-    dateState: null,
+    receiver: '',
+    dateState: '',
     specifiedTime1: '',
     specifiedTime2: '',
 })
@@ -326,24 +362,29 @@ const searchKeyword = ref(null)
 const pageTotal = ref(null)
 
 const dialogFormVisible = ref(false)
-const echartsVisible = ref(1)
+const echartsVisible = ref(2)
 
 let multipleSelection = []
 const multipleTable = ref()
 const tableData = ref(null)
 const tableDataAllList = ref(null)
 
+const handleDetail = (row) => {
+
+}
+
 const getList = () => {
     if (defaultList.value.dateState == 2) {
-        listUserDateOrderAPI(defaultList.value).then(res => {
+        listUserDateOrderNoGroupAPI(defaultList.value).then(res => {
             tableData.value = res.data.records
             pageTotal.value = res.data.total
             currentYear()
+            alert("1")
         }).catch(console.log("false"))
 
     } else if (defaultList.value.dateState == 3) {
         if (defaultList.value.specifiedTime1 != '' && defaultList.value.specifiedTime2 != '') {
-            listUserDateOrderAPI(defaultList.value).then(res => {
+            listUserDateOrderNoGroupAPI(defaultList.value).then(res => {
                 tableData.value = res.data.records
                 const timeFrames = (defaultList.value.specifiedTime1 + '----' + defaultList.value.specifiedTime2)
                 if (tableData.value != null) {
@@ -352,20 +393,33 @@ const getList = () => {
                     }
                 }
                 pageTotal.value = res.data.total
-
+                alert("2")
             }).catch(console.log("false"))
         } else {
             ElMessage.error('请选择开始时间与结束时间')
         }
     }
     else {
-        listUserDateOrderAPI(defaultList.value).then(res => {
+        listUserDateOrderNoGroupAPI(defaultList.value).then(res => {
             tableData.value = res.data.records
             pageTotal.value = res.data.total
             currentMonth()
+            alert("3")
         }).catch(console.log("false"))
     }
+    console.log("defaultList.value.dateState:", defaultList.value.dateState)
+    console.log("tableDataaaaaaaaaaaaaaaaaaaaaa:", tableData)
 }
+watch(userDetailName, () => {
+    alert("USER_DETAIL_NAME")
+    defaultList.value.receiver = storage.get("USER_DETAIL_NAME")
+    defaultList.value.dateState = storage.get("USER_DATE_STATE")
+    defaultList.value.specifiedTime1 = storage.get("USER_SPECIFIED_TIME1")
+    defaultList.value.specifiedTime2 = storage.get("USER_SPECIFIED_TIME2")
+    radio.value = storage.get("USER_RADIO")
+    getList()
+    getAllList()
+})
 const chartsReset = ref(true)
 
 const getAllList = () => {
@@ -417,7 +471,7 @@ const handleCurrentChange = (val) => {
 const querySearch = (queryString, cb) => {
     let lists = []
     querySearchList.value.pageSize = pageTotal.value
-    listUserDateOrderAPI(querySearchList.value).then(res => {
+    listUserDateOrderNoGroupAPI(querySearchList.value).then(res => {
         for (let i = 0; i < res.data.records.length; i++) {
             lists[i] = res.data.records[i]
         }
@@ -455,7 +509,7 @@ const handleSelectionChange = (val) => {
 //excel fontEnd
 const handleDowloadPage = () => {
     import('@/utils/Export2Excel').then(excel => {
-        const tHeader = ['领用人', '订单总数', '申请耗材总量', '最多申请耗材型号', '时间范围']
+        const tHeader = ['订单号', '耗材类别', '耗材型号', '耗材数量', '创建时间']
         const filterVal = ['receiver', 'countOrderNumber', 'sumProductNumber', 'maxNumSkuName', 'timeFrame']
         const list = tableData.value
         const data = formatJson(filterVal, list)
@@ -485,8 +539,10 @@ getAllList()
 
 </script>
 <style scoped>
-.echarts {
-    margin-top: 10px;
+.default-info {
+    margin-bottom: 10px;
+    display: grid;
+    grid-template-columns: 20% auto;
 }
 :deep().el-autocomplete.inline-input {
     margin-right: 20px !important;

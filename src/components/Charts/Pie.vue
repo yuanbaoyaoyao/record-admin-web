@@ -18,10 +18,10 @@ const props = defineProps({
   },
 })
 const pieData = ref([])
-console.log("xAxisData:", props.xAxisData)
-console.log("yAxisData:", props.yAxisData)
-console.log("length:", props.xAxisData.length)
-console.log("selection:", props.selection)
+// console.log("xAxisData:", props.xAxisData)
+// console.log("yAxisData:", props.yAxisData)
+// console.log("length:", props.xAxisData.length)
+// console.log("selection:", props.selection)
 
 
 

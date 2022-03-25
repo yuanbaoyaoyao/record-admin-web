@@ -189,6 +189,7 @@ import {
 import router from "../../router";
 import store from "../../store";
 import moment from 'moment'
+import storage from "../../utils/storage";
 
 
 const timePickerValue = ref()
@@ -202,7 +203,7 @@ const setXAxisData = () => {
     for (let i = 0; i < tableDataAllList.value.length; i++) {
         xAxisData.value[i] = tableDataAllList.value[i].receiver
     }
-    console.log("xAxisData11111111", xAxisData.value)
+    // console.log("xAxisData11111111", xAxisData.value)
 }
 
 const setYAxisData = (selection) => {
@@ -216,8 +217,12 @@ const setYAxisData = (selection) => {
             yAxisData.value[i] = tableDataAllList.value[i].sumProductNumber
         }
     }
-    console.log("yAxisData:", yAxisData.value)
+    // console.log("yAxisData:", yAxisData.value)
+}
 
+const handleDetail = (row) => {
+    store.commit("SET_USER_DETAIL_NAME", row.receiver)
+    router.push({ path: '/userStatisticsDetail' ,params: { username: row.receiver } })
 }
 
 const radio = ref(1)
@@ -248,7 +253,7 @@ const currentYear = () => {
 const changeRadio = (radio) => {
     console.log("radio:", radio)
     if (radio == 1) {
-        defaultList.value.dateState = null
+        defaultList.value.dateState = 1
         defaultList.value.specifiedTime1 = ''
         defaultList.value.specifiedTime2 = ''
         timePickerValue.value = null
@@ -260,6 +265,7 @@ const changeRadio = (radio) => {
     } else {
         defaultList.value.dateState = 3
     }
+
 }
 const changeTimePicker = (timePickerValue) => {
     defaultList.value.specifiedTime1 = timePickerValue[0]
@@ -301,7 +307,7 @@ const defaultList = ref({
     pageSize: 5,
     userId: null,
     receiver: null,
-    dateState: null,
+    dateState: 1,
     specifiedTime1: '',
     specifiedTime2: '',
 })
@@ -352,7 +358,6 @@ const getList = () => {
                     }
                 }
                 pageTotal.value = res.data.total
-
             }).catch(console.log("false"))
         } else {
             ElMessage.error('请选择开始时间与结束时间')
@@ -365,6 +370,11 @@ const getList = () => {
             currentMonth()
         }).catch(console.log("false"))
     }
+    store.commit("SET_USER_RADIO", radio.value)
+    store.commit("SET_USER_DATE_STATE", defaultList.value.dateState)
+    store.commit("SET_USER_SPECIFIED_TIME1", defaultList.value.specifiedTime1)
+    store.commit("SET_USER_SPECIFIED_TIME2", defaultList.value.specifiedTime2)
+    console.log("store.getter.dateState:", store.getters.dateState)
 }
 const chartsReset = ref(true)
 
@@ -500,9 +510,6 @@ getAllList()
 button.el-button.el-button--primary.button-data-type.el-dropdown-selfdefine {
     margin-right: 5px;
 }
-/* .button-data-type{
-    margin-right: 5px;
-} */
 .user-footer,
 .user-header,
 .search {

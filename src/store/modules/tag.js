@@ -14,13 +14,15 @@ const tag = {
         },
         HANDLE_DELETE_TAGS(state, data) {
             state.editableTabs.splice(data.i, 1)
-
         },
         HANDLE_CLEAR_TAGS(state) {
             state.editableTabs = []
         },
         HANDLE_DELETE_OTHER_TAGS(state, data) {
             state.editableTabs = data
+        },
+        HANDLE_CHANGE_TAGS(state, data) {
+            state.editableTabs[data.i] = data
         }
     },
     // actions:{

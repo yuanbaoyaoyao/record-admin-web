@@ -17,9 +17,9 @@ const props = defineProps({
     default: () => '',
   },
 })
-console.log("xAxisData:", props.xAxisData)
-console.log("yAxisData:", props.yAxisData)
-console.log("selection:", props.selection)
+// console.log("xAxisData:", props.xAxisData)
+// console.log("yAxisData:", props.yAxisData)
+// console.log("selection:", props.selection)
 
 let echartInstance;
 
