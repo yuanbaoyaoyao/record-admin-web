@@ -106,14 +106,23 @@ export const asyncRoutes = [
                 component: () => import("../views/orders/OrdersList.vue"),
 
             }, {
-                path: "/orderStatistics",
-                name: "orderStatistics",
+                path: "/orderDetail",
+                name: "OrderDetail",
                 meta: {
                     perms: ['GET /order/ordersDetail'],
+                    title: '需求详情',
+                    hidden: true,
+                },
+                component: () => import("../views/orders/OrderDetail.vue"),
+
+            }, {
+                path: "/orderStatistics",
+                name: "OrderStatistics",
+                meta: {
+                    perms: ['GET /order/ordersList'],
                     title: '需求统计'
                 },
                 component: () => import("../views/orders/orderStatistics.vue"),
-
             },
         ]
     },
@@ -152,7 +161,7 @@ export const asyncRoutes = [
                     perms: ['GET /product/list'],
                     title: '耗材统计'
                 },
-                component: () => import("../views/consumables/consumableStatistics.vue"),
+                component: () => import("../views/consumables/ConsumableStatistics.vue"),
 
             },
             // {
@@ -207,46 +216,6 @@ export const asyncRoutes = [
             },
         ]
     },
-    {
-        path: '/test',
-        component: Layout,
-        redirect: '/test/charts',
-        name: 'testManage',
-        meta: {
-            title: '测试管理',
-            icon: "fas fa-vials fa-2x fa-fw",
-        },
-        children: [
-            {
-                path: "/charts",
-                name: "Charts",
-                meta: {
-                    perms: ['GET /test/charts'],
-                    title: '表格'
-                },
-                component: () => import("../views/tests/Charts.vue"),
-
-            }, {
-                path: "/3d",
-                name: "3d",
-                meta: {
-                    perms: ['GET /test/3d'],
-                    title: '3d'
-                },
-                component: () => import("../views/tests/3d.vue"),
-
-            }, {
-                path: "editor",
-                name: "Editor",
-                meta: {
-                    perms: ['GET /test/editor'],
-                    title: '富文本编辑器'
-                },
-                component: () => import("../views/tests/Editor.vue"),
-
-            },
-        ]
-    }
 ]
 
 const router = createRouter({

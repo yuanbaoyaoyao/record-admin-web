@@ -44,9 +44,9 @@
                 <el-table-column type="selection" width="55" />
                 <el-table-column prop="orderSn" label="需求单号" width="180" />
                 <el-table-column prop="receiver" label="申请人" width="180" />
-                <el-table-column prop="productTitle" label="耗材类别" width="180" />
-                <el-table-column prop="productSkusTitle" label="耗材型号" width="180" />
-                <el-table-column prop="productNumber" label="耗材数量" width="180" />
+                <el-table-column prop="user" label="使用人" width="180" />
+                <el-table-column prop="orderRemarks" label="订单留言" width="180" />
+                <!-- <el-table-column prop="productNumber" label="耗材数量" width="180" /> -->
                 <el-table-column prop="createdAt" label="创建时间" sortable />
                 <el-table-column prop="orderStatus" label="状态" width="180" sortable />
                 <el-table-column fixed="right" label="操作" width="120">
@@ -54,7 +54,7 @@
                         <el-button
                             type="text"
                             size="small"
-                            @click="handleUpdate(scope.$index, scope.row)"
+                            @click="handleDetail(scope.$index, scope.row)"
                         >详情</el-button>
                         <!-- <el-button type="text" size="small" @click="handleDelete(scope.row)">删除</el-button> -->
                     </template>
@@ -78,7 +78,7 @@
             </div>
         </div>
     </div>
-    <el-dialog v-model="dialogFormVisible" title="查看订单详情">
+    <!-- <el-dialog v-model="dialogFormVisible" title="查看订单详情">
         <el-descriptions class="margin-top" :column="3" :size="size" border>
             <el-descriptions-item>
                 <template #label>
@@ -191,7 +191,7 @@
                 </template>
             </span>
         </template>
-    </el-dialog>
+    </el-dialog>-->
 </template>
 <script setup>
 import { ref, onMounted, reactive, computed } from "vue"
@@ -217,6 +217,7 @@ import {
 } from 'element-plus/es/components/upload/src/upload.type'
 import router from "../../router";
 import { getUserInfo } from "../../api/login"
+import store from "../../store";
 
 const tableDetail = ref()
 
@@ -293,7 +294,7 @@ const pageTotal = ref(null)
 const dialogFormVisible = ref(false)
 const dialogStatus = ref('')
 
-let multipleSelection = []
+// let multipleSelection = []
 const multipleTable = ref()
 const tableData = ref([])
 const addressInfo = ref([])
@@ -323,7 +324,6 @@ const updateDataReject = (tableDetail) => {
             defaultForm.value = Object.assign({}, defaultFormTemp)
             getList()
         })
-
     })
         .catch(() => {
             ElMessage({
@@ -370,7 +370,7 @@ const updateDataArrivals = (tableDetail) => {
 const getList = () => {
     // defaultForm.value.userId = store.getters.userId
     console.log("defaultFormGetList", defaultForm.value)
-    listUserOrderAPI(defaultForm.value).then(res => {
+    listUserOrderAPI(defaultList.value).then(res => {
         console.log("res", res)
         tableData.value = res.data.records
         pageTotal.value = res.data.total
@@ -380,39 +380,39 @@ const getList = () => {
     }).catch()
 }
 
-const handleCreate = () => {
-    dialogStatus.value = "create"
-    restForm()
-    options.value.title = ''
-    dialogFormVisible.value = true
-}
-const createData = () => {
-    createProductSkusAPI(defaultForm.value).then(res => {
-    })
-    dialogFormVisible.value = false
-}
+// const handleCreate = () => {
+//     dialogStatus.value = "create"
+//     restForm()
+//     options.value.title = ''
+//     dialogFormVisible.value = true
+// }
+// const createData = () => {
+//     createProductSkusAPI(defaultForm.value).then(res => {
+//     })
+//     dialogFormVisible.value = false
+// }
 
-const restForm = () => {
-    defaultForm.value = Object.assign({}, defaultFormTemp.value);
-}
+// const restForm = () => {
+//     defaultForm.value = Object.assign({}, defaultFormTemp.value);
+// }
 
-const handleAvatarSuccess = (res, file) => {
-    defaultForm.value.avatar = 'http://' + qiniuDomain + '/' + res.key;
-    alert('success');
-}
-const beforeAvatarUpload = (file) => {
-    qiniuUploadData.value.key = file.name
-    const isJPG = file.type === 'image/jpeg'
-    const isLt2M = file.size / 1024 / 1024 < 2
+// const handleAvatarSuccess = (res, file) => {
+//     defaultForm.value.avatar = 'http://' + qiniuDomain + '/' + res.key;
+//     alert('success');
+// }
+// const beforeAvatarUpload = (file) => {
+//     qiniuUploadData.value.key = file.name
+//     const isJPG = file.type === 'image/jpeg'
+//     const isLt2M = file.size / 1024 / 1024 < 2
 
-    if (!isJPG) {
-        ElMessage.error('Avatar picture must be JPG format!')
-    }
-    if (!isLt2M) {
-        ElMessage.error('Avatar picture size can not exceed 2MB!')
-    }
-    return isJPG && isLt2M
-}
+//     if (!isJPG) {
+//         ElMessage.error('Avatar picture must be JPG format!')
+//     }
+//     if (!isLt2M) {
+//         ElMessage.error('Avatar picture size can not exceed 2MB!')
+//     }
+//     return isJPG && isLt2M
+// }
 
 const productChange = () => {
     for (let i = 0; i < options.value.length; i++) {
@@ -422,25 +422,13 @@ const productChange = () => {
         }
     }
 }
-const handleUpdate = (index, row) => {
+const handleDetail = (index, row) => {
     console.log("row", row)
     tableDetail.value = row
-    dialogFormVisible.value = true
+    store.commit("SET_ORDER_SN",row.orderSn)
+    router.push("/orderDetail")
+    // dialogFormVisible.value = true
 }
-// const updateData = () => {
-//     updateProductSkusAPI(defaultForm.value).then(res => {
-//         console.log("resUpdate", res)
-//         // getList()
-//     }).catch(err => tableData(err))
-//     dialogFormVisible.value = false
-//     dialogStatus == ''
-// }
-
-// const handleDelete = (row) => {
-//     deleteProductSkusAPI(row).then(res => {
-//         getList()
-//     }).catch(err => tableData(err))
-// }
 
 const handleSearchList = () => {
     defaultList.value.pageNum = 1
@@ -456,6 +444,7 @@ const handleSizeChange = (val) => {
 
 const handleCurrentChange = (val) => {
     defaultList.value.pageNum = val
+    console.log("valllllllllllllllll:", val)
     getList()
 }
 
@@ -501,8 +490,8 @@ const handleSelectionChange = (val) => {
 //excel fontEnd
 const handleDowloadPage = () => {
     import('@/utils/Export2Excel').then(excel => {
-        const tHeader = ['耗材类别', '耗材型号', '耗材描述', '库存', '创建时间']
-        const filterVal = ['productName', 'title', 'description', 'stock', 'createdAt']
+        const tHeader = ['需求单号', '申请人', '使用人', '订单留言', '创建时间', '状态']
+        const filterVal = ['orderSn', 'receiver', 'user', 'orderRemarks', 'createdAt', 'orderStatus']
         const list = tableData.value
         console.log(list)
         const data = formatJson(filterVal, list)
@@ -510,7 +499,7 @@ const handleDowloadPage = () => {
         excel.export_json_to_excel({
             header: tHeader, //表头 必填
             data, //具体数据 必填
-            filename: '耗材列表', //非必填
+            filename: '需求列表', //非必填
             autoWidth: true, //非必填
             bookType: 'xlsx' //非必填
         })
@@ -529,13 +518,13 @@ const handleDowloadAllURL = () => {
 }
 
 getList()
-getToken().then(res => {
-    qiniuUploadData.value.token = res.data.token
-})
+// getToken().then(res => {
+//     qiniuUploadData.value.token = res.data.token
+// })
 
-getProduct().then(res => {
-    options.value = res.data.records
-}).catch(err => tableData(err))
+// getProduct().then(res => {
+//     options.value = res.data.records
+// }).catch(err => tableData(err))
 </script>
 <style scoped>
 .user-footer,

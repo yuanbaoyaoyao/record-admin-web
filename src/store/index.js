@@ -5,6 +5,7 @@ import permission from "./modules/permission";
 import tag from "./modules/tag";
 import user from "./modules/user"
 import statisticsDetail from "./modules/statisticsDetail"
+import order from "./modules/order";
 import getters from "./getters"
 
 const store = createStore({
@@ -13,7 +14,8 @@ const store = createStore({
         permission,
         tag,
         user,
-        statisticsDetail
+        statisticsDetail,
+        order
     },
     getters
 })

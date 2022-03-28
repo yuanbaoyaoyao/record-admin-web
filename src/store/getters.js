@@ -35,6 +35,7 @@ const getters = {
   consumableDateState: state => state.statisticsDetail.consumableDateState,
   consumableSpecifiedTime1: state => state.statisticsDetail.consumableSpecifiedTime1,
   consumableSpecifiedTime2: state => state.statisticsDetail.consumableSpecifiedTime2,
+  orderSn:state=>state.order.orderSn
 
 }
 export default getters
