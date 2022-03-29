@@ -9,3 +9,11 @@ export function listOrderProductAPI(params){
 export function listDateOrderNoGroupAPI(params){
     return http.get(`${resquest}`+`dateList`,params)
 }
+
+export function listDateOrderProductCountNoGroupAPI(params){
+    return http.get(`${resquest}`+`dateProductCountList`,params)
+}
+
+export function listDateOrderProductCountNoGroupAllListAPI(params){
+    return http.get(`${resquest}`+`dateProductCountAllList`,params)
+}

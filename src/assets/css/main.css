@@ -33,3 +33,6 @@ body,
 .content-collapse {
     left: 90px;
 }
+:deep().multipleSelection i{
+    opacity: 0;
+}

@@ -82,7 +82,7 @@
                     <el-table-column prop="countOrderNumber" label="订单总数" width="180" sortable></el-table-column>
                     <el-table-column prop="sumProductNumber" label="申请耗材总数" width="180" sortable />
                     <el-table-column prop="maxNumSkuName" label="最多申请耗材型号" width="180" />
-                    <el-table-column prop="timeFrame" label="时间范围" width="360" />
+                    <el-table-column prop="timeFrame" label="时间范围" />
                     <el-table-column fixed="right" label="操作" width="120">
                         <template v-slot="scope">
                             <el-button
@@ -233,7 +233,7 @@ const timeFrame = ref()
 const currentMonth = () => {
     const startTime = moment().startOf("month").format('YYYY-MM-DD');
     const endTime = moment().endOf("month").format('YYYY-MM-DD');
-    const timeFrames = (startTime + '----' + endTime)
+    const timeFrames = (startTime + '——' + endTime)
     if (tableData.value != null) {
         for (let i = 0; i < tableData.value.length; i++) {
             tableData.value[i].timeFrame = timeFrames
@@ -243,7 +243,7 @@ const currentMonth = () => {
 const currentYear = () => {
     const startTime = moment().startOf("year").format('YYYY-MM-DD');
     const endTime = moment().endOf("year").format('YYYY-MM-DD');
-    const timeFrames = (startTime + '----' + endTime)
+    const timeFrames = (startTime + '——' + endTime)
     if (tableData.value != null) {
         for (let i = 0; i < tableData.value.length; i++) {
             tableData.value[i].timeFrame = timeFrames

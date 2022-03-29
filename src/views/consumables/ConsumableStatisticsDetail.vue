@@ -2,7 +2,7 @@
     <div>
         <div class="user-header">
             <div>
-                <el-col :span="12" class="search">用户名：{{ userDetailName }}</el-col>
+                <el-col :span="12" class="search">耗材类别：{{ productTitle }} 耗材型号：{{productSkusTitle}}</el-col>
                 <!-- 可以换成el-select -->
                 <el-radio-group v-model="radio" @change="changeRadio(radio)">
                     <el-radio :label="1" border>本月</el-radio>
@@ -167,6 +167,7 @@ import { Search, Download, CirclePlus, Plus, Grid } from '@element-plus/icons'
 // import { listUserAPI, deleteUserAPI, updateUserAPI } from '@/api/user'
 import { listAllUserStatisticsURL } from '@/api/excel'
 import { listUserDateOrderAPI, listUserDateOrderNoGroupAPI, listUserDateOrderAllListAPI, listUserOrderAPI, updateUserOrderAPI } from '@/api/user-order'
+import { listDateOrderProductCountNoGroupAPI,listDateOrderProductCountNoGroupAllListAPI } from "../../api/order-product";
 import { ElMessage } from 'element-plus'
 import * as XLSX from 'xlsx'
 import {
@@ -181,101 +182,22 @@ import moment from 'moment'
 import storage from "../../utils/storage";
 import { watch } from "vue";
 
-// let typeNameArr = []  // 第一列进行合并操作时存放的数组变量
-// let typeNamePos = 0 // 上面的数组的下标值
-// let storeArr = []  // 第二列进行合并操作时存放的数组变量
-// let storePos = 0// 上面的数组的下标值
-// let feeArr = [] // 第三列进行合并操作时存放的数组变量
-// let feePos = 0
-
-// const merageInit = () => { // 在下文的时候会用到，对数据进行初始化是很有必要的
-//     typeNameArr = [];
-//     typeNamePos = 0;
-//     storeArr = [];
-//     storePos = 0;
-//     feeArr = [];
-//     feePos = 0;
-// }
-// const merage = () => {
-//     merageInit(); // 前文的初始化数据函数
-//     for (let i = 0; i < tableData.value.length; i += 1) {
-//         if (i === 0) {
-//             // 第一行必须存在
-//             typeNameArr.push(1);
-//             typeNamePos = 0;
-//             storeArr.push(1);
-//             storePos = 0; F
-//             feeArr.push(1);
-//             feePos = 0;
-//         } else {
-//             // 判断当前元素与上一个元素是否相同,eg：typeNamePos 是 typeNameArr序号
-//             // 第一列 下面的是eslint的不限制语法
-//             // eslint-disable-next-line no-lonely-if 
-//             if (tableData.value[i].name === tableData.value[i - 1].name) {
-//                 typeNameArr[typeNamePos] += 1;
-//                 typeNameArr.push(0);
-//             } else {
-//                 typeNameArr.push(1);
-//                 typeNamePos = i;
-//             }
-//             // 第二列
-//             if (tableData.value[i].storeIdInfo === tableData.value[i - 1].storeIdInfo && tableData.value[i].name ===
-//                 tableData.value[i - 1].name) {
-//                 storeArr[storePos] += 1;
-//                 storeArr.push(0);
-//             } else {
-//                 storeArr.push(1);
-//                 storePos = i;
-//             }
-//             // 第三列
-//             if (tableData.value[i].feeType === tableData.value[i - 1].feeType && tableData.value[i].storeIdInfo
-//                 === tableData.value[i - 1].storeIdInfo && tableData.value[i].name ===
-//                 tableData.value[i - 1].name) {
-//                 feeArr[feePos] += 1;
-//                 feeArr.push(0);
-//             } else {
-//                 feeArr.push(1);
-//                 feePos = i;
-//             }
-//         }
-//     }
-// }
-
-// const objectSpanMethod = ({ row, column, rowIndex, columnIndex }) => {
-//     if (columnIndex === 0) {
-//         // 第一列的合并方法
-//         const row1 = typeNameArr[rowIndex];
-//         const col1 = row1 > 0 ? 1 : 0; // 如果被合并了row = 0; 则他这个列需要取消
-//         return {
-//             rowspan: 2,
-//             colspan: 1,
-//         };
-//     } else if (columnIndex === 3) {
-//         // 第二列的合并方法
-//         const row2 = storeArr[rowIndex];
-//         const col2 = row2 > 0 ? 1 : 0; // 如果被合并了row = 0; 则他这个列需要取消
-//         return {
-//             rowspan: row2,
-//             colspan: col2,
-//         };
-//     } else if (columnIndex === 4) {
-//         // 第三列的合并方法
-//         const row3 = feeArr[rowIndex];
-//         const col3 = row3 > 0 ? 1 : 0; // 如果被合并了row = 0; 则他这个列需要取消
-//         return {
-//             rowspan: row3,
-//             colspan: col3,
-//         };
-//     }
-// }
-
-const userDetailName = computed(() => {
-    if (store.getters.userDetailName != '') {
-        return store.getters.userDetailName
+const productTitle = computed(() => {
+    if (store.getters.consumableTitle != '') {
+        return store.getters.consumableTitle
     } else {
-        return storage.get("USER_DETAIL_NAME")
+        return storage.get("CONSUMABLE_TITLE")
     }
 })
+
+const productSkusTitle = computed(() => {
+    if (store.getters.consumableSkusTitle != '') {
+        return store.getters.consumableSkusTitle
+    } else {
+        return storage.get("CONSUMABLE_SKUS_TITLE")
+    }
+})
+
 const route = useRoute();
 
 const timePickerValue = ref()
@@ -289,7 +211,6 @@ const setXAxisData = () => {
     for (let i = 0; i < tableDataAllList.value.length; i++) {
         xAxisData.value[i] = tableDataAllList.value[i].receiver
     }
-    // console.log("xAxisData11111111", xAxisData.value)
 }
 
 const setYAxisData = (selection) => {
@@ -303,8 +224,6 @@ const setYAxisData = (selection) => {
             yAxisData.value[i] = tableDataAllList.value[i].sumProductNumber
         }
     }
-    // console.log("yAxisData:", yAxisData.value)
-
 }
 
 const radio = ref(storage.get("USER_RADIO"))
@@ -387,10 +306,11 @@ const defaultList = ref({
     pageNum: 1,
     pageSize: 5,
     userId: null,
-    receiver: storage.get("USER_DETAIL_NAME"),
-    dateState: storage.get("USER_DATE_STATE"),
-    specifiedTime1: storage.get("USER_SPECIFIED_TIME1"),
-    specifiedTime2: storage.get("USER_SPECIFIED_TIME2"),
+    productTitle:storage.get("CONSUMABLE_TITLE"),
+    productSkusTitle:storage.get("CONSUMABLE_SKUS_TITLE"),
+    dateState: storage.get("CONSUMABLE_DATE_STATE"),
+    specifiedTime1: storage.get("CONSUMABLE_SPECIFIED_TIME1"),
+    specifiedTime2: storage.get("CONSUMABLE_SPECIFIED_TIME2"),
 })
 
 const querySearchList = ref({
@@ -450,27 +370,20 @@ const getList = () => {
     }
     else {
         listUserDateOrderNoGroupAPI(defaultList.value).then(res => {
-            // for (let i = 0; i < res.data.records.length; i++) {
-            //     for (let j = 0; j < res.data.records[i].orderProductVoList.length; j++) {
-            //         let tempArr = { ...{ orderSn: '' }, ...res.data.records[i].orderProductVoList[j] }
-            //         tempArr.orderSn = res.data.records[i].orderSn
-            //         tempArr.createdAt = res.data.records[i].createdAt
-            //         tableData.value.push(tempArr)
-            //     }
-            // }
             tableData.value = res.data.records
             pageTotal.value = res.data.total
             currentMonth()
         }).catch(console.log("false"))
     }
 }
-watch(userDetailName, () => {
-    alert("USER_DETAIL_NAME")
-    defaultList.value.receiver = storage.get("USER_DETAIL_NAME")
-    defaultList.value.dateState = storage.get("USER_DATE_STATE")
-    defaultList.value.specifiedTime1 = storage.get("USER_SPECIFIED_TIME1")
-    defaultList.value.specifiedTime2 = storage.get("USER_SPECIFIED_TIME2")
-    radio.value = storage.get("USER_RADIO")
+
+watch(productTitle,productSkusTitle, () => {
+    defaultList.value.productTitle = storage.get("CONSUMABLE_TITLE")
+    defaultList.value.productSkusTitle = storage.get("CONSUMABLE_SKUS_TITLE")
+    defaultList.value.dateState = storage.get("CONSUMABLE_DATE_STATE")
+    defaultList.value.specifiedTime1 = storage.get("CONSUMABLE_SPECIFIED_TIME1")
+    defaultList.value.specifiedTime2 = storage.get("CONSUMABLE_SPECIFIED_TIME2")
+    radio.value = storage.get("CONSUMABLE_RADIO")
     getList()
     getAllList()
 })

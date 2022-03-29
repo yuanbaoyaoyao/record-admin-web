@@ -2,20 +2,43 @@
     <div>
         <div class="user-header">
             <div>
-                <el-row>
-                    <el-col :span="12" class="search">
-                        <el-autocomplete
-                            v-model="searchKeyword"
-                            value-key="title"
-                            :fetch-suggestions="querySearch"
-                            :trigger-on-focus="false"
-                            class="inline-input"
-                            placeholder="类别/型号"
-                            @select="handleSelect"
-                        />
-                    </el-col>
-                    <el-button :icon="Search" type="primary" @click="handleSearchList">搜索</el-button>
-                </el-row>
+                <el-col :span="12" class="search">
+                    <el-autocomplete
+                        v-model="searchKeyword"
+                        value-key="receiver"
+                        :fetch-suggestions="querySearch"
+                        :trigger-on-focus="false"
+                        class="inline-input"
+                        placeholder="名称"
+                        @select="handleSelect"
+                    />
+                </el-col>
+                <!-- 可以换成el-select -->
+                <el-radio-group v-model="radio" @change="changeRadio(radio)">
+                    <el-radio :label="1" border>本月</el-radio>
+                    <el-radio :label="2" border>本年</el-radio>
+                    <el-radio :label="3" border>
+                        <span>指定时间</span>
+                        <el-date-picker
+                            v-model="timePickerValue"
+                            type="daterange"
+                            unlink-panels
+                            range-separator="To"
+                            format="YYYY/MM/DD"
+                            value-format="YYYY-MM-DD"
+                            start-placeholder="开始时间"
+                            end-placeholder="结束时间"
+                            :shortcuts="shortcuts"
+                            @change="changeTimePicker(timePickerValue)"
+                        ></el-date-picker>
+                    </el-radio>
+                </el-radio-group>
+                <el-button
+                    :icon="Search"
+                    type="primary"
+                    @click="handleSearchList"
+                    class="button-search"
+                >搜索</el-button>
             </div>
             <div class="button-right">
                 <el-dropdown trigger="click">
@@ -206,7 +229,7 @@ import {
 import { listProductSkusAPI, createProductSkusAPI, deleteProductSkusAPI, updateProductSkusAPI } from '@/api/product-skus'
 import { listProductAPI as getProduct } from "../../api/product"
 import { listAllProductSkusURL } from "../../api/excel"
-import { listUserOrderAPI, updateUserOrderAPI } from "../../api/user-order"
+import { listUserOrderAPI, updateUserOrderAPI,listUserDateOrderNoGroupAPI  } from "../../api/user-order"
 import { getToken } from "../../api/upload-pic"
 import { ElMessage, ElMessageBox } from 'element-plus'
 import * as XLSX from 'xlsx'
@@ -218,6 +241,7 @@ import {
 import router from "../../router";
 import { getUserInfo } from "../../api/login"
 import store from "../../store";
+import moment from 'moment'
 
 const tableDetail = ref()
 
@@ -243,10 +267,69 @@ const blockMargin = computed(() => {
     }
 })
 
+const radio = ref(1)
+
+const changeRadio = (radio) => {
+    console.log("radio:", radio)
+    if (radio == 1) {
+        defaultList.value.dateState = 1
+        defaultList.value.specifiedTime1 = ''
+        defaultList.value.specifiedTime2 = ''
+        timePickerValue.value = null
+    } else if (radio == 2) {
+        defaultList.value.dateState = 2
+        defaultList.value.specifiedTime1 = ''
+        defaultList.value.specifiedTime2 = ''
+        timePickerValue.value = null
+    } else {
+        defaultList.value.dateState = 3
+    }
+
+}
+const changeTimePicker = (timePickerValue) => {
+    defaultList.value.specifiedTime1 = timePickerValue[0]
+    defaultList.value.specifiedTime2 = timePickerValue[1]
+}
+
+const shortcuts = [
+    {
+        text: '近一周',
+        value: () => {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            return [start, end]
+        },
+    },
+    {
+        text: '近一个月',
+        value: () => {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            return [start, end]
+        },
+    },
+    {
+        text: '近三个月',
+        value: () => {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            return [start, end]
+        },
+    },
+]
+
+
 const defaultList = ref({
     pageNum: 1,
     pageSize: 5,
-    keyword1: null
+    userId: null,
+    receiver: null,
+    dateState: 1,
+    specifiedTime1: '',
+    specifiedTime2: '',
 })
 
 const querySearchList = ref({
@@ -283,12 +366,6 @@ const changeStatus = (i, index) => {
     tableData.value[index].orderStatus = status[i]
 }
 
-const qiniuDomain = 'r6ctg8uno.hd-bkt.clouddn.com';
-const qiniuUploadData = ref({
-    token: "",
-    key: ""
-})
-
 const searchKeyword = ref(null)
 const pageTotal = ref(null)
 const dialogFormVisible = ref(false)
@@ -300,84 +377,103 @@ const tableData = ref([])
 const addressInfo = ref([])
 const options = ref([])
 
-const updateDataReject = (tableDetail) => {
+// const updateDataReject = (tableDetail) => {
 
-    //添加handleconfirm
-    ElMessageBox.confirm(
-        console.log("tableDetail1", tableDetail),
-        '是否确认驳回需求',
-        {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning',
-        },
-    ).then(() => {
-        let tableDetailTemp = Object.assign({}, tableDetail);
-        defaultForm.value = tableDetailTemp
-        defaultForm.value.orderStatus = 0
-        updateUserOrderAPI(defaultForm.value).then(res => {
-            ElMessage({
-                type: 'success',
-                message: '驳回成功',
-            })
-            dialogFormVisible.value = false
-            defaultForm.value = Object.assign({}, defaultFormTemp)
-            getList()
-        })
-    })
-        .catch(() => {
-            ElMessage({
-                type: 'info',
-                message: '取消驳回',
-            })
-        })
-}
+//     //添加handleconfirm
+//     ElMessageBox.confirm(
+//         console.log("tableDetail1", tableDetail),
+//         '是否确认驳回需求',
+//         {
+//             confirmButtonText: '确定',
+//             cancelButtonText: '取消',
+//             type: 'warning',
+//         },
+//     ).then(() => {
+//         let tableDetailTemp = Object.assign({}, tableDetail);
+//         defaultForm.value = tableDetailTemp
+//         defaultForm.value.orderStatus = 0
+//         updateUserOrderAPI(defaultForm.value).then(res => {
+//             ElMessage({
+//                 type: 'success',
+//                 message: '驳回成功',
+//             })
+//             dialogFormVisible.value = false
+//             defaultForm.value = Object.assign({}, defaultFormTemp)
+//             getList()
+//         })
+//     })
+//         .catch(() => {
+//             ElMessage({
+//                 type: 'info',
+//                 message: '取消驳回',
+//             })
+//         })
+// }
 
-const updateDataArrivals = (tableDetail) => {
+// const updateDataArrivals = (tableDetail) => {
 
-    //添加handleconfirm
-    ElMessageBox.confirm(
-        console.log("tableDetail1", tableDetail),
-        '是否确认到货',
-        {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning',
-        },
-    ).then(() => {
-        let tableDetailTemp = Object.assign({}, tableDetail);
-        defaultForm.value = tableDetailTemp
-        defaultForm.value.orderStatus = 2
-        updateUserOrderAPI(defaultForm.value).then(res => {
-            ElMessage({
-                type: 'success',
-                message: '确认到货成功',
-            })
-            dialogFormVisible.value = false
-            defaultForm.value = Object.assign({}, defaultFormTemp)
-            getList()
-        })
+//     //添加handleconfirm
+//     ElMessageBox.confirm(
+//         console.log("tableDetail1", tableDetail),
+//         '是否确认到货',
+//         {
+//             confirmButtonText: '确定',
+//             cancelButtonText: '取消',
+//             type: 'warning',
+//         },
+//     ).then(() => {
+//         let tableDetailTemp = Object.assign({}, tableDetail);
+//         defaultForm.value = tableDetailTemp
+//         defaultForm.value.orderStatus = 2
+//         updateUserOrderAPI(defaultForm.value).then(res => {
+//             ElMessage({
+//                 type: 'success',
+//                 message: '确认到货成功',
+//             })
+//             dialogFormVisible.value = false
+//             defaultForm.value = Object.assign({}, defaultFormTemp)
+//             getList()
+//         })
 
-    })
-        .catch(() => {
-            ElMessage({
-                type: 'info',
-                message: '取消确认到货',
-            })
-        })
-}
+//     })
+//         .catch(() => {
+//             ElMessage({
+//                 type: 'info',
+//                 message: '取消确认到货',
+//             })
+//         })
+// }
 
 const getList = () => {
-    // defaultForm.value.userId = store.getters.userId
-    console.log("defaultFormGetList", defaultForm.value)
-    listUserOrderAPI(defaultList.value).then(res => {
-        console.log("res", res)
-        tableData.value = res.data.records
-        pageTotal.value = res.data.total
-        for (let i = 0; i < tableData.value.length; i++) {
-            changeStatus(tableData.value[i].orderStatus, i)
+    if (defaultList.value.dateState == 2) {
+        listUserDateOrderNoGroupAPI(defaultList.value).then(res => {
+            tableData.value = res.data.records
+            pageTotal.value = res.data.total
+        }).catch(console.log("false"))
+
+    } else if (defaultList.value.dateState == 3) {
+        if (defaultList.value.specifiedTime1 != '' && defaultList.value.specifiedTime2 != '') {
+            listUserDateOrderNoGroupAPI(defaultList.value).then(res => {
+                tableData.value = res.data.records
+                const timeFrames = (defaultList.value.specifiedTime1 + '----' + defaultList.value.specifiedTime2)
+                if (tableData.value != null) {
+                    for (let i = 0; i < tableData.value.length; i++) {
+                        tableData.value[i].timeFrame = timeFrames
+                    }
+                }
+                pageTotal.value = res.data.total
+            }).catch(console.log("false"))
+        } else {
+            ElMessage.error('请选择开始时间与结束时间')
         }
-    }).catch()
+    }
+    else {
+        listUserDateOrderNoGroupAPI(defaultList.value).then(res => {
+            tableData.value = res.data.records
+            pageTotal.value = res.data.total
+            console.log("tableData",tableData.value)
+        }).catch(console.log("false"))
+    }
 }
 
 // const handleCreate = () => {
@@ -425,14 +521,14 @@ const productChange = () => {
 const handleDetail = (index, row) => {
     console.log("row", row)
     tableDetail.value = row
-    store.commit("SET_ORDER_SN",row.orderSn)
+    store.commit("SET_ORDER_SN", row.orderSn)
     router.push("/orderDetail")
     // dialogFormVisible.value = true
 }
 
 const handleSearchList = () => {
     defaultList.value.pageNum = 1
-    defaultList.value.keyword1 = searchKeyword
+    defaultList.value.receiver = searchKeyword
     getList()
 }
 
@@ -463,7 +559,7 @@ const querySearch = (queryString, cb) => {
 const createFilter = (queryString) => {
     return (list) => {
         return (
-            list.title.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+            list.receiver.toLowerCase().indexOf(queryString.toLowerCase()) === 0
         )
     }
 }
@@ -532,6 +628,24 @@ getList()
 .search {
     display: flex;
     justify-content: space-between;
+}
+:deep()
+    .el-date-editor.el-range-editor.el-input__inner.el-date-editor--daterange {
+    height: 38px;
+    margin-left: 5px;
+}
+
+:deep().el-row {
+    display: flex;
+    justify-items: flex-start;
+}
+
+.el-radio-group {
+    margin-left: 10px;
+}
+
+:deep()label.el-radio.is-bordered {
+    background-color: white;
 }
 .el-pagination {
     --el-pagination-button-height: 40px;

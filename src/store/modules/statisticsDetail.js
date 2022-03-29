@@ -8,12 +8,14 @@ const statistics = {
         userSpecifiedTime1: '',
         userSpecifiedTime2: '',
         // userDetailName: '',
-        orderRadio:1,
-        orderDateState: 1,
-        orderSpecifiedTime1: '',
-        orderSpecifiedTime2: '',
+        // orderRadio:1,
+        // orderDateState: 1,
+        // orderSpecifiedTime1: '',
+        // orderSpecifiedTime2: '',
         // userDetailName: '',
         consumableRadio: 1,
+        consumableTitle: '',
+        consumableSkusTitle: '',
         consumableDateState: 1,
         consumableSpecifiedTime1: '',
         consumableSpecifiedTime2: '',
@@ -44,30 +46,39 @@ const statistics = {
         //     state.userDateState = userDateState
         //     storage.set("USER_DATE_STATE", userDateState)
         // },
-        SET_ORDER_DATESTATE: (state, orderDateState) => {
-            state.orderDateState = orderDateState
-            storage.set("ORDER_DATESTATE", orderDateState)
-        },
-        SET_ORDER_RADIO: (state, orderRadio) => {
-            state.orderRadio = orderRadio
-            storage.set("ORDER_RADIO", orderRadio)
-        },
-        SET_ORDER_SPECIFIED_TIME1: (state, orderSpecifiedTime1) => {
-            state.orderSpecifiedTime1 = orderSpecifiedTime1
-            storage.set("ORDER_SPECIFIED_TIME1", orderSpecifiedTime1)
-        },
-        SET_ORDER_SPECIFIED_TIME2: (state, orderSpecifiedTime2) => {
-            state.orderSpecifiedTime2 = orderSpecifiedTime2
-            storage.set("ORDER_SPECIFIED_TIME2", orderSpecifiedTime2)
-        },
+        // SET_ORDER_DATESTATE: (state, orderDateState) => {
+        //     state.orderDateState = orderDateState
+        //     storage.set("ORDER_DATESTATE", orderDateState)
+        // },
+        // SET_ORDER_RADIO: (state, orderRadio) => {
+        //     state.orderRadio = orderRadio
+        //     storage.set("ORDER_RADIO", orderRadio)
+        // },
+        // SET_ORDER_SPECIFIED_TIME1: (state, orderSpecifiedTime1) => {
+        //     state.orderSpecifiedTime1 = orderSpecifiedTime1
+        //     storage.set("ORDER_SPECIFIED_TIME1", orderSpecifiedTime1)
+        // },
+        // SET_ORDER_SPECIFIED_TIME2: (state, orderSpecifiedTime2) => {
+        //     state.orderSpecifiedTime2 = orderSpecifiedTime2
+        //     storage.set("ORDER_SPECIFIED_TIME2", orderSpecifiedTime2)
+        // },
 
         // SET_CONSUMABLE_DETAIL_NAME: (state, userDetailName) => {
         //     state.userDetailName = userDetailName
         //     storage.set("USER_DETAIL_NAME", userDetailName)
         // },
+
         SET_CONSUMABLE_DATE_STATE: (state, consumableDateState) => {
             state.consumableDateState = consumableDateState
             storage.set("CONSUMABLE_DATE_STATE", consumableDateState)
+        },
+        SET_CONSUMABLE_TITLE: (state, consumableTitle) => {
+            state.consumableTitle = consumableTitle
+            storage.set("CONSUMABLE_TITLE", consumableTitle)
+        },
+        SET_CONSUMABLE_SKUS_TITLE: (state, consumableSkusTitle) => {
+            state.consumableSkusTitle = consumableSkusTitle
+            storage.set("CONSUMABLE_SKUS_TITLE", consumableSkusTitle)
         },
         SET_CONSUMABLE_RADIO: (state, consumableRadio) => {
             state.consumableRadio = consumableRadio

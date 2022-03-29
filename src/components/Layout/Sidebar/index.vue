@@ -69,6 +69,7 @@ const resolvePath = (routePath) => {
     width: 200px;
     min-height: 100%;
 }
+
 </style>
 
 

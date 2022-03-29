@@ -15,7 +15,7 @@
             </el-menu-item>
         </template>
 
-        <el-sub-menu v-else ref="subMenu" :index="item.path" popper-append-to-body>
+        <el-sub-menu  :class="{ 'multipleSelection': collapse }" v-else ref="subMenu" :index="item.path" popper-append-to-body>
             <template #title>
                 <div>
                     <i class="icon" :data-index="item.path" :class="item.meta.icon"></i>
@@ -87,5 +87,11 @@ export default defineComponent({
 .icon {
     display: block;
     margin: 14px;
+}
+/* :deep().el-sub-menu .el-sub-menu__icon-arrow{
+    opacity: 0;
+} */
+:deep().multipleSelection i{
+    opacity: 0 ;
 }
 </style>
