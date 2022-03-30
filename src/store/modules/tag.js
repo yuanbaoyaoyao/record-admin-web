@@ -25,13 +25,6 @@ const tag = {
             state.editableTabs[data.i] = data
         }
     },
-    // actions:{
-    //     AddTags({ commit }, editableTabs) {
-    //         return new Promise((resolve,reject)=>{
-    //             commit('HANDLE_ADD_TAGS')
-    //         })
-    //     }
-    // }
 }
 
 export default tag

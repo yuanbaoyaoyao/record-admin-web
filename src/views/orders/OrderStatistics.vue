@@ -374,7 +374,7 @@ const getList = () => {
     store.commit("SET_USER_DATE_STATE", defaultList.value.dateState)
     store.commit("SET_USER_SPECIFIED_TIME1", defaultList.value.specifiedTime1)
     store.commit("SET_USER_SPECIFIED_TIME2", defaultList.value.specifiedTime2)
-    console.log("store.getter.dateState:", store.getters.dateState)
+    console.log("store.getters.dateState:", store.getters.dateState)
 }
 const chartsReset = ref(true)
 

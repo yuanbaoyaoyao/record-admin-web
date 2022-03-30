@@ -78,7 +78,7 @@
                     @selection-change="handleSelectionChange"
                 >
                     <el-table-column type="selection" width="55" />
-                    <el-table-column prop="productTitle" label="耗材类型" width="180" sortable/>
+                    <el-table-column prop="productTitle" label="耗材类型" width="180" sortable />
                     <el-table-column prop="productSkusTitle" label="耗材型号" width="180"></el-table-column>
                     <el-table-column prop="sumProductNumber" label="领用数量" width="180" sortable />
                     <el-table-column prop="countOrderNumber" label="订单数量" width="180" sortable />
@@ -174,12 +174,12 @@
 import Bar from "../../components/Charts/Bar.vue"
 import Pie from "../../components/Charts/Pie.vue"
 import Line from "../../components/Charts/Line.vue"
-import { ref, onMounted, nextTick } from "vue";
+import { ref, onMounted, nextTick,computed } from "vue";
 import { Search, Download, CirclePlus, Plus, Grid } from '@element-plus/icons'
 // import { listUserAPI, deleteUserAPI, updateUserAPI } from '@/api/user'
 import { listAllUserStatisticsURL } from '@/api/excel'
 import { listUserDateOrderAPI, listUserDateOrderAllListAPI, listUserOrderAPI, updateUserOrderAPI } from '@/api/user-order'
-import { listDateOrderProductCountNoGroupAPI,listDateOrderProductCountNoGroupAllListAPI } from "../../api/order-product";
+import { listDateOrderProductCountNoGroupAPI, listDateOrderProductCountNoGroupAllListAPI } from "../../api/order-product";
 import { ElMessage } from 'element-plus'
 import * as XLSX from 'xlsx'
 import {
@@ -223,12 +223,18 @@ const setYAxisData = (selection) => {
 
 const handleDetail = (row) => {
     store.commit("SET_CONSUMABLE_TITLE", row.productTitle)
-    store.commit("SET_CONSUMABLE_SKUS_TITLE",row.productSkusTitle)
+    store.commit("SET_CONSUMABLE_SKUS_TITLE", row.productSkusTitle)
     router.push({ path: '/consumableStatisticsDetail' })
     // console.log("row:",row)
 }
 
-const radio = ref(1)
+const radio = computed(() => {
+    if (store.getters.consumableRadio != '') {
+        return store.getters.consumableRadio
+    } else {
+        return 1
+    }
+})
 const startTime = ref()
 const endTime = ref()
 const timeFrame = ref()
@@ -377,7 +383,7 @@ const getList = () => {
     store.commit("SET_CONSUMABLE_DATE_STATE", defaultList.value.dateState)
     store.commit("SET_CONSUMABLE_SPECIFIED_TIME1", defaultList.value.specifiedTime1)
     store.commit("SET_CONSUMABLE_SPECIFIED_TIME2", defaultList.value.specifiedTime2)
-    console.log("store.getter.dateState:", store.getters.dateState)
+    console.log("store.getters.dateState:", store.getters.dateState)
 }
 const chartsReset = ref(true)
 

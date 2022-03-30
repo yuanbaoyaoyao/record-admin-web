@@ -88,9 +88,6 @@ export default defineComponent({
     display: block;
     margin: 14px;
 }
-/* :deep().el-sub-menu .el-sub-menu__icon-arrow{
-    opacity: 0;
-} */
 :deep().multipleSelection i{
     opacity: 0 ;
 }

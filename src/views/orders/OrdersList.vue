@@ -476,40 +476,6 @@ const getList = () => {
     }
 }
 
-// const handleCreate = () => {
-//     dialogStatus.value = "create"
-//     restForm()
-//     options.value.title = ''
-//     dialogFormVisible.value = true
-// }
-// const createData = () => {
-//     createProductSkusAPI(defaultForm.value).then(res => {
-//     })
-//     dialogFormVisible.value = false
-// }
-
-// const restForm = () => {
-//     defaultForm.value = Object.assign({}, defaultFormTemp.value);
-// }
-
-// const handleAvatarSuccess = (res, file) => {
-//     defaultForm.value.avatar = 'http://' + qiniuDomain + '/' + res.key;
-//     alert('success');
-// }
-// const beforeAvatarUpload = (file) => {
-//     qiniuUploadData.value.key = file.name
-//     const isJPG = file.type === 'image/jpeg'
-//     const isLt2M = file.size / 1024 / 1024 < 2
-
-//     if (!isJPG) {
-//         ElMessage.error('Avatar picture must be JPG format!')
-//     }
-//     if (!isLt2M) {
-//         ElMessage.error('Avatar picture size can not exceed 2MB!')
-//     }
-//     return isJPG && isLt2M
-// }
-
 const productChange = () => {
     for (let i = 0; i < options.value.length; i++) {
         if (options.value.title == options.value[i].title) {
@@ -577,7 +543,6 @@ const toggleSelection = (rows) => {
         multipleTable.value.clearSelection()
     }
 }
-
 
 const handleSelectionChange = (val) => {
     multipleSelection = val

@@ -1,17 +1,16 @@
 import router from './router'
-import store from './store'
 import { ElMessage } from 'element-plus'
-import NProgress from 'nprogress' // progress bar
-import 'nprogress/nprogress.css'// progress bar style
-import { getToken } from '@/utils/auth' // getToken from cookie
-import { computed } from '@vue/reactivity';
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+import { getToken } from '@/utils/auth' 
+import { computed } from '@vue/reactivity'
 import storage from '../src/utils/storage'
+import store from './store'
 
-NProgress.configure({ showSpinner: false })// NProgress Configuration
+NProgress.configure({ showSpinner: false })
 
-// permission judge function
 function hasPermission(perms, permissions) {
-  if (perms.indexOf('*') >= 0) return true // admin permission passed directly
+  if (perms.indexOf('*') >= 0) return true 
   if (!permissions) return true
   return perms.some(perm => permissions.indexOf(perm) >= 0)
 }
@@ -81,14 +80,13 @@ const addTags = (route) => {
 router.beforeEach((to, from, next) => {
   addTags(to)
 
-  NProgress.start() // start progress bar
-  if (getToken()) { // determine if there has token
-    /* has token*/
+  NProgress.start() 
+  if (getToken()) { 
     if (to.path === '/login') {
       next({ path: '/' })
       NProgress.done() // if current page is dashboard will not trigger	afterEach hook, so manually handle it
     } else {
-      if (store.getters.perms.length === 0) { // 判断当前用户是否已拉取完user_info信息
+      if (store.getters.adminPerms.length === 0) { // 判断当前用户是否已拉取完user_info信息
         store.dispatch('GetUserInfo').then(res => { // 拉取user_info
           const perms = res.data.perms // note: perms must be a array! such as: ['GET /aaa','POST /bbb']
           console.log("perms:", perms)
@@ -107,13 +105,9 @@ router.beforeEach((to, from, next) => {
         })
       } else {
         // 没有动态改变权限的需求可直接next() 删除下方权限判断 ↓
-        if (hasPermission(store.getters.perms, to.meta.perms)) {
+        if (hasPermission(store.getters.adminPerms, to.meta.perms)) {
           next()
         }
-        // else {
-        //   next({ path: '/401', replace: true, query: { noGoBack: true } })
-        // }
-        // 可删 ↑
       }
     }
   }

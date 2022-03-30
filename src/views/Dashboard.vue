@@ -4,49 +4,57 @@
             <el-col :span="8">
                 <el-card shadow="hover">
                     <div>
-                        <span>管理员信息</span>
+                        <router-link to="/adminsList">
+                            <span>管理员信息</span>
+                        </router-link>
                     </div>
                     <hr class="hr" />
                     <div class="admin-info">
                         <img src="../assets/logo.jpg" class="admin-avator" />
                         <div class="admin-info-cont">
-                            <div class="admin-info-name">元宝</div>
-                            <div class="admin-info-role">超级管理员</div>
+                            <div class="admin-info-name">{{ adminName }}</div>
+                            <div class="admin-info-role">{{ adminRoles }}</div>
                         </div>
                     </div>
                     <hr />
                     <div class="admin-info-list">
                         <div>
                             上次登录时间：
-                            <span>2019-11-01</span>
+                            <span>{{ adminLastLoginTime }}</span>
                         </div>
                         <div>
-                            上次登录地点：
-                            <span>东莞</span>
+                            上次登录IP：
+                            <span>{{ adminLastLoginIp }}</span>
                         </div>
                     </div>
                 </el-card>
             </el-col>
             <el-col :span="16">
                 <el-card shadow="hover">
-                    <div>
-                        <span>用户领用信息</span>
+                    <div class="orderInfo">
+                        <div>
+                            <router-link to="/ordersList">
+                                <span>用户需求信息</span>
+                            </router-link>
+                        </div>
                     </div>
                     <hr />
                     <div>
                         <ul class="user-info">
-                            <li>名称</li>
+                            <li>领用人</li>
                             <li>时间</li>
-                            <li>事件</li>
+                            <li>订单状态</li>
                         </ul>
                     </div>
                     <div class="user-info-list">
-                        <ul v-for="(item,index) in listData" :key="index">
-                            <li class="user-info-list-detail">
-                                <span>{{ item.name }}</span>
-                                <span>{{ item.time }}</span>
-                                <span>{{ item.event }}</span>
-                            </li>
+                        <ul v-for="(item, index) in tableData.slice(0, 4)" :key="index">
+                            <router-link to="/orderDetail" @click="handleOrderDetail(item.orderSn)">
+                                <li class="user-info-list-detail">
+                                    <span>{{ item.receiver }}</span>
+                                    <span>{{ item.createdAt }}</span>
+                                    <span>{{ item.orderStatus }}</span>
+                                </li>
+                            </router-link>
                         </ul>
                     </div>
                 </el-card>
@@ -56,10 +64,17 @@
             <el-col :span="8">
                 <el-card shadow="hover">
                     <div class="stock-info">
-                        <span>库存信息</span>
+                        <router-link to="/consumablesList">
+                            <span>库存信息</span>
+                        </router-link>
                         <hr />
                         <div class="chart">
-                            <Bar :list="list"/>
+                            <Bar
+                                v-if="chartsReset"
+                                :xAxisData="pSSxAxisData"
+                                :yAxisData="pSSyAxisData"
+                                :selection="pSSselection"
+                            />
                         </div>
                     </div>
                 </el-card>
@@ -67,10 +82,17 @@
             <el-col :span="8">
                 <el-card shadow="hover">
                     <div class="month-info">
-                        <span>本月信息</span>
+                        <router-link to="/consumableStatistics" @click="handleMonthOrderDetail()">
+                            <span>本月耗材领用信息</span>
+                        </router-link>
                         <hr />
                         <div class="chart">
-                            <Line />
+                            <Pie
+                                v-if="chartsReset"
+                                :xAxisData="monthOrderxAxisData"
+                                :yAxisData="monthOrderyAxisData"
+                                :selection="monthOrderselection"
+                            />
                         </div>
                     </div>
                 </el-card>
@@ -78,10 +100,17 @@
             <el-col :span="8">
                 <el-card shadow="hover">
                     <div class="year-info">
-                        <span>本年信息</span>
+                        <router-link to="/consumableStatistics" @click="handleYearOrderDetail()">
+                            <span>本年耗材领用信息</span>
+                        </router-link>
                         <hr />
                         <div class="chart">
-                            <Pie />
+                            <Line
+                                v-if="chartsReset"
+                                :xAxisData="yearOrderxAxisData"
+                                :yAxisData="yearOrderyAxisData"
+                                :selection="yearOrderselection"
+                            />
                         </div>
                     </div>
                 </el-card>
@@ -94,36 +123,194 @@
 import Bar from "../components/Charts/Bar.vue"
 import Pie from "../components/Charts/Pie.vue"
 import Line from "../components/Charts/Line.vue"
-import { ref } from "vue";
+import { listUserOrderAPI } from "../api/user-order"
+import { listProductSkusAPI } from "../api/product-skus"
+import { listDateOrderProductCountNoGroupAllListAPI } from "../api/order-product"
+import { computed, ref, nextTick } from "vue"
+import store from "../store"
+import storage from "../utils/storage"
 
-const list = ref(['1','JavaScript', 'HTML', 'CSS'])
+const handleOrderDetail = (orderSn) => {
+    store.commit("SET_ORDER_SN", orderSn)
+}
 
-const listData = [
-    {
-        name: "qwe",
-        time: "2021/12/7",
-        event: "need a card"
-    },
-    {
-        name: "qwe",
-        time: "2021/12/7",
-        event: "need a card"
-    },
-    {
-        name: "qwe",
-        time: "2021/12/7",
-        event: "need a card"
-    },
-    {
-        name: "qwe",
-        time: "2021/12/7",
-        event: "need a card"
-    },
-]
+const handleMonthOrderDetail = () => {
+    store.commit("SET_CONSUMABLE_RADIO", monthReceiveList.value.dataStatus)
+}
+
+const handleYearOrderDetail = () => {
+    store.commit("SET_CONSUMABLE_RADIO", yearReceiveList.value.dataStatus)
+}
+
+const adminName = computed(() => {
+    if (store.getters.adminName != '') {
+        return store.getters.adminName
+    } else {
+        return storage.get("ADMIN_NAME")
+    }
+})
+const adminRoles = computed(() => {
+    if (store.getters.adminRoles != '') {
+        return store.getters.adminRoles
+    } else {
+        return storage.get("ADMIN_ROLES")
+    }
+})
+const adminLastLoginIp = computed(() => {
+    if (store.getters.adminLastLoginIp != '') {
+        return store.getters.adminLastLoginIp
+    } else {
+        return storage.get("ADMIN_LAST_LOGIN_IP")
+    }
+})
+const adminLastLoginTime = computed(() => {
+    if (store.getters.adminLastLoginTime != '') {
+        return store.getters.adminLastLoginTime
+    } else {
+        return storage.get("ADMIN_LAST_LOGIN_TIME")
+    }
+})
+
+
+const status = {
+    "1": "审核中",
+    "2": "已到货",
+    "3": "已收货",
+    "4": "已结束(评价)",
+    "0": "已驳回",
+    "-1": "已取消",
+}
+const pSSxAxisData = ref([])
+const pSSyAxisData = ref([])
+const pSSselection = ref('库存总数')
+const monthOrderxAxisData = ref([])
+const monthOrderyAxisData = ref([])
+const monthOrderselection = ref('月领用总数')
+const yearOrderxAxisData = ref([])
+const yearOrderyAxisData = ref([])
+const yearOrderselection = ref('年领用总数')
+const chartsReset = ref(true)
+
+const productSkusStockInfo = ref([])
+const monthOrderReceiveInfo = ref([])
+const yearOrderReceiveInfo = ref([])
+const tableData = ref([])
+const monthReceiveList = ref({
+    dataStatus: 1
+})
+const yearReceiveList = ref({
+    dataStatus: 2
+})
+
+const setPSSXAxisData = () => {
+    pSSxAxisData.value = []
+    for (let i = 0; i < productSkusStockInfo.value.length; i++) {
+        pSSxAxisData.value[i] = productSkusStockInfo.value[i].productName
+    }
+}
+
+const setPSSYAxisData = (pSSselection) => {
+    pSSyAxisData.value = []
+    for (let i = 0; i < productSkusStockInfo.value.length; i++) {
+        pSSyAxisData.value[i] = productSkusStockInfo.value[i].stock
+    }
+}
+const setMonthOrderXAxisData = () => {
+    monthOrderxAxisData.value = []
+    for (let i = 0; i < monthOrderReceiveInfo.value.length; i++) {
+        monthOrderxAxisData.value[i] = monthOrderReceiveInfo.value[i].productSkusTitle
+    }
+}
+
+const setMonthOrderYAxisData = (monthOrderselection) => {
+    monthOrderyAxisData.value = []
+    for (let i = 0; i < monthOrderReceiveInfo.value.length; i++) {
+        monthOrderyAxisData.value[i] = monthOrderReceiveInfo.value[i].sumProductNumber
+    }
+}
+const setYearOrderXAxisData = () => {
+    yearOrderxAxisData.value = []
+    for (let i = 0; i < yearOrderReceiveInfo.value.length; i++) {
+        yearOrderxAxisData.value[i] = yearOrderReceiveInfo.value[i].productSkusTitle
+    }
+}
+
+const setYearOrderYAxisData = (yearOrderselection) => {
+    yearOrderyAxisData.value = []
+    for (let i = 0; i < yearOrderReceiveInfo.value.length; i++) {
+        yearOrderyAxisData.value[i] = yearOrderReceiveInfo.value[i].sumProductNumber
+    }
+}
+
+const changeStatus = (i, index) => {
+    tableData.value[index].orderStatus = status[i]
+}
+
+const getOrderList = () => {
+    listUserOrderAPI().then(res => {
+        tableData.value = res.data.records
+        for (let i = 0; i < tableData.value.length; i++) {
+            changeStatus(tableData.value[i].orderStatus, i)
+        }
+    })
+}
+const getProductSkusStock = () => {
+    chartsReset.value = false
+    nextTick(() => {
+        setTimeout(() => {
+            chartsReset.value = true
+        }, 500)
+    })
+    listProductSkusAPI().then(res => {
+        productSkusStockInfo.value = res.data.records
+        setPSSXAxisData()
+        setPSSYAxisData(pSSselection.value)
+    })
+}
+const getMonthProductSkusReceive = () => {
+    chartsReset.value = false
+    nextTick(() => {
+        setTimeout(() => {
+            chartsReset.value = true
+        }, 500)
+    })
+    listDateOrderProductCountNoGroupAllListAPI(monthReceiveList.value).then(res => {
+        monthOrderReceiveInfo.value = res.data
+        setMonthOrderXAxisData()
+        setMonthOrderYAxisData(monthOrderselection.value)
+    })
+}
+const getYearProductSkusReceive = () => {
+    chartsReset.value = false
+    nextTick(() => {
+        setTimeout(() => {
+            chartsReset.value = true
+        }, 500)
+    })
+    listDateOrderProductCountNoGroupAllListAPI(yearReceiveList.value).then(res => {
+        yearOrderReceiveInfo.value = res.data
+        setYearOrderXAxisData()
+        setYearOrderYAxisData(yearOrderselection.value)
+        // console.log("productSkusStockInfo:", productSkusStockInfo.value)
+        console.log("yearOrderReceiveInfo:", yearOrderReceiveInfo.value)
+
+    })
+}
+getOrderList()
+getProductSkusStock()
+getMonthProductSkusReceive()
+getYearProductSkusReceive()
 </script>
 
 
-<style >
+<style scoped>
+a {
+    text-decoration: none;
+    color: black;
+}
+.orderInfo {
+    display: flex;
+}
 .admin-info {
     display: flex;
     flex-direction: row;
@@ -172,5 +359,8 @@ const listData = [
 .user-info li {
     text-align: center;
     overflow: hidden;
+}
+:deep()a:link {
+    color: inherit;
 }
 </style>
