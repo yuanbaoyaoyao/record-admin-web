@@ -100,7 +100,7 @@
 import { ref, onMounted, nextTick } from "vue";
 import { Search, Download, CirclePlus, Plus, Grid } from '@element-plus/icons'
 import { listAllUserStatisticsURL } from '@/api/excel'
-import { listUserDateOrderAPI, listUserDateOrderAllListAPI, listUserOrderAPI, updateUserOrderAPI } from '@/api/user-order'
+import { listUserDateOrderCountAPI, listUserDateOrderAllListAPI, listUserOrderAPI, updateUserOrderAPI } from '@/api/user-order'
 import { listDateOrderNoGroupAPI } from "../../api/order-product";
 import { ElMessage } from 'element-plus'
 import * as XLSX from 'xlsx'
@@ -254,7 +254,7 @@ const handleCurrentChange = (val) => {
 const querySearch = (queryString, cb) => {
     let lists = []
     querySearchList.value.pageSize = pageTotal.value
-    listUserDateOrderAPI(querySearchList.value).then(res => {
+    listUserDateOrderCountAPI(querySearchList.value).then(res => {
         for (let i = 0; i < res.data.records.length; i++) {
             lists[i] = res.data.records[i]
         }

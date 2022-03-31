@@ -1,51 +1,80 @@
 <template>
     <div class="orderDetail">
         <div>
-            <el-steps :active="2" align-center>
-                <el-step title="Step 1" description="Some description" />
-                <el-step title="Step 2" description="Some description" />
-                <el-step title="Step 3" description="Some description" />
-                <el-step title="Step 4" description="Some description" />
+            <el-steps :active="visibleButton" align-center>
+                <el-step title="审核中" description="Some description" />
+                <el-step title="已到货" description="Some description" />
+                <el-step title="已收货" description="Some description" />
+                <el-step title="已结束(评价)" description="Some description" />
             </el-steps>
         </div>
-        <el-card>
-            <div>
+        <el-card class="content-info">
+            <div class="operation-button">
                 <span>当前订单状态：{{ userOrderViewInfo.orderStatus }}</span>
-                <el-button>1</el-button>
-                <el-button>1</el-button>
-                <el-button>1</el-button>
-                <el-button>1</el-button>
+                <div v-if="visibleButton == 1">
+                    <el-button type="primary">确认到货</el-button>
+                    <el-button type="info">订单备注</el-button>
+                    <el-button type="info">用户短信</el-button>
+                    <el-button type="danger">驳回需求</el-button>
+                </div>
+                <div v-if="visibleButton != 1">
+                    <el-button type="info">订单备注</el-button>
+                    <el-button type="info">用户短信</el-button>
+                </div>
             </div>
-            <div>
-                <div>
-                    <span>基本信息</span>
-                    <el-row>
-                        <el-col :span="4">订单号</el-col>
-                        <el-col :span="12">订单留言</el-col>
+            <div class="content-info-detail">
+                <div class="content-info-detail-part">
+                    <span class="table-head">
+                        <el-icon>
+                            <info-filled />
+                        </el-icon>基本信息
+                    </span>
+                    <div>
+                        <el-row class="table-row">
+                            <el-col class="table-title" :span="6">订单号</el-col>
+                            <el-col class="table-title" :span="18">订单留言</el-col>
+                        </el-row>
+                        <el-row>
+                            <el-col class="table-detail" :span="6">{{ userOrderViewInfo.orderSn }}</el-col>
+                            <el-col
+                                class="table-detail"
+                                :span="18"
+                            >{{ userOrderViewInfo.orderRemarks }}</el-col>
+                        </el-row>
+                    </div>
+                </div>
+                <div class="content-info-detail-part">
+                    <span class="table-head">
+                        <el-icon>
+                            <info-filled />
+                        </el-icon>领用人信息
+                    </span>
+                    <el-row class="table-row">
+                        <el-col class="table-title" :span="6">领用人</el-col>
+                        <el-col class="table-title" :span="6">使用人</el-col>
+                        <el-col class="table-title" :span="12">收货地址</el-col>
                     </el-row>
                     <el-row>
-                        <el-col :span="4">{{ userOrderViewInfo.orderSn }}</el-col>
-                        <el-col :span="12">{{ userOrderViewInfo.orderRemarks }}</el-col>
+                        <el-col class="table-detail" :span="6">{{ userOrderViewInfo.receiver }}</el-col>
+                        <el-col class="table-detail" :span="6">{{ userOrderViewInfo.user }}</el-col>
+                        <el-col
+                            class="table-detail"
+                            :span="12"
+                        >{{ userOrderViewInfo.addressDetail }}</el-col>
                     </el-row>
                 </div>
-                <div>
-                    <span>领用人信息</span>
-                    <el-row>
-                        <el-col :span="4">领用人</el-col>
-                        <el-col :span="4">使用人</el-col>
-                        <!-- <el-col :span="4">联系电话</el-col> -->
-                        <el-col :span="4">收货地址</el-col>
-                    </el-row>
-                    <el-row>
-                        <el-col :span="4">{{ userOrderViewInfo.receiver }}</el-col>
-                        <el-col :span="4">{{ userOrderViewInfo.user }}</el-col>
-                        <!-- <el-col :span="4">{{ userOrderViewInfo.orderSn }}</el-col> -->
-                        <el-col :span="4">{{ userOrderViewInfo.addressDetail }}</el-col>
-                    </el-row>
-                </div>
-                <div>
-                    <span>耗材信息</span>
-                    <el-table ref="multipleTable" :data="userOrderProductInfo">
+                <div class="content-info-detail-part">
+                    <span class="table-head">
+                        <el-icon>
+                            <info-filled />
+                        </el-icon>耗材信息
+                    </span>
+                    <el-table
+                        class="table-row"
+                        ref="multipleTable"
+                        border
+                        :data="userOrderProductInfo"
+                    >
                         <el-table-column label="耗材类别">
                             <template v-slot="scope">
                                 <p>{{ scope.row.productTitle }}</p>
@@ -63,19 +92,23 @@
                         </el-table-column>
                     </el-table>
                 </div>
-                <div>
-                    <span>操作信息</span>
-                    <el-row>
-                        <el-col :span="4">操作者</el-col>
-                        <el-col :span="4">操作时间</el-col>
-                        <el-col :span="4">操作细节</el-col>
-                        <el-col :span="4">备注</el-col>
+                <div class="content-info-detail-part">
+                    <span class="table-head">
+                        <el-icon>
+                            <info-filled />
+                        </el-icon>操作信息
+                    </span>
+                    <el-row class="table-row">
+                        <el-col class="table-title" :span="6">操作者</el-col>
+                        <el-col class="table-title" :span="6">操作时间</el-col>
+                        <el-col class="table-title" :span="6">操作动作</el-col>
+                        <el-col class="table-title" :span="6">备注</el-col>
                     </el-row>
                     <el-row>
-                        <el-col :span="4">123</el-col>
-                        <el-col :span="4">123</el-col>
-                        <el-col :span="4">123</el-col>
-                        <el-col :span="4">123</el-col>
+                        <el-col class="table-detail" :span="6">123</el-col>
+                        <el-col class="table-detail" :span="6">123</el-col>
+                        <el-col class="table-detail" :span="6">123</el-col>
+                        <el-col class="table-detail" :span="6">123</el-col>
                     </el-row>
                 </div>
             </div>
@@ -90,6 +123,9 @@ import { listUserOrderAPI } from '../../api/user-order';
 import { listOrderProductAPI } from '../../api/order-product'
 import storage from "../../utils/storage"
 import store from '../../store';
+import { InfoFilled } from '@element-plus/icons';
+
+const visibleButton = ref("1")
 
 const orderSn = computed(() => {
     if (store.getters.orderSn != '') {
@@ -130,6 +166,7 @@ const userOrderProductViewInfo = ref({
 })
 
 const changeStatus = (i, index) => {
+    visibleButton.value = i
     userOrderInfo.value[index].orderStatus = status[i]
 }
 
@@ -164,11 +201,55 @@ getUserOrderProductInfo()
 
 </script>
 
-<style>
+<style scoped>
+.content-info-detail-part {
+    margin-bottom: 20px;
+}
+.table-head {
+    font-size: larger;
+}
+.table-row {
+    margin-top: 20px;
+}
+.table-title {
+    border: 1px solid #dcdfe6;
+    padding: 10px;
+    background: #f2f6fc;
+    text-align: center;
+    font-size: 14px;
+    color: #303133;
+}
+.table-detail {
+    height: 60px;
+    line-height: 40px;
+    border: 1px solid #dcdfe6;
+    padding: 10px;
+    font-size: 14px;
+    color: #606266;
+    text-align: center;
+    overflow: hidden;
+}
+.content-info {
+    width: 90%;
+    margin-left: 5%;
+}
+/* :deep().el-card__body{
+    padding: 0;
+} */
 .orderDetail {
     background-color: white;
-        /* width: 80%; */
     padding: 20px 20px 20px 20px;
     margin: 20px auto;
+}
+.operation-button {
+    background-color: #f2f6fc;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 20px;
+    /* margin: ; */
+}
+.operation-button > span {
+    font-size: x-large;
 }
 </style>

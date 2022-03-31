@@ -60,13 +60,13 @@
             <div class="default-info-table">
                 <!-- <el-table :data="tableDataAllList">
                     <el-table-column prop="countOrderNumber" label="订单总数" />
-                    <el-table-column prop="sumProductNumber" label="申请耗材总数" />
-                    <el-table-column prop="maxNumSkuName" label="最多申请耗材型号" />
+                    <el-table-column prop="sumProductNumber" label="已领用耗材总数" />
+                    <el-table-column prop="maxNumSkuName" label="最多已领用耗材型号" />
                 </el-table> -->
                 <el-col>
                     <el-row class="table-cell-title">订单总数</el-row>
-                    <el-row class="table-cell-title">申请耗材总数</el-row>
-                    <el-row class="table-cell-title">最多申请耗材型号</el-row>
+                    <el-row class="table-cell-title">已领用耗材总数</el-row>
+                    <el-row class="table-cell-title">最多已领用耗材型号</el-row>
                 </el-col>
                 <el-col>
                     <el-row class="table-cell">123</el-row>
@@ -166,7 +166,7 @@ import { ref, onMounted, nextTick, computed } from "vue";
 import { Search, Download, CirclePlus, Plus, Grid } from '@element-plus/icons'
 // import { listUserAPI, deleteUserAPI, updateUserAPI } from '@/api/user'
 import { listAllUserStatisticsURL } from '@/api/excel'
-import { listUserDateOrderAPI, listUserDateOrderNoGroupAPI, listUserDateOrderAllListAPI, listUserOrderAPI, updateUserOrderAPI } from '@/api/user-order'
+import { listUserDateOrderCountAPI, listUserDateOrderNoGroupAPI, listUserDateOrderAllListAPI, listUserOrderAPI, updateUserOrderAPI } from '@/api/user-order'
 import { listDateOrderProductCountNoGroupAPI,listDateOrderProductCountNoGroupAllListAPI } from "../../api/order-product";
 import { ElMessage } from 'element-plus'
 import * as XLSX from 'xlsx'

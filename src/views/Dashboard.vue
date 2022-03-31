@@ -123,7 +123,7 @@
 import Bar from "../components/Charts/Bar.vue"
 import Pie from "../components/Charts/Pie.vue"
 import Line from "../components/Charts/Line.vue"
-import { listUserOrderAPI } from "../api/user-order"
+import { listUserOrderAPI, listUserDateOrderAllListDayAPI, listUserDateOrderAllListMonthAPI } from "../api/user-order"
 import { listProductSkusAPI } from "../api/product-skus"
 import { listDateOrderProductCountNoGroupAllListAPI } from "../api/order-product"
 import { computed, ref, nextTick } from "vue"

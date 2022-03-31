@@ -80,8 +80,8 @@
                     <el-table-column type="selection" width="55" />
                     <el-table-column prop="receiver" label="领用人" width="180" />
                     <el-table-column prop="countOrderNumber" label="订单总数" width="180" sortable></el-table-column>
-                    <el-table-column prop="sumProductNumber" label="申请耗材总数" width="180" sortable />
-                    <el-table-column prop="maxNumSkuName" label="最多申请耗材型号" width="180" />
+                    <el-table-column prop="sumProductNumber" label="已领用耗材总数" width="180" sortable />
+                    <el-table-column prop="maxNumSkuName" label="最多已领用耗材型号" width="180" />
                     <el-table-column prop="timeFrame" label="时间范围" width="360" />
                     <el-table-column fixed="right" label="操作" width="120">
                         <template v-slot="scope">
@@ -178,7 +178,7 @@ import { ref, onMounted, nextTick } from "vue";
 import { Search, Download, CirclePlus, Plus, Grid } from '@element-plus/icons'
 // import { listUserAPI, deleteUserAPI, updateUserAPI } from '@/api/user'
 import { listAllUserStatisticsURL } from '@/api/excel'
-import { listUserDateOrderAPI, listUserDateOrderAllListAPI, listUserOrderAPI, updateUserOrderAPI } from '@/api/user-order'
+import { listUserDateOrderCountAPI, listUserDateOrderAllListAPI, listUserOrderAPI, updateUserOrderAPI } from '@/api/user-order'
 import { ElMessage } from 'element-plus'
 import * as XLSX from 'xlsx'
 import {
@@ -190,7 +190,6 @@ import router from "../../router";
 import store from "../../store";
 import moment from 'moment'
 import storage from "../../utils/storage";
-
 
 const timePickerValue = ref()
 
@@ -341,7 +340,7 @@ const tableDataAllList = ref(null)
 
 const getList = () => {
     if (defaultList.value.dateState == 2) {
-        listUserDateOrderAPI(defaultList.value).then(res => {
+        listUserDateOrderCountAPI(defaultList.value).then(res => {
             tableData.value = res.data.records
             pageTotal.value = res.data.total
             currentYear()
@@ -349,7 +348,7 @@ const getList = () => {
 
     } else if (defaultList.value.dateState == 3) {
         if (defaultList.value.specifiedTime1 != '' && defaultList.value.specifiedTime2 != '') {
-            listUserDateOrderAPI(defaultList.value).then(res => {
+            listUserDateOrderCountAPI(defaultList.value).then(res => {
                 tableData.value = res.data.records
                 const timeFrames = (defaultList.value.specifiedTime1 + '----' + defaultList.value.specifiedTime2)
                 if (tableData.value != null) {
@@ -364,7 +363,7 @@ const getList = () => {
         }
     }
     else {
-        listUserDateOrderAPI(defaultList.value).then(res => {
+        listUserDateOrderCountAPI(defaultList.value).then(res => {
             tableData.value = res.data.records
             pageTotal.value = res.data.total
             currentMonth()
@@ -427,7 +426,7 @@ const handleCurrentChange = (val) => {
 const querySearch = (queryString, cb) => {
     let lists = []
     querySearchList.value.pageSize = pageTotal.value
-    listUserDateOrderAPI(querySearchList.value).then(res => {
+    listUserDateOrderCountAPI(querySearchList.value).then(res => {
         for (let i = 0; i < res.data.records.length; i++) {
             lists[i] = res.data.records[i]
         }
@@ -465,7 +464,7 @@ const handleSelectionChange = (val) => {
 //excel fontEnd
 const handleDowloadPage = () => {
     import('@/utils/Export2Excel').then(excel => {
-        const tHeader = ['领用人', '订单总数', '申请耗材总量', '最多申请耗材型号', '时间范围']
+        const tHeader = ['领用人', '订单总数', '已领用耗材总量', '最多已领用耗材型号', '时间范围']
         const filterVal = ['receiver', 'countOrderNumber', 'sumProductNumber', 'maxNumSkuName', 'timeFrame']
         const list = tableData.value
         const data = formatJson(filterVal, list)

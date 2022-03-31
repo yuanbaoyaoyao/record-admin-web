@@ -2,7 +2,12 @@
     <div>
         <div class="user-header">
             <div>
-                <el-col :span="12" class="search">用户名：{{ userDetailName }}</el-col>
+                <el-col :span="12" class="userName">
+                    <el-button disabled>
+                        用户名：
+                        <span class="userDetailName">{{ userDetailName }}</span>
+                    </el-button>
+                </el-col>
                 <!-- 可以换成el-select -->
                 <el-radio-group v-model="radio" @change="changeRadio(radio)">
                     <el-radio :label="1" border>本月</el-radio>
@@ -58,20 +63,19 @@
         </div>
         <div class="default-info">
             <div class="default-info-table">
-                <!-- <el-table :data="tableDataAllList">
-                    <el-table-column prop="countOrderNumber" label="订单总数" />
-                    <el-table-column prop="sumProductNumber" label="申请耗材总数" />
-                    <el-table-column prop="maxNumSkuName" label="最多申请耗材型号" />
-                </el-table> -->
                 <el-col>
-                    <el-row class="table-cell-title">订单总数</el-row>
-                    <el-row class="table-cell-title">申请耗材总数</el-row>
-                    <el-row class="table-cell-title">最多申请耗材型号</el-row>
+                    <div class="table-cell-title">
+                        <el-row class="table-cell-title-detail">订单总数</el-row>
+                        <el-row class="table-cell-title-detail">已领用耗材总数</el-row>
+                        <el-row class="table-cell-title-detail">最多已领用耗材型号</el-row>
+                    </div>
                 </el-col>
                 <el-col>
-                    <el-row class="table-cell">123</el-row>
-                    <el-row class="table-cell">123</el-row>
-                    <el-row class="table-cell">123</el-row>
+                    <div class="table-cell">
+                        <el-row class="table-cell-detail">{{ countOrderNumber }}</el-row>
+                        <el-row class="table-cell-detail">{{ sumProductNumber }}</el-row>
+                        <el-row class="table-cell-detail">{{ maxNumSkuName }}</el-row>
+                    </div>
                 </el-col>
             </div>
             <div class="charts">
@@ -166,7 +170,7 @@ import { ref, onMounted, nextTick, computed } from "vue";
 import { Search, Download, CirclePlus, Plus, Grid } from '@element-plus/icons'
 // import { listUserAPI, deleteUserAPI, updateUserAPI } from '@/api/user'
 import { listAllUserStatisticsURL } from '@/api/excel'
-import { listUserDateOrderAPI, listUserDateOrderNoGroupAPI, listUserDateOrderAllListAPI, listUserOrderAPI, updateUserOrderAPI } from '@/api/user-order'
+import { listUserDateOrderCountAPI, listUserDateOrderAPI, listUserDateOrderNoGroupAPI, listUserDateOrderAllListAPI, listUserOrderAPI, updateUserOrderAPI, listUserDateOrderAllListDayAPI, listUserDateOrderAllListMonthAPI } from '@/api/user-order'
 import { ElMessage } from 'element-plus'
 import * as XLSX from 'xlsx'
 import {
@@ -180,95 +184,6 @@ import store from "../../store";
 import moment from 'moment'
 import storage from "../../utils/storage";
 import { watch } from "vue";
-
-// let typeNameArr = []  // 第一列进行合并操作时存放的数组变量
-// let typeNamePos = 0 // 上面的数组的下标值
-// let storeArr = []  // 第二列进行合并操作时存放的数组变量
-// let storePos = 0// 上面的数组的下标值
-// let feeArr = [] // 第三列进行合并操作时存放的数组变量
-// let feePos = 0
-
-// const merageInit = () => { // 在下文的时候会用到，对数据进行初始化是很有必要的
-//     typeNameArr = [];
-//     typeNamePos = 0;
-//     storeArr = [];
-//     storePos = 0;
-//     feeArr = [];
-//     feePos = 0;
-// }
-// const merage = () => {
-//     merageInit(); // 前文的初始化数据函数
-//     for (let i = 0; i < tableData.value.length; i += 1) {
-//         if (i === 0) {
-//             // 第一行必须存在
-//             typeNameArr.push(1);
-//             typeNamePos = 0;
-//             storeArr.push(1);
-//             storePos = 0; F
-//             feeArr.push(1);
-//             feePos = 0;
-//         } else {
-//             // 判断当前元素与上一个元素是否相同,eg：typeNamePos 是 typeNameArr序号
-//             // 第一列 下面的是eslint的不限制语法
-//             // eslint-disable-next-line no-lonely-if 
-//             if (tableData.value[i].name === tableData.value[i - 1].name) {
-//                 typeNameArr[typeNamePos] += 1;
-//                 typeNameArr.push(0);
-//             } else {
-//                 typeNameArr.push(1);
-//                 typeNamePos = i;
-//             }
-//             // 第二列
-//             if (tableData.value[i].storeIdInfo === tableData.value[i - 1].storeIdInfo && tableData.value[i].name ===
-//                 tableData.value[i - 1].name) {
-//                 storeArr[storePos] += 1;
-//                 storeArr.push(0);
-//             } else {
-//                 storeArr.push(1);
-//                 storePos = i;
-//             }
-//             // 第三列
-//             if (tableData.value[i].feeType === tableData.value[i - 1].feeType && tableData.value[i].storeIdInfo
-//                 === tableData.value[i - 1].storeIdInfo && tableData.value[i].name ===
-//                 tableData.value[i - 1].name) {
-//                 feeArr[feePos] += 1;
-//                 feeArr.push(0);
-//             } else {
-//                 feeArr.push(1);
-//                 feePos = i;
-//             }
-//         }
-//     }
-// }
-
-// const objectSpanMethod = ({ row, column, rowIndex, columnIndex }) => {
-//     if (columnIndex === 0) {
-//         // 第一列的合并方法
-//         const row1 = typeNameArr[rowIndex];
-//         const col1 = row1 > 0 ? 1 : 0; // 如果被合并了row = 0; 则他这个列需要取消
-//         return {
-//             rowspan: 2,
-//             colspan: 1,
-//         };
-//     } else if (columnIndex === 3) {
-//         // 第二列的合并方法
-//         const row2 = storeArr[rowIndex];
-//         const col2 = row2 > 0 ? 1 : 0; // 如果被合并了row = 0; 则他这个列需要取消
-//         return {
-//             rowspan: row2,
-//             colspan: col2,
-//         };
-//     } else if (columnIndex === 4) {
-//         // 第三列的合并方法
-//         const row3 = feeArr[rowIndex];
-//         const col3 = row3 > 0 ? 1 : 0; // 如果被合并了row = 0; 则他这个列需要取消
-//         return {
-//             rowspan: row3,
-//             colspan: col3,
-//         };
-//     }
-// }
-
 const userDetailName = computed(() => {
     if (store.getters.userDetailName != '') {
         return store.getters.userDetailName
@@ -287,7 +202,7 @@ const selection = ref('订单总数')
 const setXAxisData = () => {
     xAxisData.value = []
     for (let i = 0; i < tableDataAllList.value.length; i++) {
-        xAxisData.value[i] = tableDataAllList.value[i].receiver
+        xAxisData.value[i] = tableDataAllList.value[i].timeUnit
     }
     // console.log("xAxisData11111111", xAxisData.value)
 }
@@ -419,22 +334,39 @@ let multipleSelection = []
 const multipleTable = ref()
 const tableData = ref([])
 const tableDataAllList = ref([])
+const countOrderNumber = ref("")
+const sumProductNumber = ref("")
+const maxNumSkuName = ref("")
 
 const handleDetail = (row) => {
 
 }
+const status = {
+    "1": "审核中",
+    "2": "已到货",
+    "3": "已收货",
+    "4": "已结束(评价)",
+    "0": "已驳回",
+    "-1": "已取消",
+}
+const changeStatus = (i, index) => {
+    tableData.value[index].orderStatus = status[i]
+}
 
 const getList = () => {
     if (defaultList.value.dateState == 2) {
-        listUserDateOrderNoGroupAPI(defaultList.value).then(res => {
+        listUserDateOrderAPI(defaultList.value).then(res => {
             tableData.value = res.data.records
             pageTotal.value = res.data.total
             currentYear()
+            for (let i = 0; i < tableData.value.length; i++) {
+                changeStatus(tableData.value[i].orderStatus, i)
+            }
         }).catch(console.log("false"))
 
     } else if (defaultList.value.dateState == 3) {
         if (defaultList.value.specifiedTime1 != '' && defaultList.value.specifiedTime2 != '') {
-            listUserDateOrderNoGroupAPI(defaultList.value).then(res => {
+            listUserDateOrderAPI(defaultList.value).then(res => {
                 tableData.value = res.data.records
                 const timeFrames = (defaultList.value.specifiedTime1 + '----' + defaultList.value.specifiedTime2)
                 if (tableData.value != null) {
@@ -443,29 +375,28 @@ const getList = () => {
                     }
                 }
                 pageTotal.value = res.data.total
+                for (let i = 0; i < tableData.value.length; i++) {
+                    changeStatus(tableData.value[i].orderStatus, i)
+                }
             }).catch(console.log("false"))
         } else {
             ElMessage.error('请选择开始时间与结束时间')
         }
     }
     else {
-        listUserDateOrderNoGroupAPI(defaultList.value).then(res => {
-            // for (let i = 0; i < res.data.records.length; i++) {
-            //     for (let j = 0; j < res.data.records[i].orderProductVoList.length; j++) {
-            //         let tempArr = { ...{ orderSn: '' }, ...res.data.records[i].orderProductVoList[j] }
-            //         tempArr.orderSn = res.data.records[i].orderSn
-            //         tempArr.createdAt = res.data.records[i].createdAt
-            //         tableData.value.push(tempArr)
-            //     }
-            // }
+        listUserDateOrderAPI(defaultList.value).then(res => {
             tableData.value = res.data.records
             pageTotal.value = res.data.total
             currentMonth()
+            console.log("defaulttttttttttttttt:", defaultList.value)
+            console.log("tableDataaaaaaaaaaaaaaaaaa", tableData.value)
+            for (let i = 0; i < tableData.value.length; i++) {
+                changeStatus(tableData.value[i].orderStatus, i)
+            }
         }).catch(console.log("false"))
     }
 }
 watch(userDetailName, () => {
-    alert("USER_DETAIL_NAME")
     defaultList.value.receiver = storage.get("USER_DETAIL_NAME")
     defaultList.value.dateState = storage.get("USER_DATE_STATE")
     defaultList.value.specifiedTime1 = storage.get("USER_SPECIFIED_TIME1")
@@ -477,29 +408,43 @@ watch(userDetailName, () => {
 const chartsReset = ref(true)
 
 const getAllList = () => {
+    chartsReset.value = false
     nextTick(() => {
         setTimeout(() => {
             chartsReset.value = true
         }, 500)
     })
     if (defaultList.value.dateState == 2) {
-        listUserDateOrderAllListAPI(defaultList.value).then(res => {
+        listUserDateOrderAllListMonthAPI(defaultList.value).then(res => {
             tableDataAllList.value = res.data
+            valueUserDefaultInfo(tableDataAllList.value)
             setXAxisData()
             setYAxisData(selection.value)
         })
     } else if (defaultList.value.dateState == 3) {
-        listUserDateOrderAllListAPI(defaultList.value).then(res => {
+        listUserDateOrderAllListDayAPI(defaultList.value).then(res => {
             tableDataAllList.value = res.data
+            valueUserDefaultInfo(tableDataAllList.value)
             setXAxisData()
             setYAxisData(selection.value)
         })
     } else {
-        listUserDateOrderAllListAPI(defaultList.value).then(res => {
+        listUserDateOrderAllListDayAPI(defaultList.value).then(res => {
             tableDataAllList.value = res.data
+            valueUserDefaultInfo(tableDataAllList.value)
             setXAxisData()
             setYAxisData(selection.value)
+            console.log("tableDataAllListtttttttttt:", tableDataAllList.value)
         })
+    }
+}
+const valueUserDefaultInfo = (data) => {
+    countOrderNumber.value = 0
+    sumProductNumber.value = 0
+    for (let i = 0; i < data.length; i++) {
+        countOrderNumber.value += data[i].countOrderNumber
+        maxNumSkuName.value = data[0].maxNumSkuName
+        sumProductNumber.value += data[i].sumProductNumber
     }
 }
 
@@ -523,7 +468,7 @@ const handleCurrentChange = (val) => {
 const querySearch = (queryString, cb) => {
     let lists = []
     querySearchList.value.pageSize = pageTotal.value
-    listUserDateOrderNoGroupAPI(querySearchList.value).then(res => {
+    listUserDateOrderAPI(querySearchList.value).then(res => {
         for (let i = 0; i < res.data.records.length; i++) {
             lists[i] = res.data.records[i]
         }
@@ -561,8 +506,8 @@ const handleSelectionChange = (val) => {
 //excel fontEnd
 const handleDowloadPage = () => {
     import('@/utils/Export2Excel').then(excel => {
-        const tHeader = ['订单号', '耗材类别', '耗材型号', '耗材数量', '创建时间']
-        const filterVal = ['receiver', 'countOrderNumber', 'sumProductNumber', 'maxNumSkuName', 'timeFrame']
+        const tHeader = ['订单号', '使用人', '订单状态', '订单留言', '创建时间']
+        const filterVal = ['orderSn', 'user', 'orderStatus', 'orderRemarks', 'createdAt']
         const list = tableData.value
         const data = formatJson(filterVal, list)
         excel.export_json_to_excel({
@@ -591,43 +536,46 @@ getAllList()
 
 </script>
 <style scoped>
+.table-cell-title {
+    height: 100%;
+    position: relative;
+    display: grid;
+    grid-template-rows: 33% 33% auto;
+}
+.table-cell {
+    height: 100%;
+    position: relative;
+    display: grid;
+    grid-template-rows: 33% 33% auto;
+}
+.table-cell-detail {
+    border-right: 1px solid #dcdfe6;
+    border-bottom: 1px solid #dcdfe6;
+    /* text-align: center; */
+    align-content: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #606266;
+    text-align: center;
+    overflow: auto;
+}
+
+.table-cell-title-detail {
+    border-right: 1px solid #dcdfe6;
+    border-bottom: 1px solid #dcdfe6;
+    background: #f2f6fc;
+    align-content: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #303133;
+    overflow: auto;
+}
 .default-info-table {
     background-color: white;
-    margin-right: 10px;
-}
-.default-info-table :deep()thead > tr {
-    display: grid;
-    /* grid-template-rows: 33% 33% auto; */
-    height: 100%;
-}
-.default-info-table :deep()thead > th {
-    height: 100%;
-}
-.default-info-table :deep()tbody > tr {
-    display: grid;
-    /* grid-template-rows: 33% 33% auto; */
-    height: 100%;
-}
-:deep()table.el-table__header {
-    height: 100%;
-}
-.default-info-table:deep().el-table--fit.el-table--enable-row-hover.el-table--enable-row-transition.el-table {
     display: grid;
     grid-template-columns: 50% auto;
-    height: 100%;
-}
-.default-info-table:deep().el-table td.el-table__cell,
-.el-table th.el-table__cell.is-leaf {
-    border-bottom: none !important;
-}
-.default-info-table:deep().el-table td.el-table__cell,
-:deep() .el-table th.el-table__cell.is-leaf {
-    border-bottom: none !important;
-    border-left: 1px solid #ebeef5;
-}
-.default-info-table:deep().el-table__body-wrapper.is-scrolling-none
-    table.el-table__body {
-    height: 100%;
+    position: relative;
+    margin-right: 10px;
 }
 .default-info {
     margin-bottom: 10px;
@@ -651,9 +599,12 @@ button.el-button.el-button--primary.button-data-type.el-dropdown-selfdefine {
 } */
 .user-footer,
 .user-header,
-.search {
+.userName {
     display: flex;
     justify-content: space-between;
+}
+.userDetailName {
+    color: black;
 }
 
 :deep()
@@ -740,25 +691,4 @@ button.el-button.el-button--primary.button-data-type.el-dropdown-selfdefine {
 .tableproductName :deep()span.el-input__suffix {
     margin-right: 45px;
 }
-  /* .table-cell {
-    line-height: 40px;
-    border-right: 1px solid #DCDFE6;
-    border-bottom: 1px solid #DCDFE6;
-    padding: 10px;
-    font-size: 14px;
-    color: #606266;
-    text-align: center;
-    overflow: hidden;
-  }
-
-  .table-cell-title {
-      display: grid;
-    border-right: 1px solid #DCDFE6;
-    border-bottom: 1px solid #DCDFE6;
-    padding: 10px;
-    background: #F2F6FC;
-    text-align: center;
-    font-size: 14px;
-    color: #303133;
-  } */
 </style>

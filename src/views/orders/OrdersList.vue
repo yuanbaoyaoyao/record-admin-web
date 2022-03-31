@@ -229,7 +229,7 @@ import {
 import { listProductSkusAPI, createProductSkusAPI, deleteProductSkusAPI, updateProductSkusAPI } from '@/api/product-skus'
 import { listProductAPI as getProduct } from "../../api/product"
 import { listAllProductSkusURL } from "../../api/excel"
-import { listUserOrderAPI, updateUserOrderAPI,listUserDateOrderNoGroupAPI  } from "../../api/user-order"
+import { listUserOrderAPI, updateUserOrderAPI, listUserDateOrderNoGroupAPI } from "../../api/user-order"
 import { getToken } from "../../api/upload-pic"
 import { ElMessage, ElMessageBox } from 'element-plus'
 import * as XLSX from 'xlsx'
@@ -448,6 +448,9 @@ const getList = () => {
     if (defaultList.value.dateState == 2) {
         listUserDateOrderNoGroupAPI(defaultList.value).then(res => {
             tableData.value = res.data.records
+            for (let i = 0; i < tableData.value.length; i++) {
+                changeStatus(tableData.value[i].orderStatus, i)
+            }
             pageTotal.value = res.data.total
         }).catch(console.log("false"))
 
@@ -462,6 +465,9 @@ const getList = () => {
                     }
                 }
                 pageTotal.value = res.data.total
+                for (let i = 0; i < tableData.value.length; i++) {
+                    changeStatus(tableData.value[i].orderStatus, i)
+                }
             }).catch(console.log("false"))
         } else {
             ElMessage.error('请选择开始时间与结束时间')
@@ -470,8 +476,11 @@ const getList = () => {
     else {
         listUserDateOrderNoGroupAPI(defaultList.value).then(res => {
             tableData.value = res.data.records
+            for (let i = 0; i < tableData.value.length; i++) {
+                changeStatus(tableData.value[i].orderStatus, i)
+            }
             pageTotal.value = res.data.total
-            console.log("tableData",tableData.value)
+            console.log("tableData", tableData.value)
         }).catch(console.log("false"))
     }
 }
@@ -566,6 +575,7 @@ const handleDowloadPage = () => {
         })
     })
 }
+
 const formatJson = (filterVal, jsonData) => {
     return jsonData.map(v => filterVal.map(j => {
         return v[j]
@@ -579,6 +589,7 @@ const handleDowloadAllURL = () => {
 }
 
 getList()
+
 // getToken().then(res => {
 //     qiniuUploadData.value.token = res.data.token
 // })

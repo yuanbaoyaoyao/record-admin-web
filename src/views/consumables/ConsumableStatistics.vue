@@ -178,7 +178,7 @@ import { ref, onMounted, nextTick,computed } from "vue";
 import { Search, Download, CirclePlus, Plus, Grid } from '@element-plus/icons'
 // import { listUserAPI, deleteUserAPI, updateUserAPI } from '@/api/user'
 import { listAllUserStatisticsURL } from '@/api/excel'
-import { listUserDateOrderAPI, listUserDateOrderAllListAPI, listUserOrderAPI, updateUserOrderAPI } from '@/api/user-order'
+import { listUserDateOrderCountAPI, listUserDateOrderAllListAPI, listUserOrderAPI, updateUserOrderAPI } from '@/api/user-order'
 import { listDateOrderProductCountNoGroupAPI, listDateOrderProductCountNoGroupAllListAPI } from "../../api/order-product";
 import { ElMessage } from 'element-plus'
 import * as XLSX from 'xlsx'
