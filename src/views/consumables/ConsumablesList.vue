@@ -160,7 +160,7 @@ import router from "../../router";
 const querySearchList = ref({
     pageNum: 1,
     pageSize: 5,
-    keyword1: null
+    title: null
 })
 
 const defaultFormTemp = ref({
@@ -170,7 +170,6 @@ const defaultFormTemp = ref({
     productId: '',
     pageNum: 1,
     pageSize: 5,
-    keyword1: null
 })
 const textMap = {
     update: '编辑',
@@ -197,7 +196,6 @@ const options = ref([])
 
 const getList = () => {
     listProductSkusAPI(defaultForm.value).then(res => {
-        console.log("res", res)
         tableData.value = res.data.records
         pageTotal.value = res.data.total
     }).catch(console.log("getList fail"))

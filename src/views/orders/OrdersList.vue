@@ -335,7 +335,7 @@ const defaultList = ref({
 const querySearchList = ref({
     pageNum: 1,
     pageSize: 5,
-    keyword1: null
+    title: null
 })
 
 const defaultFormTemp = {

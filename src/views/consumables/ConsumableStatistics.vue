@@ -174,7 +174,7 @@
 import Bar from "../../components/Charts/Bar.vue"
 import Pie from "../../components/Charts/Pie.vue"
 import Line from "../../components/Charts/Line.vue"
-import { ref, onMounted, nextTick,computed } from "vue";
+import { ref, onMounted, nextTick, computed,watch } from "vue";
 import { Search, Download, CirclePlus, Plus, Grid } from '@element-plus/icons'
 // import { listUserAPI, deleteUserAPI, updateUserAPI } from '@/api/user'
 import { listAllUserStatisticsURL } from '@/api/excel'
@@ -227,14 +227,16 @@ const handleDetail = (row) => {
     router.push({ path: '/consumableStatisticsDetail' })
     // console.log("row:",row)
 }
+const radio = ref(1)
 
-const radio = computed(() => {
-    if (store.getters.consumableRadio != '') {
-        return store.getters.consumableRadio
-    } else {
-        return 1
-    }
-})
+// const radio = computed(() => {
+//     if (store.getters.consumableRadio != '') {
+//         radioTemp.value = radio.value
+//         return store.getters.consumableRadio
+//     } else {
+//         return 1
+//     }
+// })
 const startTime = ref()
 const endTime = ref()
 const timeFrame = ref()
@@ -385,6 +387,18 @@ const getList = () => {
     store.commit("SET_CONSUMABLE_SPECIFIED_TIME2", defaultList.value.specifiedTime2)
     console.log("store.getters.dateState:", store.getters.dateState)
 }
+
+const radioTemp = computed(() => {
+    if (store.getters.consumableRadio != '') {
+        return store.getters.consumableRadio
+    } else {
+        return 1
+    }
+})
+watch(radioTemp, () => {
+    radio.value = store.getters.consumableRadio
+})
+
 const chartsReset = ref(true)
 
 const getAllList = () => {

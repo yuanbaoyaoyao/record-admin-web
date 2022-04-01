@@ -54,7 +54,7 @@
                     :total="pageTotal"
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
-                >></el-pagination>
+                ></el-pagination>
             </div>
         </div>
     </div>
