@@ -7,6 +7,9 @@ const storage = {
     },
     remove() {
         localStorage.removeItem(key)
+    },
+    clear(){
+        localStorage.clear
     }
 }
 

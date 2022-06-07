@@ -1,6 +1,6 @@
 import Cookies from 'js-cookie'
 
-const TokenKey = 'X-Record-Admin-Token'
+const TokenKey = 'Record-Admin-Token'
 
 export function getToken() {
   return Cookies.get(TokenKey)

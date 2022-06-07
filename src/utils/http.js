@@ -27,7 +27,7 @@ const http = {
     },
     delete(url, params) {
         const config = {
-            method: 'post',
+            method: 'delete',
             url: url
         }
         if (params) config.data = params

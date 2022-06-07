@@ -92,13 +92,13 @@ import {
 const defaultList = ref({
     pageNum: 1,
     pageSize: 5,
-    keyword1: null
+    title: null
 })
 
 const querySearchList = ref({
     pageNum: 1,
     pageSize: 5,
-    keyword1: null
+    title: null
 })
 
 const defaultFormTemp = ref({
@@ -160,7 +160,7 @@ const handleDelete = (row) => {
 
 const handleSearchList = () => {
     defaultList.value.pageNum = 1
-    defaultList.value.keyword1 = searchKeyword
+    defaultList.value.title = searchKeyword
     getList()
 }
 
@@ -219,6 +219,7 @@ getList()
 .search {
     display: flex;
     justify-content: space-between;
+    margin-right: 20px;
 }
 .el-pagination {
     --el-pagination-button-height: 40px;

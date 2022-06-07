@@ -55,10 +55,11 @@ const adminUser = {
         LoginByUsername({ commit }, userInfo) {
             const username = userInfo.username.trim()
             return new Promise((resolve, reject) => {
-                loginByUsername(username, userInfo.password, userInfo.code).then(res => {
+                loginByUsername(username, userInfo.password).then(res => {
                     console.log(res)
                     const token = res.data.token
                     commit('SET_ADMIN_TOKEN', token)
+                    console.log("登录成功")
                     setToken(token)
                     resolve()
                 }).catch(error => {
@@ -68,12 +69,11 @@ const adminUser = {
         },
 
         GetUserInfo({ commit, state }) {
-            console.log("调用了获取用户信息")
             return new Promise((resolve, reject) => {
-                getUserInfo(state.token).then(res => {
+                getUserInfo(state).then(res => {
                     const data = res.data
                     console.log("data", data)
-                    if (data.perms && data.perms.length > 0) { // 验证返回的perms是否是一个非空数组
+                    if (data.perms && data.perms.length > 0) { 
                         commit('SET_ADMIN_PERMS', data.perms)
                     } else {
                         reject('getInfo: perms must be a non-null array !')
@@ -84,12 +84,6 @@ const adminUser = {
                     commit('SET_ADMIN_USERID', data.adminUserId)
                     commit('SET_ADMIN_LAST_LOGIN_IP',data.lastLoginIp)
                     commit('SET_ADMIN_LAST_LOGIN_TIME',data.lastLoginTime)
-
-                    // console.log("dataaaaaaaaaaaaaaaa:",data)
-                    // listRoleAPI(data.adminRoleId).then(res=>{
-                    //     console.log("resssssssssssssssss",res)
-                    //     commit('SET_ADMIN_ROLES',res.data.records.name)
-                    // })
                     resolve(res)
                 }).catch(error => {
                     reject(error)
@@ -97,7 +91,6 @@ const adminUser = {
             })
         },
 
-        // 登出
         LogOut({ commit, state, dispatch }) {
             return new Promise((resolve, reject) => {
                 logout(state.token).then(() => {
@@ -105,6 +98,7 @@ const adminUser = {
                     commit('SET_ADMIN_ROLES', [])
                     commit('SET_ADMIN_PERMS', [])
                     removeToken()
+                    storage.clear
                     resetRouter()
                     resolve()
                 }).catch(error => {
@@ -119,26 +113,27 @@ const adminUser = {
                 commit('SET_ADMIN_TOKEN', '')
                 commit('SET_ADMIN_ROLES', [])
                 removeToken()
+                storage.clear;
                 resolve()
             })
         },
 
         // 动态修改权限
-        ChangeRoles({ commit, dispatch }, role) {
-            return new Promise(async resolve => {
-                commit('SET_ADMIN_TOKEN', role)
-                setToken(role)
-                const { roles } = await dispatch('GetUserInfo')
-                resetRouter()
-                const accessRoutes = await dispatch('permission/generateRoutes', roles, { root: true })
-                // dynamically add accessible routes
-                router.addRoutes(accessRoutes)
-                // reset visited views and cached views
-                dispatch('tagsView/delAllViews', null, { root: true })
+        // ChangeRoles({ commit, dispatch }, role) {
+        //     return new Promise(async resolve => {
+        //         commit('SET_ADMIN_TOKEN', role)
+        //         setToken(role)
+        //         const { roles } = await dispatch('GetUserInfo')
+        //         resetRouter()
+        //         const accessRoutes = await dispatch('permission/generateRoutes', roles, { root: true })
+        //         // dynamically add accessible routes
+        //         router.addRoutes(accessRoutes)
+        //         // reset visited views and cached views
+        //         dispatch('tagsView/delAllViews', null, { root: true })
 
-                resolve()
-            })
-        }
+        //         resolve()
+        //     })
+        // }
     }
 }
 

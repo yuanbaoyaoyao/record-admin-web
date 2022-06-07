@@ -1,6 +1,6 @@
 import axios from "axios";
 import {
-    ElMessage
+    ElNotification
 } from "element-plus";
 import store from "../store";
 import { getToken } from "./auth";
@@ -15,8 +15,9 @@ const service = axios.create({
 
 service.interceptors.request.use(
     config => {
-        if (store.getters.token) {
-            config.headers['Authorization'] = getToken()
+        if (store.getters.token || getToken()) {
+            // jwt认证
+            config.headers['Authorization'] = 'Bearer ' + getToken()
         }
         return config;
     },
@@ -35,6 +36,7 @@ service.interceptors.response.use(
     error => {
         if (error.response && error.response.status) {
             const status = error.response.status
+            const errorMsg = error.response.data.message
             switch (status) {
                 case 400:
                     message = '请求错误';
@@ -73,14 +75,24 @@ service.interceptors.response.use(
                     message = 'HTTP版本不受支持';
                     break;
                 default:
-                    message = '请求失败'
+                    if (errorMsg != undefined) {
+                        message = errorMsg
+                    } else {
+                        message = '请求失败'
+                    }
             }
         } else {
             if (JSON.stringify(error).includes('timeout')) {
-                ElMessage.error('服务器响应超时，请刷新当前页')
+                ElNotification({
+                    title: "服务器响应超时，请刷新当前页",
+                    type: "error",
+                });
             }
         }
-        ElMessage.error(message)
+        ElNotification({
+            title: message,
+            type: "error",
+        });
         return Promise.reject(error);
     }
 )

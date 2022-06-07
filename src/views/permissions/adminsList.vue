@@ -306,6 +306,7 @@ getRole().then(res => {
 .search {
     display: flex;
     justify-content: space-between;
+    margin-right: 20px;
 }
 .el-pagination {
     --el-pagination-button-height: 40px;
