@@ -3,6 +3,7 @@ import {
     createRouter
 } from "vue-router";
 import Layout from "../components/Layout/Home.vue";
+import { shallowRef } from "vue";
 
 export const constantRoutes = [
     {
@@ -39,7 +40,7 @@ export const asyncRoutes = [
 
     {
         path: '/user',
-        component: Layout,
+        component: shallowRef(Layout),
         redirect: '/user/usersList',
         name: 'userManage',
         meta: {
@@ -66,6 +67,14 @@ export const asyncRoutes = [
                 component: () => import("../views/users/UserTrace.vue"),
 
             }, {
+                path: "/usersFeedback",
+                name: "UsersFeedback",
+                meta: {
+                    perms: ['GET /user/usersFeedback'],
+                    title: '用户反馈'
+                },
+                component: () => import("../views/users/UsersFeedback.vue"),
+            }, {
                 path: "/userStatistics",
                 name: "UserStatistics",
                 meta: {
@@ -73,7 +82,6 @@ export const asyncRoutes = [
                     title: '用户统计'
                 },
                 component: () => import("../views/users/UserStatistics.vue"),
-
             }, {
                 path: "/userStatisticsDetail",
                 name: "UserStatisticsDetail",
@@ -88,7 +96,7 @@ export const asyncRoutes = [
     },
     {
         path: '/order',
-        component: Layout,
+        component: shallowRef(Layout),
         redirect: '/order/ordersList',
         name: 'orderManage',
         meta: {
@@ -131,7 +139,7 @@ export const asyncRoutes = [
     },
     {
         path: '/consumables',
-        component: Layout,
+        component: shallowRef(Layout),
         redirect: '/consumables/consumablesList',
         name: 'consumablesManage',
         meta: {
@@ -179,8 +187,30 @@ export const asyncRoutes = [
 
     },
     {
+        path: '/pages',
+        component: shallowRef(Layout),
+        redirect: '/pages/pagesManagement',
+        name: 'pagesManagement',
+        meta: {
+            title: '页面管理',
+            icon: "fas fa-image fa-2x fa-fw",
+        },
+        children: [
+            {
+                path: "/pagesManagement",
+                name: "PagesManagement",
+                meta: {
+                    perms: ['GET /pages/pagesManagement'],
+                    title: '页面管理',
+                    icon: "fas fa-image fa-2x fa-fw",
+                },
+                component: () => import("../views/pages/pagesManagement.vue"),
+            }
+        ]
+    },
+    {
         path: '/admin',
-        component: Layout,
+        component: shallowRef(Layout),
         redirect: '/admin/adminsList',
         name: 'adminManage',
         meta: {

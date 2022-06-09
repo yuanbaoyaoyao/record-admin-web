@@ -1,6 +1,6 @@
 <script setup>
 import echarts from "@/plugins/echarts";
-import { onBeforeMount, onMounted, nextTick } from "vue";
+import { onBeforeMount, onMounted, nextTick, onUnmounted,ref } from "vue";
 import { useEventListener, tryOnUnmounted, useTimeoutFn } from "@vueuse/core";
 
 const props = defineProps({
@@ -14,14 +14,15 @@ const props = defineProps({
   },
   selection: {
     type: String,
-    default: () => '',
+    default: () => "",
   },
-})
-// console.log("xAxisData:", props.xAxisData)
-// console.log("yAxisData:", props.yAxisData)
-// console.log("selection:", props.selection)
+});
+console.log("xAxisData:", props.xAxisData)
+console.log("yAxisData:", props.yAxisData)
+console.log("selection:", props.selection)
 
 let echartInstance;
+const isShowEcharts = ref(true);
 
 function initechartInstance() {
   const echartDom = document.querySelector(".line");
@@ -30,51 +31,53 @@ function initechartInstance() {
   echartInstance.clear(); //清除旧画布 重新渲染
 
   echartInstance.setOption({
-    dataZoom: [{
-      id: 'dataZoomX',
-      type: 'slider',
-      xAxisIndex: [0],
-      filterMode: 'filter'
-    }],
+    dataZoom: [
+      {
+        id: "dataZoomX",
+        type: "slider",
+        xAxisIndex: [0],
+        filterMode: "filter",
+      },
+    ],
     toolbox: {
       show: true,
       feature: {
         saveAsImage: {
           show: true,
           name: "折线图",
-          excludeComponents: ['toolbox'],
+          excludeComponents: ["toolbox"],
           pixelRatio: 2,
-          title:'下载'
-        }
-      }
+          title: "下载",
+        },
+      },
     },
     grid: {
       bottom: "20%",
       height: "68%",
-      containLabel: true
+      containLabel: true,
     },
     tooltip: {
-      trigger: "item"
+      trigger: "item",
     },
     xAxis: {
       type: "category",
       axisLabel: {
-        interval: 0
+        interval: 0,
       },
       data: props.xAxisData,
     },
     yAxis: {
       type: "value",
-      minInterval: 1
+      minInterval: 1,
     },
     series: [
       {
         name: props.selection,
         data: props.yAxisData,
         type: "line",
-        areaStyle: {}
-      }
-    ]
+        areaStyle: {},
+      },
+    ],
   });
 }
 
@@ -82,6 +85,10 @@ onBeforeMount(() => {
   nextTick(() => {
     initechartInstance();
   });
+});
+
+onUnmounted(() => {
+  isShowEcharts.value = false;
 });
 
 onMounted(() => {
@@ -102,8 +109,9 @@ tryOnUnmounted(() => {
 });
 </script>
 
-<template>
-  <div class="line"></div>
+<template >
+  <div v-if="props.xAxisData.length != 0 && isShowEcharts" class="line"></div>
+  <div v-else>暂无数据</div>
 </template>
 
 <style scoped>

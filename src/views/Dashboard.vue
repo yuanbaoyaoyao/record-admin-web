@@ -10,7 +10,7 @@
           </div>
           <hr class="hr" />
           <div class="admin-info">
-            <img src="../assets/logo.jpg" class="admin-avator" />
+            <img src="{{adminAvatar}}" class="admin-avator" />
             <div class="admin-info-cont">
               <div class="admin-info-name">{{ adminName }}</div>
               <div class="admin-info-role">{{ adminRoles }}</div>
@@ -162,6 +162,13 @@ const adminName = computed(() => {
     return storage.get("ADMIN_NAME");
   }
 });
+const adminAvatar = computed(() => {
+  if (store.getters.adminAvatar != "") {
+    return store.getters.adminAvatar;
+  } else {
+    return storage.get("ADEMIN_AVATAR");
+  }
+});
 const adminRoles = computed(() => {
   if (store.getters.adminRoles != "") {
     return store.getters.adminRoles;
@@ -210,10 +217,10 @@ const monthOrderReceiveInfo = ref([]);
 const yearOrderReceiveInfo = ref([]);
 const tableData = ref([]);
 const monthReceiveList = ref({
-  dataStatus: 1,
+  dateState: 1,
 });
 const yearReceiveList = ref({
-  dataStatus: 2,
+  dateState: 4,
 });
 
 const setPSSXAxisData = () => {
@@ -294,7 +301,9 @@ const getMonthProductSkusReceive = () => {
   });
   listDateOrderProductCountNoGroupAllListAPI(monthReceiveList.value).then(
     (res) => {
+      console.log("monthReceiveList.value:",monthReceiveList.value)
       monthOrderReceiveInfo.value = res.data;
+      console.log("resssssssssssssssssssssss:",res)
       setMonthOrderXAxisData();
       setMonthOrderYAxisData(monthOrderselection.value);
     }
@@ -309,6 +318,8 @@ const getYearProductSkusReceive = () => {
   });
   listDateOrderProductCountNoGroupAllListAPI(yearReceiveList.value).then(
     (res) => {
+      console.log("yearReceiveList.value:",yearReceiveList.value)
+
       yearOrderReceiveInfo.value = res.data;
       setYearOrderXAxisData();
       setYearOrderYAxisData(yearOrderselection.value);

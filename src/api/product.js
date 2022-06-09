@@ -5,6 +5,10 @@ let resquest = "/adminIp/product/"
 export function listProductAPI(params){
     return http.get(`${resquest}`+`list`,params)
 }
+export function listProductAllAPI(params){
+    return http.get(`${resquest}`+`listAll`,params)
+}
+
 export function createProductAPI(params){
     return http.post(`${resquest}`+`create`,params)
 }

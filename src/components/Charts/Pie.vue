@@ -1,6 +1,6 @@
 <script setup>
 import echarts from "@/plugins/echarts";
-import { onBeforeMount, onMounted, nextTick, ref } from "vue";
+import { onBeforeMount, onMounted, nextTick, onUnmounted, ref } from "vue";
 import { useEventListener, tryOnUnmounted, useTimeoutFn } from "@vueuse/core";
 
 const props = defineProps({
@@ -14,25 +14,24 @@ const props = defineProps({
   },
   selection: {
     type: String,
-    default: () => '',
+    default: () => "",
   },
-})
-const pieData = ref([])
-// console.log("xAxisData:", props.xAxisData)
-// console.log("yAxisData:", props.yAxisData)
-// console.log("length:", props.xAxisData.length)
-// console.log("selection:", props.selection)
-
-
+});
+const pieData = ref([]);
+// console.log("xAxisData:", props.xAxisData);
+// console.log("yAxisData:", props.yAxisData);
+// console.log("length:", props.xAxisData.length);
+// console.log("selection:", props.selection);
 
 for (let i = 0; i < props.xAxisData.length; i++) {
-  let name = props.xAxisData[i]
-  let value = props.yAxisData[i]
-  pieData.value[i] = { value, name }
+  let name = props.xAxisData[i];
+  let value = props.yAxisData[i];
+  pieData.value[i] = { value, name };
 }
-console.log("pieData:", pieData.value)
+console.log("pieData:", pieData.value);
 
 let echartInstance;
+const isShowEcharts = ref(true);
 
 function initechartInstance() {
   const echartDom = document.querySelector(".pie");
@@ -47,18 +46,18 @@ function initechartInstance() {
         saveAsImage: {
           show: true,
           name: "饼图",
-          excludeComponents: ['toolbox'],
+          excludeComponents: ["toolbox"],
           pixelRatio: 2,
-          title: '下载'
-        }
-      }
+          title: "下载",
+        },
+      },
     },
     tooltip: {
-      trigger: "item"
+      trigger: "item",
     },
     legend: {
       orient: "vertical",
-      right: true
+      right: true,
     },
     series: [
       {
@@ -71,11 +70,11 @@ function initechartInstance() {
           itemStyle: {
             shadowBlur: 10,
             shadowOffsetX: 0,
-            shadowColor: "rgba(0, 0, 0, 0.5)"
-          }
-        }
-      }
-    ]
+            shadowColor: "rgba(0, 0, 0, 0.5)",
+          },
+        },
+      },
+    ],
   });
 }
 
@@ -83,6 +82,10 @@ onBeforeMount(() => {
   nextTick(() => {
     initechartInstance();
   });
+});
+
+onUnmounted(() => {
+  isShowEcharts.value = false;
 });
 
 onMounted(() => {
@@ -103,8 +106,9 @@ tryOnUnmounted(() => {
 });
 </script>
 
-<template>
-  <div class="pie"></div>
+<template >
+  <div v-if="props.xAxisData.length != 0 && isShowEcharts" class="pie"></div>
+  <div v-else>暂无数据</div>
 </template>
 
 <style scoped>

@@ -15,7 +15,7 @@ export function generateIndexRouter(data) {
     return indexRouter
 }
 
-function generateChildRouters(data) {
+export function generateChildRouters(data) {
     const routers = [];
     for (let item of data) {
         let component = "";
@@ -93,7 +93,3 @@ function generateChildRouters(data) {
     }
     return routers
 }
-
-export function isOAuth2AppEnv() {
-    return /wxwork|dingtalk/i.test(navigator.userAgent)
-  }

@@ -258,7 +258,6 @@ const setXAxisData = () => {
   for (let i = 0; i < tableDataAllList.value.length; i++) {
     xAxisData.value[i] = tableDataAllList.value[i].productSkusTitle;
   }
-  // console.log("xAxisData11111111", xAxisData.value)
 };
 
 const setYAxisData = (selection) => {
@@ -280,7 +279,7 @@ const handleDetail = (row) => {
   store.commit("SET_CONSUMABLE_SKUS_TITLE", row.productSkusTitle);
   router.push({ path: "/consumableStatisticsDetail" });
 };
-const radio = ref();
+const radio = ref(storage.get("CONSUMABLE_RADIO"));
 
 const startTime = ref();
 const endTime = ref();
@@ -327,6 +326,7 @@ const changeRadio = (radio) => {
     timePickerValue.value = null;
   }
 };
+
 const changeTimePicker = (timePickerValue) => {
   defaultList.value.specifiedTime1 = timePickerValue[0];
   defaultList.value.specifiedTime2 = timePickerValue[1];
@@ -364,19 +364,19 @@ const shortcuts = [
 
 const options = [
   {
-    value: "1",
+    value: 1,
     label: "本月",
   },
   {
-    value: "2",
+    value: 2,
     label: "本年",
   },
   {
-    value: "3",
+    value: 3,
     label: "指定时间",
   },
   {
-    value: "4",
+    value: 4,
     label: "全部时间",
   },
 ];
@@ -390,6 +390,9 @@ const defaultList = ref({
   specifiedTime1: "",
   specifiedTime2: "",
 });
+if (storage.get("CONSUMABLE_RADIO") != null) {
+  defaultList.value.dateState = storage.get("CONSUMABLE_RADIO");
+}
 
 const querySearchList = ref({
   pageNum: 1,
@@ -471,6 +474,7 @@ const getList = () => {
       })
       .catch(console.log("false"));
   }
+  console.log("radio.value:", radio.value);
   store.commit("SET_CONSUMABLE_RADIO", radio.value);
   store.commit("SET_CONSUMABLE_DATE_STATE", defaultList.value.dateState);
   store.commit(
@@ -488,11 +492,13 @@ const radioTemp = computed(() => {
   if (store.getters.consumableRadio != "") {
     return store.getters.consumableRadio;
   } else {
-    return 1;
+    return 4;
   }
 });
 watch(radioTemp, () => {
   radio.value = store.getters.consumableRadio;
+  defaultList.value.dateState = radio.value;
+  getList();
 });
 
 const chartsReset = ref(true);

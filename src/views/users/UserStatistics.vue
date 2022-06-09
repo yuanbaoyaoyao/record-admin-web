@@ -388,16 +388,6 @@ const querySearchList = ref({
   receiver: null,
 });
 
-const defaultFormTemp = ref({
-  name: "",
-  avatar: "",
-  email: "",
-  email_verified_at: "",
-  enable: "",
-});
-
-const defaultForm = ref(Object.assign({}, defaultFormTemp.value));
-
 const searchKeyword = ref(null);
 const pageTotal = ref(null);
 
@@ -454,6 +444,7 @@ const getList = () => {
   } else {
     listUserDateOrderCountAPI(defaultList.value)
       .then((res) => {
+        console.log("ressssssssssssssssss111111111111111:", res);
         tableData.value = res.data.records;
         pageTotal.value = res.data.total;
         if (tableData.value != null) {
@@ -484,25 +475,11 @@ const getAllList = () => {
       chartsReset.value = true;
     }, 500);
   });
-  if (defaultList.value.dateState == 2) {
-    listUserDateOrderAllListAPI(defaultList.value).then((res) => {
-      tableDataAllList.value = res.data;
-      setXAxisData();
-      setYAxisData(selection.value);
-    });
-  } else if (defaultList.value.dateState == 3) {
-    listUserDateOrderAllListAPI(defaultList.value).then((res) => {
-      tableDataAllList.value = res.data;
-      setXAxisData();
-      setYAxisData(selection.value);
-    });
-  } else {
-    listUserDateOrderAllListAPI(defaultList.value).then((res) => {
-      tableDataAllList.value = res.data;
-      setXAxisData();
-      setYAxisData(selection.value);
-    });
-  }
+  listUserDateOrderAllListAPI(defaultList.value).then((res) => {
+    tableDataAllList.value = res.data;
+    setXAxisData();
+    setYAxisData(selection.value);
+  });
 };
 
 const handleSearchList = () => {
