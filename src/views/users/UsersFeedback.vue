@@ -91,7 +91,7 @@
     <el-dialog v-model="dialogFormVisible" title="用户反馈">
       <div>
         <el-form :model="defaultForm">
-          <el-form-item label="用户名" :label-width="formLabelWidth">
+          <el-form-item label="用户名" >
             <el-input
               v-model="defaultForm.name"
               autocomplete="off"
@@ -99,7 +99,7 @@
               disabled
             ></el-input>
           </el-form-item>
-          <el-form-item label="反馈标题" :label-width="formLabelWidth">
+          <el-form-item label="反馈标题" >
             <el-input
               v-model="defaultForm.name"
               autocomplete="off"
@@ -107,7 +107,7 @@
               disabled
             ></el-input>
           </el-form-item>
-          <el-form-item label="图片" :label-width="formLabelWidth">
+          <el-form-item label="图片" >
             <el-upload
               class="avatar-uploader"
               action="http://upload.qiniup.com"
@@ -128,7 +128,7 @@
               </el-icon>
             </el-upload>
           </el-form-item>
-          <el-form-item label="反馈内容" :label-width="formLabelWidth">
+          <el-form-item label="反馈内容" >
             <el-input
               v-model="defaultForm.email"
               type="textarea"

@@ -70,13 +70,13 @@
     <div class="dialog">
         <el-dialog v-model="dialogFormVisible" :title="textMap[dialogStatus]">
             <el-form :model="defaultForm">
-                <el-form-item label="管理员名称" :label-width="formLabelWidth">
+                <el-form-item label="管理员名称" >
                     <el-input v-model="defaultForm.name" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="管理员密码" :label-width="formLabelWidth">
+                <el-form-item label="管理员密码" >
                     <el-input v-model="defaultForm.password" autocomplete="off" type="password"></el-input>
                 </el-form-item>
-                <el-form-item label="头像" :label-width="formLabelWidth">
+                <el-form-item label="头像" >
                     <el-upload
                         class="avatar-uploader"
                         action="http://upload.qiniup.com"
@@ -92,7 +92,7 @@
                         </el-icon>
                     </el-upload>
                 </el-form-item>
-                <el-form-item label="管理员角色" :label-width="formLabelWidth">
+                <el-form-item label="管理员角色" >
                     <el-select
                         v-model="options.name"
                         class="m-2"

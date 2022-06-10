@@ -93,7 +93,7 @@
     <div class="dialog">
         <el-dialog v-model="dialogFormVisible" title="编辑">
             <el-form :model="defaultForm">
-                <el-form-item label="名称" :label-width="formLabelWidth">
+                <el-form-item label="名称" >
                     <el-input
                         v-model="defaultForm.name"
                         autocomplete="off"
@@ -101,7 +101,7 @@
                         disabled
                     ></el-input>
                 </el-form-item>
-                <el-form-item label="头像" :label-width="formLabelWidth">
+                <el-form-item label="头像" >
                     <el-upload
                         class="avatar-uploader"
                         action="http://upload.qiniup.com"
@@ -118,7 +118,7 @@
                         </el-icon>
                     </el-upload>
                 </el-form-item>
-                <el-form-item label="邮箱" :label-width="formLabelWidth">
+                <el-form-item label="邮箱" >
                     <el-input
                         v-model="defaultForm.email"
                         type="textarea"
@@ -126,10 +126,10 @@
                         disabled
                     ></el-input>
                 </el-form-item>
-                <el-form-item label="激活时间" :label-width="formLabelWidth">
+                <el-form-item label="激活时间" >
                     <el-input v-model="defaultForm.emailVerifiedAt" autocomplete="off" disabled></el-input>
                 </el-form-item>
-                <el-form-item label="是否启用" :label-width="formLabelWidth">
+                <el-form-item label="是否启用" >
                     <el-switch v-model="defaultForm.enable" />
                 </el-form-item>
             </el-form>

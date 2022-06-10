@@ -97,7 +97,7 @@
   <div class="dialog">
     <el-dialog v-model="dialogFormVisible" :title="textMap[dialogStatus]">
       <el-form :model="defaultForm">
-        <el-form-item label="耗材类别" :label-width="formLabelWidth">
+        <el-form-item label="耗材类别" >
           <el-select
             v-model="options.title"
             class="m-2"
@@ -115,14 +115,14 @@
             <el-button type="primary" round>添加新类别</el-button>
           </router-link>
         </el-form-item>
-        <el-form-item label="耗材型号" :label-width="formLabelWidth">
+        <el-form-item label="耗材型号" >
           <el-input
             v-model="defaultForm.title"
             autocomplete="off"
             type="productName"
           ></el-input>
         </el-form-item>
-        <el-form-item label="图片" :label-width="formLabelWidth">
+        <el-form-item label="图片" >
           <el-upload
             class="avatar-uploader"
             action="http://upload.qiniup.com"
@@ -142,14 +142,14 @@
             </el-icon>
           </el-upload>
         </el-form-item>
-        <el-form-item label="耗材描述" :label-width="formLabelWidth">
+        <el-form-item label="耗材描述" >
           <el-input
             v-model="defaultForm.description"
             type="textarea"
             autocomplete="off"
           ></el-input>
         </el-form-item>
-        <el-form-item label="库存" :label-width="formLabelWidth">
+        <el-form-item label="库存" >
           <el-input v-model="defaultForm.stock" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>

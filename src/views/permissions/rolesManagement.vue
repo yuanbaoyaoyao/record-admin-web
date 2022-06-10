@@ -84,10 +84,10 @@
   <div class="dialog">
     <el-dialog v-model="dialogFormVisible" :title="textMap[dialogStatus]">
       <el-form :model="defaultForm">
-        <el-form-item label="角色名称" :label-width="formLabelWidth">
+        <el-form-item label="角色名称" >
           <el-input v-model="defaultForm.name" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="角色描述" :label-width="formLabelWidth">
+        <el-form-item label="角色描述" >
           <el-input
             v-model="defaultForm.description"
             autocomplete="off"

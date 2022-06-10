@@ -61,10 +61,10 @@
     <div class="dialog">
         <el-dialog v-model="dialogFormVisible" title="新增耗材类别">
             <el-form :model="defaultForm">
-                <el-form-item label="耗材类别" :label-width="formLabelWidth">
+                <el-form-item label="耗材类别" >
                     <el-input v-model="defaultForm.title" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="类别描述" :label-width="formLabelWidth">
+                <el-form-item label="类别描述" >
                     <el-input v-model="defaultForm.description" autocomplete="off" type="textarea"></el-input>
                 </el-form-item>
             </el-form>
