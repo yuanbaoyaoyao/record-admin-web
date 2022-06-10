@@ -48,22 +48,32 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="name" label="用户名" width="180" />
-        <el-table-column prop="name" label="反馈标题" width="180" />
-        <el-table-column prop="name" label="反馈内容" width="180" />
+        <el-table-column prop="username" label="用户名" width="180" />
+        <el-table-column prop="feedbackTitle" label="反馈标题" width="180" />
+        <el-table-column prop="feedbackContent" label="反馈内容" width="180" />
         <el-table-column label="图片" width="180">
           <template v-slot="scope">
             <el-image
               style="width: 100px; height: 100px"
-              :src="scope.row.avatar"
+              :src="scope.row.feedbackPicUrl"
               :initial-index="1"
             ></el-image>
           </template>
         </el-table-column>
+        <el-table-column prop="isRead" label="是否已读" sortable width="180" />
+        <el-table-column
+          prop="isFinished"
+          label="当前状态"
+          sortable
+          width="180"
+        />
         <el-table-column prop="createdAt" label="创建时间" sortable />
         <el-table-column fixed="right" label="操作" width="120">
           <template v-slot="scope">
-            <el-button type="text" size="small" @click="handleUpdate(scope.row)"
+            <el-button
+              type="text"
+              size="small"
+              @click="handleUpdate(scope.row, scope.$index)"
               >查看详情</el-button
             >
           </template>
@@ -91,36 +101,30 @@
     <el-dialog v-model="dialogFormVisible" title="用户反馈">
       <div>
         <el-form :model="defaultForm">
-          <el-form-item label="用户名" >
+          <el-form-item label="用户名">
             <el-input
-              v-model="defaultForm.name"
+              v-model="defaultForm.username"
               autocomplete="off"
-              type="productName"
               disabled
             ></el-input>
           </el-form-item>
-          <el-form-item label="反馈标题" >
+          <el-form-item label="反馈标题">
             <el-input
-              v-model="defaultForm.name"
+              v-model="defaultForm.feedbackTitle"
               autocomplete="off"
-              type="productName"
               disabled
             ></el-input>
           </el-form-item>
-          <el-form-item label="图片" >
+          <el-form-item label="图片">
             <el-upload
               class="avatar-uploader"
               action="http://upload.qiniup.com"
               :data="qiniuUploadData"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
-              :on-progress="handleProgress"
-              :on-error="handleError"
               disabled
             >
               <img
-                v-if="defaultForm.avatar"
-                :src="defaultForm.avatar"
+                v-if="defaultForm.feedbackPicUrl"
+                :src="defaultForm.feedbackPicUrl"
                 class="avatar"
               />
               <el-icon v-else class="avatar-uploader-icon">
@@ -128,9 +132,9 @@
               </el-icon>
             </el-upload>
           </el-form-item>
-          <el-form-item label="反馈内容" >
+          <el-form-item label="反馈内容">
             <el-input
-              v-model="defaultForm.email"
+              v-model="defaultForm.feedbackContent"
               type="textarea"
               autocomplete="off"
               disabled
@@ -140,30 +144,35 @@
       </div>
       <div>
         <div class="feedback-content-detail">
-          <p>1</p>
-          <p>1</p>
-          <p>1</p>
-          <p>1</p>
-          <p>1</p>
-          <p>1</p>
-          <p>1</p>
-          <p>1</p>
-          <p>1</p>
-          <p>1</p>
-          <p>1</p>
-          <p>1</p>
+          <div v-for="detail in feedbackDetailData" :key="detail">
+            <div
+              class="feedback-content-detail-user-content"
+              v-if="detail.adminUserId == null"
+            >
+              {{ detail.content }}
+            </div>
+            <div class="feedback-content-detail-admin-user" v-else >
+              <div class="feedback-content-detail-admin-user-content">
+                {{ detail.content }}
+              </div>
+              <div class="feedback-content-detail-admin-user-name">
+                {{ detail.adminUserName }}
+              </div>
+            </div>
+          </div>
         </div>
         <el-form class="feedback-send-message">
-          <el-input placeholder="请输入回复信息" type="textarea" />
-          <el-button>发送回复</el-button>
+          <el-input
+            v-model="message"
+            placeholder="请输入回复信息"
+            type="textarea"
+          />
+          <el-button @click="handleSendMessage">发送回复</el-button>
         </el-form>
       </div>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleEnable(defaultForm)"
-            >确定</el-button
-          >
+          <el-button @click="dialogFormVisible = false">关闭窗口</el-button>
         </span>
       </template>
     </el-dialog>
@@ -173,6 +182,14 @@
 import { ref, onMounted } from "vue";
 import { Search, Download, CirclePlus, Plus } from "@element-plus/icons";
 import { listUserAPI, deleteUserAPI, updateUserAPI } from "@/api/user";
+import {
+  listUserFeedbackAPI,
+  updateUserFeedbackAPI,
+} from "@/api/user-feedback";
+import {
+  listUserFeedbackDetailAPI,
+  createUserFeedbackDetailAPI,
+} from "@/api/user-feedback-detail";
 import { ElMessage } from "element-plus";
 import * as XLSX from "xlsx";
 import {
@@ -181,6 +198,7 @@ import {
   ElFile,
 } from "element-plus/es/components/upload/src/upload.type";
 import router from "../../router";
+import storage from "../../utils/storage";
 
 const defaultList = ref({
   pageNum: 1,
@@ -195,11 +213,17 @@ const querySearchList = ref({
 });
 
 const defaultFormTemp = ref({
-  name: "",
-  avatar: "",
-  email: "",
-  email_verified_at: "",
-  enable: "",
+  username: "",
+  feedbackPicUrl: "",
+  feedbackTitle: "",
+  feedbackContent: "",
+});
+
+const defaultFeedbackForm = ref({
+  id: null,
+  userFeedbackId: null,
+  adminUserId: null,
+  content: null,
 });
 
 const defaultForm = ref(Object.assign({}, defaultFormTemp.value));
@@ -211,57 +235,48 @@ const dialogFormVisible = ref(false);
 let multipleSelection = [];
 const multipleTable = ref();
 const tableData = ref([]);
+const feedbackDetailData = ref();
+const message = ref();
 
 const getList = () => {
-  listUserAPI(defaultList.value)
-    .then((res) => {
-      tableData.value = res.data.records;
-      pageTotal.value = res.data.total;
-    })
-    .catch((err) => tableData(err));
+  listUserFeedbackAPI().then((res) => {
+    for (let data of res.data.records) {
+      if (data.isRead == false) {
+        data.isRead = "未读";
+      } else {
+        data.isRead = "已读";
+      }
+      if (data.isFinished == false) {
+        data.isFinished = "进行中";
+      } else {
+        data.isFinished = "已结束";
+      }
+    }
+    tableData.value = res.data.records;
+    pageTotal.value = res.data.total;
+  });
 };
 
-const handleAvatarSuccess = (res, file) => {
-  defaultForm.value.avatar = "http://" + qiniuDomain + "/" + res.key;
-  alert("success");
-};
-const beforeAvatarUpload = (file) => {
-  qiniuUploadData.value.key = file.name;
-  const isJPG = file.type === "image/jpeg";
-  const isLt2M = file.size / 1024 / 1024 < 2;
-
-  if (!isJPG) {
-    ElMessage.error("Avatar picture must be JPG format!");
-  }
-  if (!isLt2M) {
-    ElMessage.error("Avatar picture size can not exceed 2MB!");
-  }
-  return isJPG && isLt2M;
-};
-
-const handleUpdate = (row) => {
+const handleUpdate = (row, index) => {
+  defaultFeedbackForm.value.id = row.id;
+  defaultFeedbackForm.value.userFeedbackId = row.id;
+  updateUserFeedbackAPI(defaultFeedbackForm.value).then((res) => {
+    row.isRead = "已读";
+    tableData.value[index] = row;
+  });
+  listUserFeedbackDetailAPI(defaultFeedbackForm.value).then((res) => {
+    feedbackDetailData.value = res.data;
+  });
   dialogFormVisible.value = true;
   defaultForm.value = row;
 };
-const updateData = () => {
-  updateUserAPI(defaultForm.value)
-    .then((res) => {
-      getList();
-    })
-    .catch((err) => tableData(err));
-  dialogFormVisible.value = false;
-};
-const handleEnable = (row) => {
-  defaultForm.value = row;
-  updateData();
-};
 
-const handleDelete = (row) => {
-  deleteUserAPI(row)
-    .then((res) => {
-      getList();
-    })
-    .catch((err) => tableData(err));
+const handleSendMessage = () => {
+  defaultFeedbackForm.value.adminUserId = storage.get("ADMIN_USERID");
+  defaultFeedbackForm.value.content = message.value;
+  createUserFeedbackDetailAPI(defaultFeedbackForm.value).then((res) => {
+    console.log("createUserFeedbackDetailAPI:", res);
+  });
 };
 
 const handleSearchList = () => {
@@ -284,7 +299,7 @@ const handleCurrentChange = (val) => {
 const querySearch = (queryString, cb) => {
   let lists = [];
   querySearchList.value.pageSize = pageTotal.value;
-  listUserAPI(querySearchList.value).then((res) => {
+  listUserFeedbackAPI(querySearchList.value).then((res) => {
     for (let i = 0; i < res.data.records.length; i++) {
       lists[i] = res.data.records[i];
     }
@@ -429,9 +444,10 @@ getList();
   margin-bottom: 15px;
   overflow-y: scroll;
   overflow-x: hidden;
+  padding: 10px;
 }
-.feedback-send-message{
-    display: flex;
+.feedback-send-message {
+  display: flex;
 }
 :deep().el-table__row:hover .el-input__inner {
   transition: background-color 0.25s ease;
@@ -444,5 +460,71 @@ getList();
 
 .tableproductName :deep()span.el-input__suffix {
   margin-right: 45px;
+}
+.feedback-content-detail-user-content,
+.feedback-content-detail-admin-user-content {
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 10px;
+  width: fit-content;
+}
+.feedback-content-detail-admin-user{
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  /* float: right; */
+}
+.feedback-content-detail-admin-user-name {
+  padding: 10px;
+  padding-top: 15px;
+  width: 30px;
+}
+.feedback-content-detail-user-content::before {
+  position: absolute;
+  left: 645px;
+  content: "";
+  border-width: 10px;
+  border-style: solid;
+  border-top-color: transparent;
+  border-right-color: black;
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+}
+.feedback-content-detail-user-content::after {
+  position: absolute;
+  left: 645px;
+  content: "";
+  border-width: 10px;
+  border-style: solid;
+  border-top-color: transparent;
+  border-right-color: rgb(152, 152, 150);
+  border-bottom-color: transparent;
+  border-left-color: transparent;
+}
+
+.feedback-content-detail-admin-user-content::before {
+  position: absolute;
+  right: 115px;
+  content: "";
+  border-width: 10px;
+  border-style: solid;
+  border-top-color: transparent;
+  border-left-color: black;
+  border-bottom-color: transparent;
+  border-right-color: transparent;
+}
+.feedback-content-detail-admin-user-content::after {
+  position: absolute;
+  right: 115px;
+  content: "";
+  border-width: 10px;
+  border-style: solid;
+  border-top-color: transparent;
+  border-left-color: rgb(152, 152, 150);
+  border-bottom-color: transparent;
+  border-right-color: transparent;
+}
+.feedback-content-detail-admin-user-name {
+  width:  60px;
 }
 </style>
