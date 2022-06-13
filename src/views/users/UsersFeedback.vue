@@ -151,12 +151,12 @@
             >
               {{ detail.content }}
             </div>
-            <div class="feedback-content-detail-admin-user" v-else >
+            <div class="feedback-content-detail-admin-user" v-else>
               <div class="feedback-content-detail-admin-user-content">
                 {{ detail.content }}
               </div>
               <div class="feedback-content-detail-admin-user-name">
-                {{ detail.adminUserName }}
+                :{{ detail.adminUserName }}
               </div>
             </div>
           </div>
@@ -190,7 +190,7 @@ import {
   listUserFeedbackDetailAPI,
   createUserFeedbackDetailAPI,
 } from "@/api/user-feedback-detail";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElNotification } from "element-plus";
 import * as XLSX from "xlsx";
 import {
   UploadFile,
@@ -223,6 +223,7 @@ const defaultFeedbackForm = ref({
   id: null,
   userFeedbackId: null,
   adminUserId: null,
+  adminUserName: null,
   content: null,
 });
 
@@ -266,6 +267,7 @@ const handleUpdate = (row, index) => {
   });
   listUserFeedbackDetailAPI(defaultFeedbackForm.value).then((res) => {
     feedbackDetailData.value = res.data;
+    console.log("feedbackDetailData:", feedbackDetailData.value);
   });
   dialogFormVisible.value = true;
   defaultForm.value = row;
@@ -274,9 +276,15 @@ const handleUpdate = (row, index) => {
 const handleSendMessage = () => {
   defaultFeedbackForm.value.adminUserId = storage.get("ADMIN_USERID");
   defaultFeedbackForm.value.content = message.value;
+  defaultFeedbackForm.value.adminUserName = storage.get("ADMIN_NAME");
   createUserFeedbackDetailAPI(defaultFeedbackForm.value).then((res) => {
     console.log("createUserFeedbackDetailAPI:", res);
+    ElNotification({
+      type: "success",
+      title: "添加回复成功",
+    });
   });
+  feedbackDetailData.value.unshift(defaultFeedbackForm.value);
 };
 
 const handleSearchList = () => {
@@ -468,7 +476,7 @@ getList();
   padding: 10px;
   width: fit-content;
 }
-.feedback-content-detail-admin-user{
+.feedback-content-detail-admin-user {
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
@@ -479,52 +487,8 @@ getList();
   padding-top: 15px;
   width: 30px;
 }
-.feedback-content-detail-user-content::before {
-  position: absolute;
-  left: 645px;
-  content: "";
-  border-width: 10px;
-  border-style: solid;
-  border-top-color: transparent;
-  border-right-color: black;
-  border-bottom-color: transparent;
-  border-left-color: transparent;
-}
-.feedback-content-detail-user-content::after {
-  position: absolute;
-  left: 645px;
-  content: "";
-  border-width: 10px;
-  border-style: solid;
-  border-top-color: transparent;
-  border-right-color: rgb(152, 152, 150);
-  border-bottom-color: transparent;
-  border-left-color: transparent;
-}
 
-.feedback-content-detail-admin-user-content::before {
-  position: absolute;
-  right: 115px;
-  content: "";
-  border-width: 10px;
-  border-style: solid;
-  border-top-color: transparent;
-  border-left-color: black;
-  border-bottom-color: transparent;
-  border-right-color: transparent;
-}
-.feedback-content-detail-admin-user-content::after {
-  position: absolute;
-  right: 115px;
-  content: "";
-  border-width: 10px;
-  border-style: solid;
-  border-top-color: transparent;
-  border-left-color: rgb(152, 152, 150);
-  border-bottom-color: transparent;
-  border-right-color: transparent;
-}
 .feedback-content-detail-admin-user-name {
-  width:  60px;
+  width: 60px;
 }
 </style>

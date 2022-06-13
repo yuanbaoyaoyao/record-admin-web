@@ -1,8 +1,16 @@
 import { loginByUsername, logout, getUserInfo } from '@/api/login'
+import {
+    listAdminReminderAPI,
+    updateAdminReminderAPI,
+    updateAdminReminderListAPI,
+    deleteAdminReminderAPI,
+    deleteAdminReminderListAPI
+} from "../../api/admin-reminder";
 import { listRoleAPI } from '@/api/admin-role'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
 import storage from '../../utils/storage'
+import { ElNotification } from 'element-plus';
 
 const adminUser = {
     state: {
@@ -13,8 +21,10 @@ const adminUser = {
         adminRoles: [],
         adminPerms: [],
         adminUserId: '',
-        adminLastLoginIp:'',
-        adminLastLoginTime:'',
+        adminLastLoginIp: '',
+        adminLastLoginTime: '',
+        adminReminders: '',
+        adminReminderForm: '',
     },
 
     mutations: {
@@ -42,13 +52,19 @@ const adminUser = {
             state.adminUserId = adminUserId
             storage.set("ADMIN_USERID", adminUserId)
         },
-        SET_ADMIN_LAST_LOGIN_IP:(state,adminLastLoginIp)=>{
+        SET_ADMIN_LAST_LOGIN_IP: (state, adminLastLoginIp) => {
             state.adminLastLoginIp = adminLastLoginIp
             storage.set("ADMIN_LAST_LOGIN_IP", adminLastLoginIp)
         },
-        SET_ADMIN_LAST_LOGIN_TIME:(state,adminLastLoginTime)=>{
+        SET_ADMIN_LAST_LOGIN_TIME: (state, adminLastLoginTime) => {
             state.adminLastLoginTime = adminLastLoginTime
             storage.set("ADMIN_LAST_LOGIN_TIME", adminLastLoginTime)
+        },
+        SET_ADMIN_REMINDERS: (state, adminReminders) => {
+            state.adminReminders = adminReminders
+        },
+        SET_ADMIN_REMINDER_FORM: (state, adminReminderForm) => {
+            state.adminReminderForm = adminReminderForm
         }
     },
     actions: {
@@ -73,7 +89,7 @@ const adminUser = {
                 getUserInfo(state).then(res => {
                     const data = res.data
                     console.log("data", data)
-                    if (data.perms && data.perms.length > 0) { 
+                    if (data.perms && data.perms.length > 0) {
                         commit('SET_ADMIN_PERMS', data.perms)
                     } else {
                         reject('getInfo: perms must be a non-null array !')
@@ -82,9 +98,80 @@ const adminUser = {
                     commit('SET_ADMIN_NAME', data.name)
                     commit('SET_ADMIN_AVATAR', data.avatar)
                     commit('SET_ADMIN_USERID', data.adminUserId)
-                    commit('SET_ADMIN_LAST_LOGIN_IP',data.lastLoginIp)
-                    commit('SET_ADMIN_LAST_LOGIN_TIME',data.lastLoginTime)
+                    commit('SET_ADMIN_LAST_LOGIN_IP', data.lastLoginIp)
+                    commit('SET_ADMIN_LAST_LOGIN_TIME', data.lastLoginTime)
                     resolve(res)
+                }).catch(error => {
+                    reject(error)
+                })
+            })
+        },
+
+        GetReminders({ commit }, params) {
+            return new Promise((resolve, reject) => {
+                listAdminReminderAPI().then((res) => {
+                    let reminders = 0
+                    for (let data of res.data) {
+                        if (data.isRead == false) {
+                            reminders++;
+                        }
+                    }
+                    commit('SET_ADMIN_REMINDERS', reminders)
+                    commit('SET_ADMIN_REMINDER_FORM', res.data)
+                    resolve()
+                }).catch(error => {
+                    reject(error)
+                })
+            })
+        },
+
+        UpdateReminder({ commit }, params) {
+            return new Promise((resolve, reject) => {
+                updateAdminReminderAPI(params).then((res) => {
+                    resolve()
+                }).catch(error => {
+                    reject(error)
+                })
+
+            })
+        },
+
+        UpdateReminderList({ commit }) {
+            return new Promise((resolve, reject) => {
+                updateAdminReminderListAPI().then((res) => {
+                    ElNotification({
+                        type: "success",
+                        title: "一键已读成功"
+                    })
+                    resolve()
+                }).catch(error => {
+                    reject(error)
+                })
+            })
+        },
+
+        DeleteAdminReminder({ commit }, params) {
+            return new Promise((resolve, reject) => {
+                deleteAdminReminderAPI(params).then((res) => {
+                    ElNotification({
+                        type: "success",
+                        title: "删除提醒成功"
+                    })
+                    resolve()
+                }).catch(error => {
+                    reject(error)
+                })
+            })
+        },
+
+        DeleteAdminReminderList({ commit }) {
+            return new Promise((resolve, reject) => {
+                deleteAdminReminderListAPI().then((res) => {
+                    ElNotification({
+                        type: "success",
+                        title: "一键清空提醒成功"
+                    })
+                    resolve()
                 }).catch(error => {
                     reject(error)
                 })

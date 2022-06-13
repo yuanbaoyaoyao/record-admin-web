@@ -31,7 +31,6 @@ export const constantRoutes = [
             },
             component: () => import("../views/Dashboard.vue")
         },
-
         ]
     },
 ]

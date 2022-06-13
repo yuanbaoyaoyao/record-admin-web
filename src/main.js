@@ -1,11 +1,11 @@
 import {
     createApp
 } from 'vue'
+import './permission'
 import router from './router'
 import App from './App.vue'
 import store from './store'
 import ElementPlus from 'element-plus'
-import './permission'
 import 'moment'
 
 import 'element-plus/dist/index.css'
@@ -26,6 +26,7 @@ import {
     dom
 } from '@fortawesome/fontawesome-svg-core'
 
+console.log("12")
 
 library.add(fas, fab)
 dom.watch()
